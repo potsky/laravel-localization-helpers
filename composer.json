@@ -1,0 +1,23 @@
+{
+    "name": "potsky/laravel-localization-helpers",
+    "description": "An artisan command package for easy translation management",
+    "authors": [
+        {
+            "name": "Potsky",
+            "email": "potsky@me.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0",
+        "illuminate/support": "4.1.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Potsky\\LaravelLocalizationHelpers\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
