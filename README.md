@@ -5,13 +5,15 @@ LLH is a set of tools to help you manage translations in your Laravel project.
 
 ## Installation
 
-Add the following line in the `require` array of the `composer.json` file :  
+1 - Add the following line in the `require` array of the `composer.json` file :  
 `"potsky/laravel-localization-helpers" : "dev-master"`
 
-Add the following line in the `providers` array of the `app/config/app.php` configuration file :
+2 - Update your installation : `composer update`
+
+3 - Add the following line in the `providers` array of the `app/config/app.php` configuration file :
 `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',`
 
-Execute `php artisan list` and you should view the new commands:
+Now execute `php artisan list` and you should view the new *localization* commands:
 
 ```
 ...
@@ -24,13 +26,25 @@ migrate
 ...
 ```
 
-
 ## Configuration
 
+To configure your fresh installed package, please create a configuration file by executing :
+
+`php artisan config:publish potsky/laravel-localization-helpers`
+
+Then you can modify the configuration in file `app/config/packages/potsky/laravel-localization-helpers/config.php`.
 
 ## Usage
 
-- `localization:missing` : this command parses all your code and generate according lang files in all `lang/XXX/` directories.
+### `localization:missing`
+
+This command parses all your code and generate according lang files in all `lang/XXX/` directories.
+
+Use `php artisan help localization:missing` for more informations about options.
+
+*Examples*
+
+...
 
 ## Support
 

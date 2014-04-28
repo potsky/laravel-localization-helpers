@@ -3,11 +3,13 @@
 namespace Potsky\LaravelLocalizationHelpers\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Config\Repository;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class LocalizationMissing extends Command
 {
+
     /**
      * The console command name.
      *
@@ -23,39 +25,25 @@ class LocalizationMissing extends Command
     protected $description = 'Parse all translations in app directory and build all lang files';
 
     /**
+     * Config repository.
+     *
+     * @var \Illuminate\Config\Repository
+     */
+    protected $configRepository;
+
+    /**
      * Folders to parse for missing translations
      *
      * @var  array
      */
-    private $folders = array(
-        '%APP/helpers',
-        '%APP/views' ,
-        '%APP/controllers',
-    );
+    private $folders = array();
 
     /**
      * functions and method to catch translations
      *
      * @var  array
      */
-    private $trans_methods = array(
-        'trans' => array(
-            '@trans\(\s*(\'.*\')\s*\)@U',
-            '@trans\(\s*(".*")\s*\)@U',
-            ),
-        'Lang::Get' => array(
-            '@Lang::Get\(\s*(\'.*\')\s*\)@U',
-            '@Lang::Get\(\s*(".*")\s*\)@U',
-            ),
-        'trans_choice' => array(
-            '@trans_choice\(\s*(\'.*\')\s*,.*\)@U',
-            '@trans_choice\(\s*(".*")\s*,.*\)@U',
-            ),
-        'Lang::choice' => array(
-            '@Lang::choice\(\s*(\'.*\')\s*,.*\)@U',
-            '@Lang::choice\(\s*(".*")\s*,.*\)@U',
-            ),
-        );
+    private $trans_methods = array();
 
     /**
      * Get the lang directory path
@@ -148,13 +136,18 @@ class LocalizationMissing extends Command
         return $result;
     }
 
+
     /**
      * Create a new command instance.
      *
+     * @param \Illuminate\Config\Repository $configRepository
+     *
      * @return void
      */
-    public function __construct()
+    public function __construct( Repository $configRepository )
     {
+        $this->trans_methods = \Config::get('laravel-localization-helpers::config.trans_methods');
+        $this->folders       = \Config::get('laravel-localization-helpers::config.folders');
         parent::__construct();
     }
 
@@ -165,11 +158,25 @@ class LocalizationMissing extends Command
      */
     public function fire()
     {
+
+        //////////////////////////////////////////////////
+        // Display where translatations are searched in //
+        //////////////////////////////////////////////////
+        $folders = $this->get_path( $this->folders );
+
+        if ( $this->option( 'verbose' ) ) {
+            $this->line("Lemmas will be searched in the following directories:");
+            foreach ( $folders as $path ) {
+                $this->line( '    <info>' . $path . '</info>' );
+            }
+            $this->line( '' );
+        }
+
         ////////////////////////////////
         // Parse all lemmas from code //
         ////////////////////////////////
         $lemmas = array();
-        foreach ( $this->get_path( $this->folders ) as $path ) {
+        foreach ( $folders as $path ) {
             foreach ( $this->get_php_files( $path ) as $php_file_path => $dumb ) {
                 $lemma = array();
                 foreach ( $this->extract_translation_from_php_file( $php_file_path ) as $k => $v) {
@@ -183,11 +190,11 @@ class LocalizationMissing extends Command
             $this->comment("No lemma have been found in code.");
             $this->line("I have searched recursively in PHP files in these directories:");
             foreach ( $this->get_path( $this->folders ) as $path ) {
-                $this->line( "  - " . $path );
+                $this->line( "    " . $path );
             }
             $this->line("for these functions/methods:");
             foreach ($this->trans_methods as $k=>$v) {
-                $this->line( "  - " . $k );
+                $this->line( "    " . $k );
             }
             die();
         }
@@ -238,10 +245,10 @@ class LocalizationMissing extends Command
                         if ( $this->option( 'verbose' ) ) {
                             $this->line( '' );
                         }
-                        $this->line( '  - ' . $this->get_short_path( $file_lang_path ) );
+                        $this->line( '    ' . $this->get_short_path( $file_lang_path ) );
 
                         if ( ! is_writable( dirname( $file_lang_path ) ) ) {
-                            $this->error( "    Unable to write file in directory " . dirname( $file_lang_path ) );
+                            $this->error( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
                             die();
                         }
 
@@ -250,17 +257,17 @@ class LocalizationMissing extends Command
                         }
 
                         if ( ! touch( $file_lang_path ) ) {
-                            $this->error( "    Unable to touch file $file_lang_path" );
+                            $this->error( "    > Unable to touch file $file_lang_path" );
                             die();
                         }
 
                         if ( ! is_readable( $file_lang_path ) ) {
-                            $this->error( "    Unable to read file $file_lang_path" );
+                            $this->error( "    > Unable to read file $file_lang_path" );
                             die();
                         }
 
                         if ( ! is_writable( $file_lang_path ) ) {
-                            $this->error( "    Unable to write in file $file_lang_path" );
+                            $this->error( "    > Unable to write in file $file_lang_path" );
                             die();
                         }
 
@@ -282,11 +289,11 @@ class LocalizationMissing extends Command
                         if ( count( $welcome_lemmas ) > 0 ) {
                             $display_already_comment = true;
                             $something_to_do         = true;
-                            $this->info( "    - " . count( $welcome_lemmas ) . " new strings to translate");
+                            $this->info( "        " . count( $welcome_lemmas ) . " new strings to translate");
                             $final_lemmas[ "POTSKY___NEW___POTSKY" ] = "POTSKY___NEW___POTSKY";
                             foreach ($welcome_lemmas as $key => $value) {
                                 if ( $this->option( 'verbose' ) ) {
-                                    $this->line( "          <info>" . $key . "</info> in " . $this->get_short_path( $value ) );
+                                    $this->line( "            <info>" . $key . "</info> in " . $this->get_short_path( $value ) );
                                 }
                                 if ( ! $this->option( 'no-comment' ) ) {
                                     $final_lemmas[ 'POTSKY___COMMENT___POTSKY' . $i ] = "Defined in file $value";
@@ -298,7 +305,7 @@ class LocalizationMissing extends Command
 
                         if ( count( $already_lemmas ) > 0 ) {
                             if ( $this->option( 'verbose' ) ) {
-                                $this->line( "    - " . count( $already_lemmas ) . " already translated strings");
+                                $this->line( "        " . count( $already_lemmas ) . " already translated strings");
                             }
                             $final_lemmas[ "POTSKY___OLD___POTSKY" ] = "POTSKY___OLD___POTSKY";
                             foreach ($already_lemmas as $key => $value) {
@@ -311,13 +318,13 @@ class LocalizationMissing extends Command
                             $display_obsolete_comment = ( $this->option( 'no-obsolete' ) ) ? false : true;
                             $something_to_do          = true;
                             $this->comment( $this->option( 'no-obsolete' )
-                                ? "    - " . count( $obsolete_lemmas ) . " obsolete strings (will be deleted)"
-                                : "    - " . count( $obsolete_lemmas ) . " obsolete strings (can be deleted manually in the generated file)"
+                                ? "        " . count( $obsolete_lemmas ) . " obsolete strings (will be deleted)"
+                                : "        " . count( $obsolete_lemmas ) . " obsolete strings (can be deleted manually in the generated file)"
                             );
                             $final_lemmas[ "POTSKY___OBSOLETE___POTSKY" ] = "POTSKY___OBSOLETE___POTSKY";
                             foreach ($obsolete_lemmas as $key => $value) {
                                 if ( $this->option( 'verbose' ) ) {
-                                    $this->line( "          <comment>" . $key . "</comment>" );
+                                    $this->line( "            <comment>" . $key . "</comment>" );
                                 }
                                 if ( ! $this->option( 'no-obsolete' ) ) {
                                     array_set( $final_lemmas , $key , $value );
@@ -351,7 +358,7 @@ class LocalizationMissing extends Command
                             $job[ $file_lang_path ] = $file_content;
                         } else {
                             if ( $this->option( 'verbose' ) ) {
-                                $this->line( "    > <comment>Nothing to do for this file</comment>" );
+                                $this->line( "        > <comment>Nothing to do for this file</comment>" );
                             }
                         }
                     }
@@ -376,7 +383,7 @@ class LocalizationMissing extends Command
                     foreach ($job as $file_lang_path => $file_content) {
                         $backup_path = preg_replace('/\..+$/', '.' . date("Ymd_His") . '.php' , $file_lang_path);
                         rename( $file_lang_path , $backup_path );
-                        $this->line( "  - <info>" . $this->get_short_path( $file_lang_path ). "</info> -> <info>" . $this->get_short_path( $backup_path ) . "</info>");
+                        $this->line( "    <info>" . $this->get_short_path( $file_lang_path ). "</info> -> <info>" . $this->get_short_path( $backup_path ) . "</info>");
                     }
                     $this->line( '' );
                 }
@@ -384,7 +391,7 @@ class LocalizationMissing extends Command
                 $this->line( 'Save files:' );
                 foreach ($job as $file_lang_path => $file_content) {
                     file_put_contents( $file_lang_path , $file_content );
-                    $this->line( "  - <info>" . $this->get_short_path( $file_lang_path ) );
+                    $this->line( "    <info>" . $this->get_short_path( $file_lang_path ) );
                 }
                 $this->line( '' );
 

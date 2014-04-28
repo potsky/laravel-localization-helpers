@@ -4,13 +4,15 @@
 
 <h2>Installation</h2>
 
-<p>Add the following line in the <code>require</code> array of the <code>composer.json</code> file :<br/>
+<p>1 - Add the following line in the <code>require</code> array of the <code>composer.json</code> file :<br/>
 <code>"potsky/laravel-localization-helpers" : "dev-master"</code></p>
 
-<p>Add the following line in the <code>providers</code> array of the <code>app/config/app.php</code> configuration file :
+<p>2 - Update your installation : <code>composer update</code></p>
+
+<p>3 - Add the following line in the <code>providers</code> array of the <code>app/config/app.php</code> configuration file :
 <code>'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',</code></p>
 
-<p>Execute <code>php artisan list</code> and you should view the new commands:</p>
+<p>Now execute <code>php artisan list</code> and you should view the new <em>localization</em> commands:</p>
 
 <p><code>
 ...
@@ -25,12 +27,23 @@ migrate
 
 <h2>Configuration</h2>
 
+<p>To configure your fresh installed package, please create a configuration file by executing :</p>
+
+<p><code>php artisan config:publish potsky/laravel-localization-helpers</code></p>
+
+<p>Then you can modify the configuration in file <code>app/config/packages/potsky/laravel-localization-helpers/config.php</code>.</p>
+
 <h2>Usage</h2>
 
-<ul>
-<li><code>localization:missing</code> : this command parses all your code and generate according lang files in all <code>lang/XXX/</code> directories.</li>
-</ul>
+<h3><code>localization:missing</code></h3>
 
+<p>This command parses all your code and generate according lang files in all <code>lang/XXX/</code> directories.</p>
+
+<p>Use <code>php artisan help localization:missing</code> for more informations about options.</p>
+
+<p><em>Examples</em></p>
+
+<p>&hellip;</p>
 
 <h2>Support</h2>
 

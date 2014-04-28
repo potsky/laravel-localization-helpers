@@ -29,7 +29,7 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider {
 	public function register()
 	{
 		$this->app['localization.missing'] = $this->app->share( function( $app ) {
-        	return new Commands\LocalizationMissing();
+        	return new Commands\LocalizationMissing( $app['config'] );
     	});
 
     	$this->commands('localization.missing');
