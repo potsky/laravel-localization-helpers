@@ -11,7 +11,7 @@ LLH is a set of tools to help you manage translations in your Laravel project.
 
 ## Usage
 
-- `TranslationMissing` : this command parses all your code and generate according lang files in all `lang/XXX/` directories.
+- `localization:missing` : this command parses all your code and generate according lang files in all `lang/XXX/` directories.
 
 ## Support
 
