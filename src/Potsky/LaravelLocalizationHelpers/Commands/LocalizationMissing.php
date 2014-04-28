@@ -115,14 +115,14 @@ class LocalizationMissing extends Command
     private function get_php_files($path)
     {
         if ( is_dir( $path ) ) {
-            return new RegexIterator(
-                new RecursiveIteratorIterator(
-                    new RecursiveDirectoryIterator( $path , RecursiveDirectoryIterator::SKIP_DOTS ),
-                    RecursiveIteratorIterator::SELF_FIRST,
-                    RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
+            return new \RegexIterator(
+                new \RecursiveIteratorIterator(
+                    new \RecursiveDirectoryIterator( $path , \RecursiveDirectoryIterator::SKIP_DOTS ),
+                    \RecursiveIteratorIterator::SELF_FIRST,
+                    \RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
                     ),
                 '/^.+\.php$/i',
-                RecursiveRegexIterator::GET_MATCH
+                \RecursiveRegexIterator::GET_MATCH
                 );
         } else {
             return array();
