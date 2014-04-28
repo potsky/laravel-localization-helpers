@@ -46,6 +46,16 @@ Use `php artisan help localization:missing` for more informations about options.
 
 ...
 
+### `localization:find`
+
+This command will search in all your code for the argument as a lemma.
+
+Use `php artisan help localization:find` for more informations about options.
+
+*Examples*
+
+...
+
 ## Support
 
 Use the github issue system to open a issue and ask for something.

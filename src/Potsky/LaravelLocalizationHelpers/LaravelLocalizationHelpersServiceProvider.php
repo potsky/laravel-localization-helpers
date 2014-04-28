@@ -32,7 +32,14 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider {
         	return new Commands\LocalizationMissing( $app['config'] );
     	});
 
-    	$this->commands('localization.missing');
+		$this->app['localization.find'] = $this->app->share( function( $app ) {
+        	return new Commands\LocalizationFind( $app['config'] );
+    	});
+
+    	$this->commands(
+    		'localization.missing',
+    		'localization.find'
+    	);
 	}
 
 	/**
