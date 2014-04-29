@@ -34,27 +34,119 @@ To configure your fresh installed package, please create a configuration file by
 
 Then you can modify the configuration in file `app/config/packages/potsky/laravel-localization-helpers/config.php`.
 
+Add new folders to search for, add your own lang methods or functions, ...
+
 ## Usage
 
-### `localization:missing`
+### Command `localization:missing`
 
 This command parses all your code and generate according lang files in all `lang/XXX/` directories.
 
 Use `php artisan help localization:missing` for more informations about options.
 
-*Examples*
+#### *Examples*
 
-...
+##### Generate all lang files
 
-### `localization:find`
+```
+php artisan localization:missing
+```
+
+##### Generate all lang files without prompt
+
+```
+php artisan localization:missing -n
+```
+
+##### Generate all lang files without backuping old files
+
+```
+php artisan localization:missing -b
+```
+
+##### Generate all lang files without keeping obsolete lemmas
+
+```
+php artisan localization:missing -o
+```
+
+##### Generate all lang files without any comment for new found lemmas
+
+```
+php artisan localization:missing -c
+```
+
+##### Generate all lang files without header comment
+
+```
+php artisan localization:missing -d
+```
+
+##### Generate all lang files and set new lemma values
+
+3 commands below produce the same output:
+```
+php artisan localization:missing
+php artisan localization:missing -l
+php artisan localization:missing -l "%LEMMA"
+```
+
+You can customize the default generated values for unknown lemmas.
+
+The following command let new values empty:
+
+```
+php artisan localization:missing -l ""
+```
+
+The following command prefixes all lemmas values with "Please translate this : "
+
+```
+php artisan localization:missing -l "Please translate this : %LEMMA"
+```
+
+The following command prefixes all lemmas values with "Please translate this !"
+
+```
+php artisan localization:missing -l 'Please translate this !'
+```
+
+
+
+### Command `localization:find`
 
 This command will search in all your code for the argument as a lemma.
 
 Use `php artisan help localization:find` for more informations about options.
 
-*Examples*
+#### *Examples*
 
-...
+##### Find regular lemma
+
+```
+php artisan localization:find Search
+```
+
+##### Find regular lemma with verbose
+
+```
+php artisan localization:find -v Search
+```
+
+##### Find regular lemma with short path displayed
+
+```
+php artisan localization:find -s "Search me"
+```
+
+##### Find lemma with a regular expression
+
+```
+php artisan localization:find -s -r "@Search.*@"
+php artisan localization:find -s -r "/.*me$/"
+```
+
+> PCRE functions are used
 
 ## Support
 

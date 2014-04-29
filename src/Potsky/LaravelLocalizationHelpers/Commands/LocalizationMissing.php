@@ -36,21 +36,21 @@ class LocalizationMissing extends Command
      *
      * @var  array
      */
-    private $folders = array();
+    protected $folders = array();
 
     /**
      * functions and method to catch translations
      *
      * @var  array
      */
-    private $trans_methods = array();
+    protected $trans_methods = array();
 
     /**
      * Get the lang directory path
      *
      * @return string the path
      */
-    private function get_lang_path()
+    protected function get_lang_path()
     {
         return app_path() . DIRECTORY_SEPARATOR . 'lang';
     }
@@ -62,7 +62,7 @@ class LocalizationMissing extends Command
      *
      * @return string the absolute path
      */
-    private function get_path($path)
+    protected function get_path($path)
     {
         return str_replace(
             array(
@@ -88,7 +88,7 @@ class LocalizationMissing extends Command
      *
      * @return string the relative path
      */
-    private function get_short_path($path)
+    protected function get_short_path($path)
     {
         return str_replace( base_path() , '' , $path );
     }
@@ -100,7 +100,7 @@ class LocalizationMissing extends Command
      *
      * @return array a list of php file paths
      */
-    private function get_php_files($path)
+    protected function get_php_files($path)
     {
         if ( is_dir( $path ) ) {
             return new \RegexIterator(
@@ -124,7 +124,7 @@ class LocalizationMissing extends Command
      *
      * @return array an array dot of found translations
      */
-    private function extract_translation_from_php_file($path)
+    protected function extract_translation_from_php_file($path)
     {
         $result = array();
         $string = file_get_contents( $path );
@@ -158,12 +158,11 @@ class LocalizationMissing extends Command
      */
     public function fire()
     {
+        $folders = $this->get_path( $this->folders );
 
         //////////////////////////////////////////////////
         // Display where translatations are searched in //
         //////////////////////////////////////////////////
-        $folders = $this->get_path( $this->folders );
-
         if ( $this->option( 'verbose' ) ) {
             $this->line("Lemmas will be searched in the following directories:");
             foreach ( $folders as $path ) {
@@ -299,7 +298,7 @@ class LocalizationMissing extends Command
                                     $final_lemmas[ 'POTSKY___COMMENT___POTSKY' . $i ] = "Defined in file $value";
                                     $i = $i + 1;
                                 }
-                                array_set( $final_lemmas , $key , $key );
+                                array_set( $final_lemmas , $key , str_replace( '%LEMMA' , $key , $this->option('new-value') ) );
                             }
                         }
 
@@ -425,11 +424,12 @@ class LocalizationMissing extends Command
     protected function getOptions()
     {
         return array(
-            array( 'force'       , 'f' , InputOption::VALUE_NONE , 'Force file rewrite even if there is nothing to do' ),
-            array( 'no-comment'  , 'c' , InputOption::VALUE_NONE , 'Do not add comments in lang files for lemma definition' ),
-            array( 'no-date'     , 'd' , InputOption::VALUE_NONE , 'Do not add the date of execution in the lang files' ),
-            array( 'no-backup'   , 'b' , InputOption::VALUE_NONE , 'Do not backup lang file (be careful, I am not a good coder)' ),
-            array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE , 'Do not write obsolete lemma' ),
+            array( 'force'       , 'f' , InputOption::VALUE_NONE     , 'Force file rewrite even if there is nothing to do' ),
+            array( 'no-comment'  , 'c' , InputOption::VALUE_NONE     , 'Do not add comments in lang files for lemma definition' ),
+            array( 'no-date'     , 'd' , InputOption::VALUE_NONE     , 'Do not add the date of execution in the lang files' ),
+            array( 'no-backup'   , 'b' , InputOption::VALUE_NONE     , 'Do not backup lang file (be careful, I am not a good coder)' ),
+            array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE     , 'Do not write obsolete lemma' ),
+            array( 'new-value'   , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value)' , '%LEMMA' ),
         );
     }
 
