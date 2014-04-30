@@ -34,12 +34,12 @@ return array(
 	*/
     'trans_methods' => array(
 	    'trans' => array(
-	        '@trans\(\s*(\'.*\')\s*\)@U',
-	        '@trans\(\s*(".*")\s*\)@U',
+	        '@trans\(\s*(\'.*\')\s*(,.*)*\)@U',
+	        '@trans\(\s*(".*")\s*(,.*)*\)@U',
 	    ),
 	    'Lang::Get' => array(
-	        '@Lang::Get\(\s*(\'.*\')\s*\)@U',
-	        '@Lang::Get\(\s*(".*")\s*\)@U',
+	        '@Lang::Get\(\s*(\'.*\')\s*(,.*)*\)@U',
+	        '@Lang::Get\(\s*(".*")\s*(,.*)*\)@U',
 	    ),
 	    'trans_choice' => array(
 	        '@trans_choice\(\s*(\'.*\')\s*,.*\)@U',
