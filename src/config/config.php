@@ -17,7 +17,7 @@ return array(
 	|
 	*/
     'folders' => array(
-        '%APP/helpers',
+        '%APP/Potsky',
         '%APP/views' ,
         '%APP/controllers',
     ),
