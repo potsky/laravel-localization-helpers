@@ -7,7 +7,7 @@ use Illuminate\Config\Repository;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class LocalizationFind extends LocalizationMissing
+class LocalizationFind extends LocalizationAbstract
 {
 
     /**
@@ -33,8 +33,6 @@ class LocalizationFind extends LocalizationMissing
      */
     public function __construct( Repository $configRepository )
     {
-        $this->trans_methods = \Config::get('laravel-localization-helpers::config.trans_methods');
-        $this->folders       = \Config::get('laravel-localization-helpers::config.folders');
         parent::__construct( $configRepository );
     }
 

@@ -49,6 +49,37 @@ return array(
 	        '@Lang::choice\(\s*(\'.*\')\s*,.*\)@U',
 	        '@Lang::choice\(\s*(".*")\s*,.*\)@U',
 	    ),
-	)
+	),
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Keywords for obssolete check
+	|--------------------------------------------------------------------------
+	|
+	| Localization::Missing will search lemmas in existing lang files.
+	| Then it searches in all PHP source files.
+	| When using dynamic or auto-generated lemmas, you must tell Localization::Missing
+	| that there are dynamic because it cannot guess them.
+	|
+	| Example :
+	|   - in PHP blade code : <span>{{{ trans( "message.user.dynamo.$s" ) }}}</span>
+	|   - in lang/en.message.php :
+	|     - 'user' => array(
+	|         'dynamo' => array(
+	|           'lastname'  => 'Family name',
+	|           'firstname' => 'Name',
+	|           'email'     => 'Email address',
+	|           ...
+	|   Then you can define in this parameter value dynamo for example so that
+	|   Localization::Missing will not exclude lastname, firstname and email from
+	|   translation files.
+	|
+	*/
+	'never_obsolete_keys' => array(
+		'dynamic' ,
+		'fields' ,
+	),
+
 
 );

@@ -7,7 +7,7 @@ use Illuminate\Config\Repository;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class LocalizationMissing extends Command
+class LocalizationMissing extends LocalizationAbstract
 {
 
     /**
@@ -24,118 +24,6 @@ class LocalizationMissing extends Command
      */
     protected $description = 'Parse all translations in app directory and build all lang files';
 
-    /**
-     * Config repository.
-     *
-     * @var \Illuminate\Config\Repository
-     */
-    protected $configRepository;
-
-    /**
-     * Folders to parse for missing translations
-     *
-     * @var  array
-     */
-    protected $folders = array();
-
-    /**
-     * functions and method to catch translations
-     *
-     * @var  array
-     */
-    protected $trans_methods = array();
-
-    /**
-     * Get the lang directory path
-     *
-     * @return string the path
-     */
-    protected function get_lang_path()
-    {
-        return app_path() . DIRECTORY_SEPARATOR . 'lang';
-    }
-
-    /**
-     * Return an absolute path without predefined variables
-     *
-     * @param string $path the relative path
-     *
-     * @return string the absolute path
-     */
-    protected function get_path($path)
-    {
-        return str_replace(
-            array(
-                '%APP',
-                '%BASE',
-                '%PUBLIC',
-                '%STORAGE',
-                ),
-            array(
-                app_path(),
-                base_path(),
-                public_path(),
-                storage_path()
-                ),
-            $path
-            );
-    }
-
-    /**
-     * Return an relative path to the laravel directory
-     *
-     * @param string $path the absolute path
-     *
-     * @return string the relative path
-     */
-    protected function get_short_path($path)
-    {
-        return str_replace( base_path() , '' , $path );
-    }
-
-    /**
-     * return an iterator of php files in the provided paths and subpaths
-     *
-     * @param string $path a source path
-     *
-     * @return array a list of php file paths
-     */
-    protected function get_php_files($path)
-    {
-        if ( is_dir( $path ) ) {
-            return new \RegexIterator(
-                new \RecursiveIteratorIterator(
-                    new \RecursiveDirectoryIterator( $path , \RecursiveDirectoryIterator::SKIP_DOTS ),
-                    \RecursiveIteratorIterator::SELF_FIRST,
-                    \RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
-                    ),
-                '/^.+\.php$/i',
-                \RecursiveRegexIterator::GET_MATCH
-                );
-        } else {
-            return array();
-        }
-    }
-
-    /**
-     * Extract all translations from the provided file
-     *
-     * @param string $path the file path
-     *
-     * @return array an array dot of found translations
-     */
-    protected function extract_translation_from_php_file($path)
-    {
-        $result = array();
-        $string = file_get_contents( $path );
-        foreach ( array_flatten( $this->trans_methods ) as $method) {
-            preg_match_all( $method , $string , $matches );
-            $result = array_merge( $result , array_flip( $matches[1] ) );
-        }
-
-        return $result;
-    }
-
 
     /**
      * Create a new command instance.
@@ -146,9 +34,7 @@ class LocalizationMissing extends Command
      */
     public function __construct( Repository $configRepository )
     {
-        $this->trans_methods = \Config::get('laravel-localization-helpers::config.trans_methods');
-        $this->folders       = \Config::get('laravel-localization-helpers::config.folders');
-        parent::__construct();
+        parent::__construct( $configRepository );
     }
 
     /**
@@ -285,6 +171,9 @@ class LocalizationMissing extends Command
                         ksort( $welcome_lemmas  );
                         ksort( $already_lemmas  );
 
+                        //////////////////////////
+                        // Deal with new lemmas //
+                        //////////////////////////
                         if ( count( $welcome_lemmas ) > 0 ) {
                             $display_already_comment = true;
                             $something_to_do         = true;
@@ -302,6 +191,9 @@ class LocalizationMissing extends Command
                             }
                         }
 
+                        ///////////////////////////////
+                        // Deal with existing lemmas //
+                        ///////////////////////////////
                         if ( count( $already_lemmas ) > 0 ) {
                             if ( $this->option( 'verbose' ) ) {
                                 $this->line( "        " . count( $already_lemmas ) . " already translated strings");
@@ -309,6 +201,20 @@ class LocalizationMissing extends Command
                             $final_lemmas[ "POTSKY___OLD___POTSKY" ] = "POTSKY___OLD___POTSKY";
                             foreach ($already_lemmas as $key => $value) {
                                 array_set( $final_lemmas , $key , $value );
+                            }
+                        }
+
+                        ///////////////////////////////
+                        // Deal with obsolete lemmas //
+                        ///////////////////////////////
+                        if ( count( $obsolete_lemmas ) > 0 ) {
+                            // Remove all dynamic fields
+                            foreach ( $obsolete_lemmas as $key => $value) {
+                                foreach ( $this->never_obsolete_keys as $remove ) {
+                                    if ( strpos( $key , '.' . $remove . '.' ) !== false ) {
+                                        unset( $obsolete_lemmas[$key] );
+                                    }
+                                }
                             }
                         }
 
