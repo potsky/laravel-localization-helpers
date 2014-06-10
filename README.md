@@ -11,7 +11,7 @@ LLH is a set of tools to help you manage translations in your Laravel project.
 
 ## Installation
 
-1 - Add the following line in the `require` array of the `composer.json` file :  
+1 - Add the following line in the `require-dev` array of the `composer.json` file :  
 `"potsky/laravel-localization-helpers" : "~1.1"`
 
 2 - Update your installation : `composer update`
