@@ -26,6 +26,7 @@ Now execute `php artisan list` and you should view the new *localization* comman
 key
   key:generate                Set the application key
 localization
+  localization:find           Display all files where the argument is used as a lemma
   localization:missing        Parse all translations in app directory and build all lang files
 migrate
   migrate:install             Create the migration repository
