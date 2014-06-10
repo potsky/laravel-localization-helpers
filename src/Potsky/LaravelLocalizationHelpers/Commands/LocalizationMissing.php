@@ -115,8 +115,9 @@ class LocalizationMissing extends LocalizationAbstract
         // - keep already defined lemmas   //
         // - add obsolete lemmas on bottom //
         /////////////////////////////////////
-        $dir_lang = $this->get_lang_path();
-        $job      = array();
+        $dir_lang      = $this->get_lang_path();
+        $job           = array();
+        $there_are_new = false;
 
         $this->line( 'Scan files:' );
         foreach ( scandir( $dir_lang ) as $lang ) {
@@ -179,6 +180,7 @@ class LocalizationMissing extends LocalizationAbstract
                         if ( count( $welcome_lemmas ) > 0 ) {
                             $display_already_comment = true;
                             $something_to_do         = true;
+                            $there_are_new           = true;
                             $this->info( "        " . count( $welcome_lemmas ) . " new strings to translate");
                             $final_lemmas[ "POTSKY___NEW___POTSKY" ] = "POTSKY___NEW___POTSKY";
                             foreach ($welcome_lemmas as $key => $value) {
@@ -273,11 +275,23 @@ class LocalizationMissing extends LocalizationAbstract
             }
         }
 
-        if ( count( $job ) > 0 ) {
 
-            if ( $this->option( 'silent' ) ) {
+        ///////////////////////////////////////////
+        // Silent mode                           //
+        // only return an exit code on new lemma //
+        ///////////////////////////////////////////
+        if ( $this->option( 'silent' ) ) {
+            if ( $there_are_new === true ) {
                 return ERROR;
+            } else {
+                return SUCCESS;
             }
+        }
+
+        ///////////////////////////////////////////
+        // Normal mode                           //
+        ///////////////////////////////////////////
+        if ( count( $job ) > 0 ) {
 
             if ( $this->option( 'no-interaction' ) ) {
                 $do = true;

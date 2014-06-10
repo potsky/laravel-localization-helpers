@@ -1,7 +1,7 @@
 {
-    "name": "potsky/laravel-localization-helpers",
-    "description": "An artisan command package for easy translation management",
-    "authors": [
+    "name"        : "potsky/laravel-localization-helpers",
+    "description" : "An artisan command package for easy translation management",
+    "authors"     : [
         {
             "name"     : "Potsky",
             "email"    : "potsky@me.com",

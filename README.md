@@ -1,6 +1,14 @@
 Laravel Localization Helpers
 ============================
 
+[![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
+
+[![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
+
+[![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
+
+
+
 LLH is a set of tools to help you manage translations in your Laravel project.
 
 ## Installation
@@ -109,6 +117,19 @@ The following command prefixes all lemmas values with "Please translate this !"
 
 ```
 php artisan localization:missing -l 'Please translate this !'
+```
+
+##### Silent option for shell integration
+
+```
+#!/bin/bash
+
+php artisan localization:missing -s
+if [ $? -eq 0 ]; then
+    echo "Nothing to do dude, GO for release"
+else
+    echo "I will not release in production, lang files are not clean"
+fi
 ```
 
 
