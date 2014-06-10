@@ -38,6 +38,13 @@ abstract class LocalizationAbstract extends Command
     protected $never_obsolete_keys = array();
 
     /**
+     * Should comands display something
+     *
+     * @var  boolean
+     */
+    protected $display = true;
+
+    /**
      * Create a new command instance.
      *
      * @param \Illuminate\Config\Repository $configRepository
@@ -61,6 +68,72 @@ abstract class LocalizationAbstract extends Command
     {
         return app_path() . DIRECTORY_SEPARATOR . 'lang';
     }
+
+    /**
+     * Display console message
+     *
+     * @param   string  $s  the message to display
+     *
+     * @return  void
+     */
+    public function line( $s ) {
+        if ( $this->display ) {
+            parent::line( $s );
+        }
+    }
+
+    /**
+     * Display console message
+     *
+     * @param   string  $s  the message to display
+     *
+     * @return  void
+     */
+    public function info( $s ) {
+        if ( $this->display ) {
+            parent::info( $s );
+        }
+    }
+
+    /**
+     * Display console message
+     *
+     * @param   string  $s  the message to display
+     *
+     * @return  void
+     */
+    public function comment( $s ) {
+        if ( $this->display ) {
+            parent::comment( $s );
+        }
+    }
+
+    /**
+     * Display console message
+     *
+     * @param   string  $s  the message to display
+     *
+     * @return  void
+     */
+    public function question( $s ) {
+        if ( $this->display ) {
+            parent::question( $s );
+        }
+    }
+
+    /**
+     * Display console message
+     *
+     * @param   string  $s  the message to display
+     *
+     * @return  void
+     */
+    public function error( $s ) {
+        if ( $this->display ) {
+            parent::error( $s );
+        }
+    }
+
 
     /**
      * Return an absolute path without predefined variables

@@ -5,7 +5,6 @@ namespace Potsky\LaravelLocalizationHelpers\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Config\Repository;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 class LocalizationMissing extends LocalizationAbstract
 {
@@ -24,7 +23,6 @@ class LocalizationMissing extends LocalizationAbstract
      */
     protected $description = 'Parse all translations in app directory and build all lang files';
 
-
     /**
      * Create a new command instance.
      *
@@ -32,7 +30,7 @@ class LocalizationMissing extends LocalizationAbstract
      *
      * @return void
      */
-    public function __construct( Repository $configRepository )
+    public function __construct(Repository $configRepository)
     {
         parent::__construct( $configRepository );
     }
@@ -44,14 +42,18 @@ class LocalizationMissing extends LocalizationAbstract
      */
     public function fire()
     {
-        $folders = $this->get_path( $this->folders );
+        define( 'SUCCESS' , 0 );
+        define( 'ERROR'   , 1 );
+
+        $folders       = $this->get_path( $this->folders );
+        $this->display = ! $this->option( 'silent' );
 
         //////////////////////////////////////////////////
         // Display where translatations are searched in //
         //////////////////////////////////////////////////
         if ( $this->option( 'verbose' ) ) {
             $this->line("Lemmas will be searched in the following directories:");
-            foreach ( $folders as $path ) {
+            foreach ($folders as $path) {
                 $this->line( '    <info>' . $path . '</info>' );
             }
             $this->line( '' );
@@ -61,7 +63,7 @@ class LocalizationMissing extends LocalizationAbstract
         // Parse all lemmas from code //
         ////////////////////////////////
         $lemmas = array();
-        foreach ( $folders as $path ) {
+        foreach ($folders as $path) {
             foreach ( $this->get_php_files( $path ) as $php_file_path => $dumb ) {
                 $lemma = array();
                 foreach ( $this->extract_translation_from_php_file( $php_file_path ) as $k => $v) {
@@ -209,8 +211,8 @@ class LocalizationMissing extends LocalizationAbstract
                         ///////////////////////////////
                         if ( count( $obsolete_lemmas ) > 0 ) {
                             // Remove all dynamic fields
-                            foreach ( $obsolete_lemmas as $key => $value) {
-                                foreach ( $this->never_obsolete_keys as $remove ) {
+                            foreach ($obsolete_lemmas as $key => $value) {
+                                foreach ($this->never_obsolete_keys as $remove) {
                                     if ( strpos( $key , '.' . $remove . '.' ) !== false ) {
                                         unset( $obsolete_lemmas[$key] );
                                     }
@@ -273,6 +275,10 @@ class LocalizationMissing extends LocalizationAbstract
 
         if ( count( $job ) > 0 ) {
 
+            if ( $this->option( 'silent' ) ) {
+                return ERROR;
+            }
+
             if ( $this->option( 'no-interaction' ) ) {
                 $do = true;
             } else {
@@ -306,6 +312,10 @@ class LocalizationMissing extends LocalizationAbstract
                 $this->comment( 'Process aborted. No file have been changed.' );
             }
         } else {
+            if ( $this->option( 'silent' ) ) {
+                return SUCCESS;
+            }
+
             $this->line( '' );
             $this->info( 'Drink a Piña colada and/or smoke Super Skunk, you have nothing to do!' );
         }
@@ -331,6 +341,7 @@ class LocalizationMissing extends LocalizationAbstract
     {
         return array(
             array( 'force'       , 'f' , InputOption::VALUE_NONE     , 'Force file rewrite even if there is nothing to do' ),
+            array( 'silent'      , 's' , InputOption::VALUE_NONE     , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma)' ),
             array( 'no-comment'  , 'c' , InputOption::VALUE_NONE     , 'Do not add comments in lang files for lemma definition' ),
             array( 'no-date'     , 'd' , InputOption::VALUE_NONE     , 'Do not add the date of execution in the lang files' ),
             array( 'no-backup'   , 'b' , InputOption::VALUE_NONE     , 'Do not backup lang file (be careful, I am not a good coder)' ),
