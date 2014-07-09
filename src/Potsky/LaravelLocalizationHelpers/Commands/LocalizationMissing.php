@@ -307,7 +307,9 @@ class LocalizationMissing extends LocalizationAbstract
                     $this->line( 'Backup files:' );
                     foreach ($job as $file_lang_path => $file_content) {
                         $backup_path = preg_replace('/\..+$/', '.' . date("Ymd_His") . '.php' , $file_lang_path);
-                        rename( $file_lang_path , $backup_path );
+                        if ( ! $this->option( 'dry-run' ) ) {
+                            rename( $file_lang_path , $backup_path );
+                        }
                         $this->line( "    <info>" . $this->get_short_path( $file_lang_path ). "</info> -> <info>" . $this->get_short_path( $backup_path ) . "</info>");
                     }
                     $this->line( '' );
@@ -315,8 +317,13 @@ class LocalizationMissing extends LocalizationAbstract
 
                 $this->line( 'Save files:' );
                 foreach ($job as $file_lang_path => $file_content) {
-                    file_put_contents( $file_lang_path , $file_content );
+                    if ( ! $this->option( 'dry-run' ) ) {
+                        file_put_contents( $file_lang_path , $file_content );
+                    }
                     $this->line( "    <info>" . $this->get_short_path( $file_lang_path ) );
+                    if ( $this->option('editor') ) {
+                        exec( $this->editor . ' ' . $file_lang_path );
+                    }
                 }
                 $this->line( '' );
 
@@ -354,13 +361,15 @@ class LocalizationMissing extends LocalizationAbstract
     protected function getOptions()
     {
         return array(
+            array( 'dry-run'     , 'r' , InputOption::VALUE_NONE     , 'Dry run : run process but do not write anything' ),
+            array( 'editor'      , 'e' , InputOption::VALUE_NONE     , 'Open files which need to be edited at the end of the process' ),
             array( 'force'       , 'f' , InputOption::VALUE_NONE     , 'Force file rewrite even if there is nothing to do' ),
-            array( 'silent'      , 's' , InputOption::VALUE_NONE     , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma)' ),
+            array( 'new-value'   , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value)' , '%LEMMA' ),
+            array( 'no-backup'   , 'b' , InputOption::VALUE_NONE     , 'Do not backup lang file (be careful, I am not a good coder)' ),
             array( 'no-comment'  , 'c' , InputOption::VALUE_NONE     , 'Do not add comments in lang files for lemma definition' ),
             array( 'no-date'     , 'd' , InputOption::VALUE_NONE     , 'Do not add the date of execution in the lang files' ),
-            array( 'no-backup'   , 'b' , InputOption::VALUE_NONE     , 'Do not backup lang file (be careful, I am not a good coder)' ),
             array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE     , 'Do not write obsolete lemma' ),
-            array( 'new-value'   , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value)' , '%LEMMA' ),
+            array( 'silent'      , 's' , InputOption::VALUE_NONE     , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma)' ),
         );
     }
 

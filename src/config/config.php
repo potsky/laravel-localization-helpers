@@ -82,4 +82,14 @@ return array(
 	),
 
 
+	/*
+	|--------------------------------------------------------------------------
+	| Editor
+	|--------------------------------------------------------------------------
+	|
+	| when using option editor, package will use this command to open your files
+	|
+	*/
+	'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
+
 );

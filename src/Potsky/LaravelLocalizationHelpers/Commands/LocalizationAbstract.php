@@ -24,6 +24,13 @@ abstract class LocalizationAbstract extends Command
     protected $trans_methods = array();
 
     /**
+     * functions and method to catch translations
+     *
+     * @var  array
+     */
+    protected $editor = '';
+
+    /**
      * Folders to parse for missing translations
      *
      * @var  array
@@ -56,6 +63,7 @@ abstract class LocalizationAbstract extends Command
         $this->trans_methods       = \Config::get('laravel-localization-helpers::config.trans_methods');
         $this->folders             = \Config::get('laravel-localization-helpers::config.folders');
         $this->never_obsolete_keys = \Config::get('laravel-localization-helpers::config.never_obsolete_keys');
+        $this->editor              = \Config::get('laravel-localization-helpers::config.editor_command_line');
         parent::__construct();
     }
 

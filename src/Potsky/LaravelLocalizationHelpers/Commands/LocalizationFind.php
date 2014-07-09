@@ -129,8 +129,8 @@ class LocalizationFind extends LocalizationAbstract
     protected function getOptions()
     {
         return array(
-            array( 'short' , 's' , InputOption::VALUE_NONE , 'Short path relative to the laravel project' ),
             array( 'regex' , 'r' , InputOption::VALUE_NONE , 'Argument is a regular expression' ),
+            array( 'short' , 's' , InputOption::VALUE_NONE , 'Short path relative to the laravel project' ),
         );
     }
 
