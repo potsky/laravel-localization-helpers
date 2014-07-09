@@ -131,7 +131,23 @@ else
 fi
 ```
 
+##### Simulate all operations (do not write anything) with a dry run
 
+```
+php artisan localization:missing -r
+```
+
+##### Open all must-edit files at the end of the process
+
+```
+php artisan localization:missing -e
+```
+
+You can edit the editor path in your configuration file. By default, editor is *Sublime Text* on *Mac OS X* :
+
+```
+    'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
+```
 
 ### Command `localization:find`
 
