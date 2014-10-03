@@ -316,18 +316,24 @@ class LocalizationMissing extends LocalizationAbstract
                 }
 
                 $this->line( 'Save files:' );
+                $open_files = '';
                 foreach ($job as $file_lang_path => $file_content) {
                     if ( ! $this->option( 'dry-run' ) ) {
                         file_put_contents( $file_lang_path , $file_content );
                     }
                     $this->line( "    <info>" . $this->get_short_path( $file_lang_path ) );
                     if ( $this->option('editor') ) {
-                        exec( $this->editor . ' ' . $file_lang_path );
+                        $open_files.= ' ' . escapeshellarg( $file_lang_path );
                     }
                 }
                 $this->line( '' );
 
                 $this->info( 'Process done!' );
+
+                if ( $this->option('editor') ) {
+                    exec( $this->editor . $open_files );
+                }
+
             } else {
                 $this->line( '' );
                 $this->comment( 'Process aborted. No file have been changed.' );

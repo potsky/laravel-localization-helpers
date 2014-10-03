@@ -53,6 +53,8 @@ return array(
 	    'Lang::Get' => array(
 	        '@Lang::Get\(\s*(\'.*\')\s*(,.*)*\)@U',
 	        '@Lang::Get\(\s*(".*")\s*(,.*)*\)@U',
+	        '@Lang::get\(\s*(\'.*\')\s*(,.*)*\)@U',
+	        '@Lang::get\(\s*(".*")\s*(,.*)*\)@U',
 	    ),
 	    'trans_choice' => array(
 	        '@trans_choice\(\s*(\'.*\')\s*,.*\)@U',
