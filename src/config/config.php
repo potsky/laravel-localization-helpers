@@ -25,6 +25,19 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Lang file to ignore
+	|--------------------------------------------------------------------------
+	|
+	| These lang files will not be written
+	|
+	*/
+    'ignore_lang_files' => array(
+        'validation',
+    ),
+
+
+	/*
+	|--------------------------------------------------------------------------
 	| Methods or functions to search for
 	|--------------------------------------------------------------------------
 	|
@@ -54,7 +67,7 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| Keywords for obssolete check
+	| Keywords for obsolete check
 	|--------------------------------------------------------------------------
 	|
 	| Localization::Missing will search lemmas in existing lang files.

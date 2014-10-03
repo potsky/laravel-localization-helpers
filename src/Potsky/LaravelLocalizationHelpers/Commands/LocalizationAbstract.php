@@ -45,6 +45,13 @@ abstract class LocalizationAbstract extends Command
     protected $never_obsolete_keys = array();
 
     /**
+     * Never manage these lang files
+     *
+     * @var  array
+     */
+    protected $ignore_lang_files = array();
+
+    /**
      * Should comands display something
      *
      * @var  boolean
@@ -62,6 +69,7 @@ abstract class LocalizationAbstract extends Command
     {
         $this->trans_methods       = \Config::get('laravel-localization-helpers::config.trans_methods');
         $this->folders             = \Config::get('laravel-localization-helpers::config.folders');
+        $this->ignore_lang_files   = \Config::get('laravel-localization-helpers::config.ignore_lang_files');
         $this->never_obsolete_keys = \Config::get('laravel-localization-helpers::config.never_obsolete_keys');
         $this->editor              = \Config::get('laravel-localization-helpers::config.editor_command_line');
         parent::__construct();
@@ -209,7 +217,7 @@ abstract class LocalizationAbstract extends Command
      * Extract all translations from the provided file
      * Remove all translations containing :
      * - $  -> auto-generated translation cannot be supported
-     * - :: -> package translations are not take in account
+     * - :: -> package translations are not taken in account
      *
      * @param string $path the file path
      *
