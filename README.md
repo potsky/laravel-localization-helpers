@@ -188,3 +188,10 @@ php artisan localization:find -s -r "/.*me$/"
 
 Use the github issue system to open a issue and ask for something.
 
+## Change Log
+
+### v1.2
+
+- support for Laravel 5 (4.3)
+- add `ignore_lang_files` parameter in configuration file to ignore lang files (useful for `validation` file for example)
+

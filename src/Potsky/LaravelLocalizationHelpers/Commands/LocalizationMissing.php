@@ -128,6 +128,14 @@ class LocalizationMissing extends LocalizationAbstract
 
                     foreach ($lemmas_structured as $family => $array) {
 
+                        if ( in_array( $family , $this->ignore_lang_files ) ) {
+                            if ( $this->option( 'verbose' ) ) {
+                                $this->line( '' );
+                                $this->info( "    ! Skip lang file '$family' !" );
+                            }
+                            continue;
+                        }
+
                         $file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
 
                         if ( $this->option( 'verbose' ) ) {
