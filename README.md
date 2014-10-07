@@ -190,6 +190,12 @@ Use the github issue system to open a issue and ask for something.
 
 ## Change Log
 
+### v1.2.1
+
+- add `lang_folder_path` parameter in configuration file to configure the custom location of your lang files
+- check lang files in `app/lang` by default for Laravel 4.x
+- check lang files in `app/resources/lang` by default for Laravel 5
+
 ### v1.2
 
 - support for Laravel 5 (4.3)

@@ -70,6 +70,7 @@ abstract class LocalizationAbstract extends Command
         $this->trans_methods       = \Config::get('laravel-localization-helpers::config.trans_methods');
         $this->folders             = \Config::get('laravel-localization-helpers::config.folders');
         $this->ignore_lang_files   = \Config::get('laravel-localization-helpers::config.ignore_lang_files');
+        $this->lang_folder_path    = \Config::get('laravel-localization-helpers::config.lang_folder_path');
         $this->never_obsolete_keys = \Config::get('laravel-localization-helpers::config.never_obsolete_keys');
         $this->editor              = \Config::get('laravel-localization-helpers::config.editor_command_line');
         parent::__construct();
@@ -82,7 +83,32 @@ abstract class LocalizationAbstract extends Command
      */
     protected function get_lang_path()
     {
-        return app_path() . DIRECTORY_SEPARATOR . 'lang';
+        if ( empty( $this->lang_folder_path ) ) {
+            $paths = array(
+                app_path() . DIRECTORY_SEPARATOR . 'lang',
+                app_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
+            );
+            foreach( $paths as $path ) {
+                if ( file_exists( $path ) ) {
+                    return $path;
+                }
+            }
+
+            $this->error( "No lang folder found in these paths:" );
+            foreach( $paths as $path ) {
+                $this->error( "- " . $path );
+            }
+            $this->line( '' );
+            die();
+        }
+        else {
+            if ( file_exists( $this->lang_folder_path ) ) {
+                return $this->lang_folder_path;
+            }
+            $this->error( 'No lang folder found in your custom path: "' . $this->lang_folder_path . '"' );
+            $this->line( '' );
+            die();
+        }
     }
 
     /**
