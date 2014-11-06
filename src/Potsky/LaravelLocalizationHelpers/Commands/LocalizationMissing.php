@@ -49,7 +49,7 @@ class LocalizationMissing extends LocalizationAbstract
         $this->display = ! $this->option( 'silent' );
 
         //////////////////////////////////////////////////
-        // Display where translatations are searched in //
+        // Display where translations are searched in //
         //////////////////////////////////////////////////
         if ( $this->option( 'verbose' ) ) {
             $this->line("Lemmas will be searched in the following directories:");
