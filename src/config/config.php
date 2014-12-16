@@ -78,6 +78,14 @@ return array(
 	        '@Lang::choice\(\s*(\'.*\')\s*,.*\)@U',
 	        '@Lang::choice\(\s*(".*")\s*,.*\)@U',
 	    ),
+	    '@lang' => array(
+	        '@\@lang\(\s*(\'.*\')\s*(,.*)*\)@U',
+	        '@\@lang\(\s*(".*")\s*(,.*)*\)@U',
+	    ),
+	    '@choice' => array(
+		'@\@choice\(\s*(\'.*\')\s*,.*\)@U',
+		'@\@choice\(\s*(".*")\s*,.*\)@U',
+	    ),
 	),
 
 
