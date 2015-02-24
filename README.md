@@ -16,20 +16,24 @@ LLH is a set of tools to help you manage translations in your Laravel project.
 
 2 - Update your installation : `composer update`
 
-3 - Add the following line in the `providers` array of the `app/config/app.php` configuration file :
-`'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',`
+3 - Add one of the following lines in the `providers` array of the `app/config/app.php` configuration file :
+
+Laravel 4: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',`
+
+Laravel 5: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',`
+
 
 Now execute `php artisan list` and you should view the new *localization* commands:
 
 ```
 ...
 key
-  key:generate                Set the application key
+key:generate                Set the application key
 localization
-  localization:find           Display all files where the argument is used as a lemma
-  localization:missing        Parse all translations in app directory and build all lang files
+localization:find           Display all files where the argument is used as a lemma
+localization:missing        Parse all translations in app directory and build all lang files
 migrate
-  migrate:install             Create the migration repository
+migrate:install             Create the migration repository
 ...
 ```
 
@@ -37,9 +41,11 @@ migrate
 
 To configure your fresh installed package, please create a configuration file by executing :
 
-`php artisan config:publish potsky/laravel-localization-helpers`
+For Laravel 4: `php artisan config:publish potsky/laravel-localization-helpers`
 
-Then you can modify the configuration in file `app/config/packages/potsky/laravel-localization-helpers/config.php`.
+For Laravel 5: `php artisan vendor:publish`
+
+Then you can modify the configuration in file `app/config/packages/potsky/laravel-localization-helpers/config.php` (Laravel 4) or `app/config/laravel-localization-helpers.php` (Laravel 5).
 
 Add new folders to search for, add your own lang methods or functions, ...
 
@@ -125,9 +131,9 @@ php artisan localization:missing -l 'Please translate this !'
 
 php artisan localization:missing -s
 if [ $? -eq 0 ]; then
-    echo "Nothing to do dude, GO for release"
+echo "Nothing to do dude, GO for release"
 else
-    echo "I will not release in production, lang files are not clean"
+echo "I will not release in production, lang files are not clean"
 fi
 ```
 
@@ -146,7 +152,7 @@ php artisan localization:missing -e
 You can edit the editor path in your configuration file. By default, editor is *Sublime Text* on *Mac OS X* :
 
 ```
-    'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
+'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
 ```
 
 ### Command `localization:find`
