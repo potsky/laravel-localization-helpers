@@ -67,12 +67,27 @@ abstract class LocalizationAbstract extends Command
      */
     public function __construct( Repository $configRepository )
     {
-        $this->trans_methods       = \Config::get('laravel-localization-helpers::config.trans_methods');
-        $this->folders             = \Config::get('laravel-localization-helpers::config.folders');
-        $this->ignore_lang_files   = \Config::get('laravel-localization-helpers::config.ignore_lang_files');
-        $this->lang_folder_path    = \Config::get('laravel-localization-helpers::config.lang_folder_path');
-        $this->never_obsolete_keys = \Config::get('laravel-localization-helpers::config.never_obsolete_keys');
-        $this->editor              = \Config::get('laravel-localization-helpers::config.editor_command_line');
+		$laravel = app();
+		if (substr($laravel::VERSION, 0, 1) == '5')
+		{
+			// Laravel 5
+			$this->trans_methods       = \Config::get('laravel-localization-helpers.trans_methods');
+			$this->folders             = \Config::get('laravel-localization-helpers.folders');
+			$this->ignore_lang_files   = \Config::get('laravel-localization-helpers.ignore_lang_files');
+			$this->lang_folder_path    = \Config::get('laravel-localization-helpers.lang_folder_path');
+			$this->never_obsolete_keys = \Config::get('laravel-localization-helpers.never_obsolete_keys');
+			$this->editor              = \Config::get('laravel-localization-helpers.editor_command_line');
+		}
+		else
+		{
+			// Laravel 4
+			$this->trans_methods       = \Config::get('laravel-localization-helpers::config.trans_methods');
+			$this->folders             = \Config::get('laravel-localization-helpers::config.folders');
+			$this->ignore_lang_files   = \Config::get('laravel-localization-helpers::config.ignore_lang_files');
+			$this->lang_folder_path    = \Config::get('laravel-localization-helpers::config.lang_folder_path');
+			$this->never_obsolete_keys = \Config::get('laravel-localization-helpers::config.never_obsolete_keys');
+			$this->editor              = \Config::get('laravel-localization-helpers::config.editor_command_line');
+		}
         parent::__construct();
     }
 
