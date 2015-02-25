@@ -101,7 +101,7 @@ abstract class LocalizationAbstract extends Command
         if ( empty( $this->lang_folder_path ) ) {
             $paths = array(
                 app_path() . DIRECTORY_SEPARATOR . 'lang',
-                app_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
+                base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
             );
             foreach( $paths as $path ) {
                 if ( file_exists( $path ) ) {
