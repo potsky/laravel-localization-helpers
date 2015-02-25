@@ -44,7 +44,7 @@ return array(
 	| You can overwrite where is located your lang folder
 	| If null or missing, Localization::Missing will search :
     | - first in app_path() . DIRECTORY_SEPARATOR . 'lang',
-    | - then  in app_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
+    | - then  in base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
 	|
 	*/
     'lang_folder_path' => null,
