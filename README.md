@@ -196,6 +196,10 @@ Use the github issue system to open a issue and ask for something.
 
 ## Change Log
 
+### v1.3.1
+
+- add resource folder for Laravel 5
+
 ### v1.3
 
 - add full support for Laravel 5
