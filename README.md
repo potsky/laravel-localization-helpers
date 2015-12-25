@@ -196,6 +196,10 @@ Use the github issue system to open a issue and ask for something.
 
 ## Change Log
 
+### v1.3.2
+
+- fix incompatibility with Laravel 5.2 [#16](https://github.com/potsky/laravel-localization-helpers/issues/16)
+
 ### v1.3.1
 
 - add resource folder for Laravel 5

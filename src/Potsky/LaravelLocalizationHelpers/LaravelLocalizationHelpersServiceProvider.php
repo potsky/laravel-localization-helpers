@@ -2,7 +2,8 @@
 
 use Illuminate\Support\ServiceProvider;
 
-class LaravelLocalizationHelpersServiceProvider extends ServiceProvider {
+class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
+{
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -18,7 +19,7 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('potsky/laravel-localization-helpers');
+		$this->package( 'potsky/laravel-localization-helpers' );
 	}
 
 	/**
@@ -28,18 +29,20 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app['localization.missing'] = $this->app->share( function( $app ) {
-        	return new Commands\LocalizationMissing( $app['config'] );
-    	});
+		$this->app[ 'localization.missing' ] = $this->app->share( function ( $app )
+		{
+			return new Commands\LocalizationMissing( $app[ 'config' ] );
+		} );
 
-		$this->app['localization.find'] = $this->app->share( function( $app ) {
-        	return new Commands\LocalizationFind( $app['config'] );
-    	});
+		$this->app[ 'localization.find' ] = $this->app->share( function ( $app )
+		{
+			return new Commands\LocalizationFind( $app[ 'config' ] );
+		} );
 
-    	$this->commands(
-    		'localization.missing',
-    		'localization.find'
-    	);
+		$this->commands(
+			'localization.missing' ,
+			'localization.find'
+		);
 	}
 
 	/**
