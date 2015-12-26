@@ -4,7 +4,8 @@ Laravel Localization Helpers
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-
+[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
+[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
 
 
 LLH is a set of tools to help you manage translations in your Laravel project.
@@ -12,28 +13,23 @@ LLH is a set of tools to help you manage translations in your Laravel project.
 ## Installation
 
 1 - Add the following line in the `require-dev` array of the `composer.json` file :  
-`"potsky/laravel-localization-helpers" : "~1.1"`
+`"potsky/laravel-localization-helpers" : "~1"`
 
 2 - Update your installation : `composer update`
 
 3 - Add one of the following lines in the `providers` array of the `app/config/app.php` configuration file :
 
-Laravel 4: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',`
-
-Laravel 5: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',`
+- Laravel 4: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',`
+- Laravel 5: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',`
 
 
 Now execute `php artisan list` and you should view the new *localization* commands:
 
 ```
 ...
-key
-key:generate                Set the application key
 localization
 localization:find           Display all files where the argument is used as a lemma
 localization:missing        Parse all translations in app directory and build all lang files
-migrate
-migrate:install             Create the migration repository
 ...
 ```
 
@@ -41,9 +37,8 @@ migrate:install             Create the migration repository
 
 To configure your fresh installed package, please create a configuration file by executing :
 
-For Laravel 4: `php artisan config:publish potsky/laravel-localization-helpers`
-
-For Laravel 5: `php artisan vendor:publish`
+- Laravel 4: `php artisan config:publish potsky/laravel-localization-helpers`
+- Laravel 5: `php artisan vendor:publish`
 
 Then you can modify the configuration in file `app/config/packages/potsky/laravel-localization-helpers/config.php` (Laravel 4) or `app/config/laravel-localization-helpers.php` (Laravel 5).
 
@@ -192,7 +187,7 @@ php artisan localization:find -s -r "/.*me$/"
 
 ## Support
 
-Use the github issue system to open a issue and ask for something.
+Use the [github issue tool](https://github.com/potsky/laravel-localization-helpers/issues) to open an issue or ask for something.
 
 ## Change Log
 
