@@ -1,4 +1,4 @@
 <?php
 
 include 'vendor/autoload.php';
-include 'tests/testCase.php';
+include 'tests/TestCase.php';
