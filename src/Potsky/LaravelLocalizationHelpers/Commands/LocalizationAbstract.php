@@ -5,7 +5,7 @@ namespace Potsky\LaravelLocalizationHelpers\Commands;
 use Config;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
-use Potsky\LaravelLocalizationHelpers\Tools;
+use Potsky\LaravelLocalizationHelpers\Factory\Tools;
 
 abstract class LocalizationAbstract extends Command
 {
@@ -197,8 +197,10 @@ abstract class LocalizationAbstract extends Command
 			{
 				return $this->lang_folder_path;
 			}
+
 			$this->writeError( 'No lang folder found in your custom path: "' . $this->lang_folder_path . '"' );
 			$this->writeLine( '' );
+
 			die();
 		}
 	}

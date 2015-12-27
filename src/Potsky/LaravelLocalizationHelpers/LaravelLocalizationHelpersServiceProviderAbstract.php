@@ -1,6 +1,7 @@
 <?php namespace Potsky\LaravelLocalizationHelpers;
 
 use Illuminate\Support\ServiceProvider;
+use Potsky\LaravelLocalizationHelpers\Factory\Tools;
 
 abstract class LaravelLocalizationHelpersServiceProviderAbstract extends ServiceProvider
 {
@@ -48,9 +49,15 @@ abstract class LaravelLocalizationHelpersServiceProviderAbstract extends Service
 			return new Commands\LocalizationFind( $app[ 'config' ] );
 		} );
 
+		$this->app[ 'localization.clear' ] = $this->app->share( function ( $app )
+		{
+			return new Commands\LocalizationClear( $app[ 'config' ] );
+		} );
+
 		$this->commands(
 			'localization.missing' ,
-			'localization.find'
+			'localization.find',
+			'localization.clear'
 		);
 
 		if ( Tools::isLaravel5() )

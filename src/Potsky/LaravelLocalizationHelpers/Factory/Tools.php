@@ -1,6 +1,6 @@
 <?php
 
-namespace Potsky\LaravelLocalizationHelpers;
+namespace Potsky\LaravelLocalizationHelpers\Factory;
 
 
 class Tools

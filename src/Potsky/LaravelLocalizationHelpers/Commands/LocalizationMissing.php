@@ -460,15 +460,15 @@ class LocalizationMissing extends LocalizationAbstract
 	protected function getOptions()
 	{
 		return array(
-			array( 'dry-run' , 'r' , InputOption::VALUE_NONE , 'Dry run : run process but do not write anything' ) ,
+			array( 'dry-run' , 'r' , InputOption::VALUE_NONE , 'Dry run: run process but do not write anything' ) ,
 			array( 'editor' , 'e' , InputOption::VALUE_NONE , 'Open files which need to be edited at the end of the process' ) ,
-			array( 'force' , 'f' , InputOption::VALUE_NONE , 'Force file rewrite even if there is nothing to do' ) ,
-			array( 'new-value' , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value)' , '%LEMMA' ) ,
+			array( 'force' , 'f' , InputOption::VALUE_NONE , 'Force files to be rewritten even if there is nothing to do' ) ,
+			array( 'new-value' , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value)' , 'TODO: %LEMMA' ) ,
 			array( 'no-backup' , 'b' , InputOption::VALUE_NONE , 'Do not backup lang file (be careful, I am not a good coder)' ) ,
 			array( 'no-comment' , 'c' , InputOption::VALUE_NONE , 'Do not add comments in lang files for lemma definition' ) ,
 			array( 'no-date' , 'd' , InputOption::VALUE_NONE , 'Do not add the date of execution in the lang files' ) ,
 			array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE , 'Do not write obsolete lemma' ) ,
-			array( 'silent' , 's' , InputOption::VALUE_NONE , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma)' ) ,
+			array( 'silent' , 's' , InputOption::VALUE_NONE , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma or nt)' ) ,
 		);
 	}
 

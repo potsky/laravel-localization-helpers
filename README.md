@@ -10,30 +10,30 @@ Laravel Localization Helpers
 
 LLH is a set of tools to help you manage translations in your Laravel project.
 
-## Installation
+## 1. Installation
 
-1 - Add the following line in the `require-dev` array of the `composer.json` file :  
-`"potsky/laravel-localization-helpers" : "~1"`
+- Add the following line in the `require-dev` array of the `composer.json` file :
+    ```
+    "potsky/laravel-localization-helpers" : "~1"
+    ```
 
-2 - Update your installation : `composer update`
+- Update your installation : `composer update`
+- Add the following line in the `providers` array of the `app/config/app.php` configuration file :
+    ```
+    'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider'
+    ```
 
-3 - Add one of the following lines in the `providers` array of the `app/config/app.php` configuration file :
+- Now execute `php artisan list` and you should view the new *localization* commands:
+    ```
+    ...
+    localization
+    localization:clear          Remove all backups
+    localization:find           Display all files where the argument is used as a lemma
+    localization:missing        Parse all translations in app directory and build all lang files
+    ...
+    ```
 
-- Laravel 4: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',`
-- Laravel 5: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',`
-
-
-Now execute `php artisan list` and you should view the new *localization* commands:
-
-```
-...
-localization
-localization:find           Display all files where the argument is used as a lemma
-localization:missing        Parse all translations in app directory and build all lang files
-...
-```
-
-## Configuration
+## 2. Configuration
 
 To configure your fresh installed package, please create a configuration file by executing :
 
@@ -44,9 +44,20 @@ Then you can modify the configuration in file `app/config/packages/potsky/larave
 
 Add new folders to search for, add your own lang methods or functions, ...
 
-## Usage
+### Backup files
 
-### Command `localization:missing`
+You should not include backup lang files in GIT or other versioning systems.
+
+In your `laravel` folder, add this in `.gitignore` file :
+
+```
+# Do not include backup lang files
+app/lang/*/[a-zA-Z]*.[0-9_]*.php
+```
+
+## 3. Usage
+
+### 3.1 Command `localization:missing`
 
 This command parses all your code and generate according lang files in all `lang/XXX/` directories.
 
@@ -150,7 +161,7 @@ You can edit the editor path in your configuration file. By default, editor is *
 'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
 ```
 
-### Command `localization:find`
+### 3.2 Command `localization:find`
 
 This command will search in all your code for the argument as a lemma.
 
@@ -185,11 +196,44 @@ php artisan localization:find -s -r "/.*me$/"
 
 > PCRE functions are used
 
-## Support
+### 3.3 Command `localization:clear`
+
+This command will remove all backup lang files.
+
+Use `php artisan help localization:clear` for more informations about options.
+
+#### *Examples*
+
+##### Remove all backups
+
+```
+php artisan localization:clear
+```
+
+##### Remove backups older than 7 days
+
+```
+php artisan localization:clear -d 7
+```
+
+## 4. Support
 
 Use the [github issue tool](https://github.com/potsky/laravel-localization-helpers/issues) to open an issue or ask for something.
 
-## Change Log
+## 5. Change Log
+
+### v1.4
+
+- new command to remove backups
+- new options to specify output formatting
+- new lemma are now marked with the TODO: prefix 
+- simplified service provider, no need to load distinct providers according to Laravel version 
+
+Internally :
+
+- totally refactored
+- unit tests
+- test coverage
 
 ### v1.3.2
 
