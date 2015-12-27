@@ -3,7 +3,6 @@
 namespace Potsky\LaravelLocalizationHelpers\Commands;
 
 use Illuminate\Config\Repository;
-use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 
 class LocalizationMissing extends LocalizationAbstract
@@ -27,8 +26,6 @@ class LocalizationMissing extends LocalizationAbstract
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
-	 *
-	 * @return void
 	 */
 	public function __construct( Repository $configRepository )
 	{
@@ -42,9 +39,6 @@ class LocalizationMissing extends LocalizationAbstract
 	 */
 	public function fire()
 	{
-		define( 'SUCCESS' , 0 );
-		define( 'ERROR' , 1 );
-
 		$folders       = $this->get_path( $this->folders );
 		$this->display = ! $this->option( 'silent' );
 
@@ -54,10 +48,12 @@ class LocalizationMissing extends LocalizationAbstract
 		if ( $this->option( 'verbose' ) )
 		{
 			$this->writeLine( "Lemmas will be searched in the following directories:" );
+
 			foreach ( $folders as $path )
 			{
 				$this->writeLine( '    <info>' . $path . '</info>' );
 			}
+
 			$this->writeLine( '' );
 		}
 
@@ -204,12 +200,12 @@ class LocalizationMissing extends LocalizationAbstract
 							die();
 						}
 
+						/** @noinspection PhpIncludeInspection */
 						$a                        = include( $file_lang_path );
 						$old_lemmas               = ( is_array( $a ) ) ? array_dot( $a ) : array();
 						$new_lemmas               = array_dot( $array );
 						$final_lemmas             = array();
 						$display_already_comment  = false;
-						$display_obsolete_comment = false;
 						$something_to_do          = false;
 						$i                        = 0;
 						$obsolete_lemmas          = array_diff_key( $old_lemmas , $new_lemmas );
@@ -285,7 +281,6 @@ class LocalizationMissing extends LocalizationAbstract
 						if ( count( $obsolete_lemmas ) > 0 )
 						{
 							$display_already_comment  = true;
-							$display_obsolete_comment = ( $this->option( 'no-obsolete' ) ) ? false : true;
 							$something_to_do          = true;
 							$this->writeComment( $this->option( 'no-obsolete' )
 								? "        " . count( $obsolete_lemmas ) . " obsolete strings (will be deleted)"
@@ -356,11 +351,11 @@ class LocalizationMissing extends LocalizationAbstract
 		{
 			if ( $there_are_new === true )
 			{
-				return ERROR;
+				return self::ERROR;
 			}
 			else
 			{
-				return SUCCESS;
+				return self::SUCCESS;
 			}
 		}
 
@@ -433,13 +428,15 @@ class LocalizationMissing extends LocalizationAbstract
 		{
 			if ( $this->option( 'silent' ) )
 			{
-				return SUCCESS;
+				return self::SUCCESS;
 			}
 
 			$this->writeLine( '' );
 			$this->writeInfo( 'Drink a Piña colada and/or smoke Super Skunk, you have nothing to do!' );
 		}
 		$this->writeLine( '' );
+
+		return self::SUCCESS;
 	}
 
 	/**

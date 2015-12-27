@@ -3,7 +3,6 @@
 namespace Potsky\LaravelLocalizationHelpers\Commands;
 
 use Illuminate\Config\Repository;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 class LocalizationClear extends LocalizationAbstract
@@ -21,14 +20,12 @@ class LocalizationClear extends LocalizationAbstract
 	 *
 	 * @var string
 	 */
-	protected $description = 'Remove all backups';
+	protected $description = 'Remove lang backup files';
 
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
-	 *
-	 * @return void
 	 */
 	public function __construct( Repository $configRepository )
 	{

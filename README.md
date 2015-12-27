@@ -3,12 +3,11 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
 [![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
+[![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
-
-LLH is a set of tools to help you manage translations in your Laravel project. Run the `localization-missing` artisan command to generate lang files according to your PHP sources.
+LLH is a set of tools to help you manage translations in your Laravel project. Run the `localization:missing` artisan command to automatically generate lang files according to your PHP sources.
 
 ## Table of contents
 
@@ -35,7 +34,7 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
     ```
     ...
     localization
-    localization:clear          Remove all backups
+    localization:clear          Remove lang backup files
     localization:find           Display all files where the argument is used as a lemma
     localization:missing        Parse all translations in app directory and build all lang files
     ...
@@ -239,9 +238,9 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ### v1.4
 
-- new command to remove backups
+- new command `localization:clear` to remove backups
 - new options to specify output formatting
-- new lemma are now marked with the TODO: prefix by default (if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!)
+- new lemma are now marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
 - simplified service provider, no need to load distinct providers according to Laravel version 
 
 Internally :
@@ -252,7 +251,7 @@ Internally :
 
 ### v1.3.2
 
-- fix incompatibility with Laravel 5.2 [#16](https://github.com/potsky/laravel-localization-helpers/issues/16)
+- fix incompatibility with Laravel 5.2 ([#16](https://github.com/potsky/laravel-localization-helpers/issues/16))
 
 ### v1.3.1
 

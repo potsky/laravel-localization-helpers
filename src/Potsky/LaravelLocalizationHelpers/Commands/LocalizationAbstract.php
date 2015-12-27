@@ -9,6 +9,10 @@ use Potsky\LaravelLocalizationHelpers\Factory\Tools;
 
 abstract class LocalizationAbstract extends Command
 {
+	const SUCCESS = 0;
+	const ERROR   = 1;
+
+
 	/**
 	 * Config repository.
 	 *
@@ -208,12 +212,17 @@ abstract class LocalizationAbstract extends Command
 	/**
 	 * Return an absolute path without predefined variables
 	 *
-	 * @param string $path the relative path
+	 * @param string|array $path the relative path
 	 *
-	 * @return string the absolute path
+	 * @return array the absolute path
 	 */
 	protected function get_path( $path )
 	{
+		if ( ! is_array( $path ) )
+		{
+			$path = array( $path );
+		}
+
 		return str_replace(
 			array(
 				'%APP' ,
