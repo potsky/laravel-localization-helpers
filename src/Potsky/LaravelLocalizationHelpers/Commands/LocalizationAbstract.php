@@ -2,10 +2,10 @@
 
 namespace Potsky\LaravelLocalizationHelpers\Commands;
 
+use Config;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
+use Potsky\LaravelLocalizationHelpers\Tools;
 
 abstract class LocalizationAbstract extends Command
 {
@@ -52,7 +52,7 @@ abstract class LocalizationAbstract extends Command
 	protected $ignore_lang_files = array();
 
 	/**
-	 * Should comands display something
+	 * Should commands display something
 	 *
 	 * @var  boolean
 	 */
@@ -62,32 +62,28 @@ abstract class LocalizationAbstract extends Command
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
-	 *
-	 * @return void
 	 */
 	public function __construct( Repository $configRepository )
 	{
-		$laravel = app();
-		if ( substr( $laravel::VERSION , 0 , 1 ) == '5' )
+		if ( Tools::getLaravelMajorVersion() >= 5 )
 		{
-			// Laravel 5
-			$this->trans_methods       = \Config::get( 'laravel-localization-helpers.trans_methods' );
-			$this->folders             = \Config::get( 'laravel-localization-helpers.folders' );
-			$this->ignore_lang_files   = \Config::get( 'laravel-localization-helpers.ignore_lang_files' );
-			$this->lang_folder_path    = \Config::get( 'laravel-localization-helpers.lang_folder_path' );
-			$this->never_obsolete_keys = \Config::get( 'laravel-localization-helpers.never_obsolete_keys' );
-			$this->editor              = \Config::get( 'laravel-localization-helpers.editor_command_line' );
+			$this->trans_methods       = Config::get( 'laravel-localization-helpers.trans_methods' );
+			$this->folders             = Config::get( 'laravel-localization-helpers.folders' );
+			$this->ignore_lang_files   = Config::get( 'laravel-localization-helpers.ignore_lang_files' );
+			$this->lang_folder_path    = Config::get( 'laravel-localization-helpers.lang_folder_path' );
+			$this->never_obsolete_keys = Config::get( 'laravel-localization-helpers.never_obsolete_keys' );
+			$this->editor              = Config::get( 'laravel-localization-helpers.editor_command_line' );
 		}
 		else
 		{
-			// Laravel 4
-			$this->trans_methods       = \Config::get( 'laravel-localization-helpers::config.trans_methods' );
-			$this->folders             = \Config::get( 'laravel-localization-helpers::config.folders' );
-			$this->ignore_lang_files   = \Config::get( 'laravel-localization-helpers::config.ignore_lang_files' );
-			$this->lang_folder_path    = \Config::get( 'laravel-localization-helpers::config.lang_folder_path' );
-			$this->never_obsolete_keys = \Config::get( 'laravel-localization-helpers::config.never_obsolete_keys' );
-			$this->editor              = \Config::get( 'laravel-localization-helpers::config.editor_command_line' );
+			$this->trans_methods       = Config::get( 'laravel-localization-helpers::config.trans_methods' );
+			$this->folders             = Config::get( 'laravel-localization-helpers::config.folders' );
+			$this->ignore_lang_files   = Config::get( 'laravel-localization-helpers::config.ignore_lang_files' );
+			$this->lang_folder_path    = Config::get( 'laravel-localization-helpers::config.lang_folder_path' );
+			$this->never_obsolete_keys = Config::get( 'laravel-localization-helpers::config.never_obsolete_keys' );
+			$this->editor              = Config::get( 'laravel-localization-helpers::config.editor_command_line' );
 		}
+
 		parent::__construct();
 	}
 
@@ -227,7 +223,7 @@ abstract class LocalizationAbstract extends Command
 				app_path() ,
 				base_path() ,
 				public_path() ,
-				storage_path(),
+				storage_path() ,
 			) ,
 			$path
 		);
@@ -289,7 +285,7 @@ abstract class LocalizationAbstract extends Command
 		foreach ( array_flatten( $this->trans_methods ) as $method )
 		{
 			preg_match_all( $method , $string , $matches );
-			$a = array();
+
 			foreach ( $matches[ 1 ] as $k => $v )
 			{
 				if ( strpos( $v , '$' ) !== false )

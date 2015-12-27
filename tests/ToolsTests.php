@@ -2,9 +2,10 @@
 
 class ToolsTests extends TestCase
 {
-	public function testDumb()
+	public function testLaravelVersion()
 	{
-		$this->assertTrue( true );
+		$this->assertEquals( 4 , \Potsky\LaravelLocalizationHelpers\Tools::getLaravelMajorVersion() );
+		$this->assertFalse( \Potsky\LaravelLocalizationHelpers\Tools::isLaravel5() );
 	}
 
 }
