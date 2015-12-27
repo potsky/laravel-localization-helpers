@@ -8,7 +8,15 @@ Laravel Localization Helpers
 [![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
 
 
-LLH is a set of tools to help you manage translations in your Laravel project.
+LLH is a set of tools to help you manage translations in your Laravel project. Run the `localization-missing` artisan command to generate lang files according to your PHP sources.
+
+## Table of contents
+
+1. [Installation](#1-installation)
+1. [Configuration](#2-configuration)
+1. [Usage](#3-usage)
+1. [Support](#4-support)
+1. [Change Log](#5-change-log)
 
 ## 1. Installation
 
@@ -104,10 +112,11 @@ php artisan localization:missing -d
 ##### Generate all lang files and set new lemma values
 
 3 commands below produce the same output:
+
 ```
 php artisan localization:missing
 php artisan localization:missing -l
-php artisan localization:missing -l "%LEMMA"
+php artisan localization:missing -l "TODO: %LEMMA"
 ```
 
 You can customize the default generated values for unknown lemmas.
@@ -159,6 +168,12 @@ You can edit the editor path in your configuration file. By default, editor is *
 
 ```
 'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
+```
+
+or *PHPStorm* :
+
+```
+'editor_command_line' => '/usr/local/bin/phpstorm'
 ```
 
 ### 3.2 Command `localization:find`
@@ -226,7 +241,7 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 - new command to remove backups
 - new options to specify output formatting
-- new lemma are now marked with the TODO: prefix 
+- new lemma are now marked with the TODO: prefix by default (if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!)
 - simplified service provider, no need to load distinct providers according to Laravel version 
 
 Internally :
