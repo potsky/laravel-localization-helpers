@@ -22,6 +22,8 @@ abstract class LaravelLocalizationHelpersServiceProviderAbstract extends Service
 	{
 		if ( Tools::isLaravel5() )
 		{
+			/** @noinspection PhpUndefinedMethodInspection */
+			/** @noinspection PhpUndefinedFunctionInspection */
 			$this->publishes( array(
 				__DIR__ . '/../../config/config-laravel5.php' => config_path( 'laravel-localization-helpers.php' ) ,
 			) );
@@ -39,29 +41,36 @@ abstract class LaravelLocalizationHelpersServiceProviderAbstract extends Service
 	 */
 	public function register()
 	{
-		$this->app[ 'localization.missing' ] = $this->app->share( function ( $app )
+		$this->app[ 'localization.command.missing' ] = $this->app->share( function ( $app )
 		{
-			return new Commands\LocalizationMissing( $app[ 'config' ] );
+			return new Command\LocalizationMissing( $app[ 'config' ] );
 		} );
 
-		$this->app[ 'localization.find' ] = $this->app->share( function ( $app )
+		$this->app[ 'localization.command.find' ] = $this->app->share( function ( $app )
 		{
-			return new Commands\LocalizationFind( $app[ 'config' ] );
+			return new Command\LocalizationFind( $app[ 'config' ] );
 		} );
 
-		$this->app[ 'localization.clear' ] = $this->app->share( function ( $app )
+		$this->app[ 'localization.command.clear' ] = $this->app->share( function ( $app )
 		{
-			return new Commands\LocalizationClear( $app[ 'config' ] );
+			return new Command\LocalizationClear( $app[ 'config' ] );
 		} );
 
 		$this->commands(
-			'localization.missing' ,
-			'localization.find',
-			'localization.clear'
+			'localization.command.missing' ,
+			'localization.command.find',
+			'localization.command.clear'
 		);
+
+		/*
+		$this->app[ 'localization.helpers' ] = $this->app->share( function ( $app )
+		{
+		} );
+		*/
 
 		if ( Tools::isLaravel5() )
 		{
+			/** @noinspection PhpUndefinedMethodInspection */
 			$this->mergeConfigFrom(
 				__DIR__ . '/../../config/config-laravel5.php' , 'laravel-localization-helpers'
 			);

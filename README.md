@@ -40,6 +40,12 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
     ...
     ```
 
+You can add the facade in the Aliases if you need to manage translations in your code :
+
+```
+'LocalizationHelpers' => 'Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers'
+```
+
 ## 2. Configuration
 
 To configure your fresh installed package, please create a configuration file by executing :
@@ -47,7 +53,10 @@ To configure your fresh installed package, please create a configuration file by
 - Laravel 4: `php artisan config:publish potsky/laravel-localization-helpers`
 - Laravel 5: `php artisan vendor:publish`
 
-Then you can modify the configuration in file `app/config/packages/potsky/laravel-localization-helpers/config.php` (Laravel 4) or `app/config/laravel-localization-helpers.php` (Laravel 5).
+Then you can modify the configuration in file :
+
+- Laravel 4: `app/config/packages/potsky/laravel-localization-helpers/config.php`
+- Laravel 5: `app/config/laravel-localization-helpers.php`
 
 Add new folders to search for, add your own lang methods or functions, ...
 
@@ -66,7 +75,7 @@ app/lang/*/[a-zA-Z]*.[0-9_]*.php
 
 ### 3.1 Command `localization:missing`
 
-This command parses all your code and generate according lang files in all `lang/XXX/` directories.
+This command parses all your code and generates according lang files in all `lang/XXX/` directories.
 
 Use `php artisan help localization:missing` for more informations about options.
 
@@ -126,13 +135,13 @@ The following command let new values empty:
 php artisan localization:missing -l ""
 ```
 
-The following command prefixes all lemmas values with "Please translate this : "
+The following command prefixes all lemma values with "Please translate this : "
 
 ```
 php artisan localization:missing -l "Please translate this : %LEMMA"
 ```
 
-The following command prefixes all lemmas values with "Please translate this !"
+The following command set all lemma values to "Please translate this !"
 
 ```
 php artisan localization:missing -l 'Please translate this !'
@@ -169,7 +178,7 @@ You can edit the editor path in your configuration file. By default, editor is *
 'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
 ```
 
-or *PHPStorm* :
+For *PHPStorm* on *Mac OS X*:
 
 ```
 'editor_command_line' => '/usr/local/bin/phpstorm'
@@ -239,7 +248,9 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 ### v1.4
 
 - new command `localization:clear` to remove backups
+- new command `localization:translate` to translate a sentence with Bing Translator
 - new options to specify output formatting
+- new option to let the command translate sentences for you with Bing Translator
 - new lemma are now marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
 - simplified service provider, no need to load distinct providers according to Laravel version 
 
@@ -248,6 +259,7 @@ Internally :
 - totally refactored
 - unit tests
 - test coverage
+- facade to let you use localization helpers in your code
 
 ### v1.3.2
 

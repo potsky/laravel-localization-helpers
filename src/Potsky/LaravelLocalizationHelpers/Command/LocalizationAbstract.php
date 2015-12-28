@@ -1,6 +1,6 @@
 <?php
 
-namespace Potsky\LaravelLocalizationHelpers\Commands;
+namespace Potsky\LaravelLocalizationHelpers\Command;
 
 use Config;
 use Illuminate\Config\Repository;
