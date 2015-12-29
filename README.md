@@ -256,6 +256,10 @@ Tests are in `tests`. To run the tests: `vendor/bin/phpunit`.
 
 Coverage cannot decrease next a merge. To track file coverage, run `vendor/bin/phpunit --coverage-html coverage` and open `coverage/index.html` to check uncovered lines of code.
 
+Dev badges :
+[![Dev Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=dev)](https://travis-ci.org/potsky/laravel-localization-helpers)
+[![Dev Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=dev&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=dev)
+
 ## 6. Change Log
 
 ### v1.4
