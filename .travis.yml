@@ -20,7 +20,7 @@ script:
   - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_success:
-  - sh -c 'if [ "$TRAVIS_PHP_VERSION" == "5.6" ]; then php vendor/bin/coveralls -v; fi;'
+  - travis_retry php vendor/bin/coveralls -v
 
 notifications:
   email:
