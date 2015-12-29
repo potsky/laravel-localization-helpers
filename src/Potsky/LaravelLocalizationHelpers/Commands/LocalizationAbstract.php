@@ -1,18 +1,14 @@
 <?php
 
-namespace Potsky\LaravelLocalizationHelpers\Command;
+namespace Potsky\LaravelLocalizationHelpers\Commands;
 
-use Config;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
-use Potsky\LaravelLocalizationHelpers\Factory\Tools;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 abstract class LocalizationAbstract extends Command
 {
-	const SUCCESS = 0;
-	const ERROR   = 1;
-
-
 	/**
 	 * Config repository.
 	 *
@@ -56,7 +52,7 @@ abstract class LocalizationAbstract extends Command
 	protected $ignore_lang_files = array();
 
 	/**
-	 * Should commands display something
+	 * Should comands display something
 	 *
 	 * @var  boolean
 	 */
@@ -66,18 +62,32 @@ abstract class LocalizationAbstract extends Command
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
+	 *
+	 * @return void
 	 */
 	public function __construct( Repository $configRepository )
 	{
-		$base = ( Tools::getLaravelMajorVersion() >= 5 ) ? 'laravel-localization-helpers.' : 'laravel-localization-helpers::config.';
-
-		$this->trans_methods       = Config::get( $base . 'trans_methods' );
-		$this->folders             = Config::get( $base . 'folders' );
-		$this->ignore_lang_files   = Config::get( $base . 'ignore_lang_files' );
-		$this->lang_folder_path    = Config::get( $base . 'lang_folder_path' );
-		$this->never_obsolete_keys = Config::get( $base . 'never_obsolete_keys' );
-		$this->editor              = Config::get( $base . 'editor_command_line' );
-
+		$laravel = app();
+		if ( substr( $laravel::VERSION , 0 , 1 ) == '5' )
+		{
+			// Laravel 5
+			$this->trans_methods       = \Config::get( 'laravel-localization-helpers.trans_methods' );
+			$this->folders             = \Config::get( 'laravel-localization-helpers.folders' );
+			$this->ignore_lang_files   = \Config::get( 'laravel-localization-helpers.ignore_lang_files' );
+			$this->lang_folder_path    = \Config::get( 'laravel-localization-helpers.lang_folder_path' );
+			$this->never_obsolete_keys = \Config::get( 'laravel-localization-helpers.never_obsolete_keys' );
+			$this->editor              = \Config::get( 'laravel-localization-helpers.editor_command_line' );
+		}
+		else
+		{
+			// Laravel 4
+			$this->trans_methods       = \Config::get( 'laravel-localization-helpers::config.trans_methods' );
+			$this->folders             = \Config::get( 'laravel-localization-helpers::config.folders' );
+			$this->ignore_lang_files   = \Config::get( 'laravel-localization-helpers::config.ignore_lang_files' );
+			$this->lang_folder_path    = \Config::get( 'laravel-localization-helpers::config.lang_folder_path' );
+			$this->never_obsolete_keys = \Config::get( 'laravel-localization-helpers::config.never_obsolete_keys' );
+			$this->editor              = \Config::get( 'laravel-localization-helpers::config.editor_command_line' );
+		}
 		parent::__construct();
 	}
 
@@ -191,10 +201,8 @@ abstract class LocalizationAbstract extends Command
 			{
 				return $this->lang_folder_path;
 			}
-
 			$this->writeError( 'No lang folder found in your custom path: "' . $this->lang_folder_path . '"' );
 			$this->writeLine( '' );
-
 			die();
 		}
 	}
@@ -202,17 +210,12 @@ abstract class LocalizationAbstract extends Command
 	/**
 	 * Return an absolute path without predefined variables
 	 *
-	 * @param string|array $path the relative path
+	 * @param string $path the relative path
 	 *
-	 * @return array the absolute path
+	 * @return string the absolute path
 	 */
 	protected function get_path( $path )
 	{
-		if ( ! is_array( $path ) )
-		{
-			$path = array( $path );
-		}
-
 		return str_replace(
 			array(
 				'%APP' ,
@@ -224,7 +227,7 @@ abstract class LocalizationAbstract extends Command
 				app_path() ,
 				base_path() ,
 				public_path() ,
-				storage_path() ,
+				storage_path(),
 			) ,
 			$path
 		);
@@ -286,7 +289,7 @@ abstract class LocalizationAbstract extends Command
 		foreach ( array_flatten( $this->trans_methods ) as $method )
 		{
 			preg_match_all( $method , $string , $matches );
-
+			$a = array();
 			foreach ( $matches[ 1 ] as $k => $v )
 			{
 				if ( strpos( $v , '$' ) !== false )

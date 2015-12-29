@@ -1,8 +1,9 @@
 <?php
 
-namespace Potsky\LaravelLocalizationHelpers\Command;
+namespace Potsky\LaravelLocalizationHelpers\Commands;
 
 use Illuminate\Config\Repository;
+use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -27,6 +28,8 @@ class LocalizationFind extends LocalizationAbstract
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
+	 *
+	 * @return void
 	 */
 	public function __construct( Repository $configRepository )
 	{
@@ -50,12 +53,10 @@ class LocalizationFind extends LocalizationAbstract
 		if ( $this->option( 'verbose' ) )
 		{
 			$this->writeLine( "Lemmas will be searched in the following directories:" );
-
 			foreach ( $folders as $path )
 			{
 				$this->writeLine( '    <info>' . $path . '</info>' );
 			}
-
 			$this->writeLine( '' );
 		}
 
@@ -63,7 +64,6 @@ class LocalizationFind extends LocalizationAbstract
 		// Parse all lemmas from code //
 		////////////////////////////////
 		$files = array();
-
 		foreach ( $folders as $path )
 		{
 			foreach ( $this->get_php_files( $path ) as $php_file_path => $dumb )

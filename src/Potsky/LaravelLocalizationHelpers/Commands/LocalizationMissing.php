@@ -1,8 +1,9 @@
 <?php
 
-namespace Potsky\LaravelLocalizationHelpers\Command;
+namespace Potsky\LaravelLocalizationHelpers\Commands;
 
 use Illuminate\Config\Repository;
+use Illuminate\Console\Command;
 use Symfony\Component\Console\Input\InputOption;
 
 class LocalizationMissing extends LocalizationAbstract
@@ -26,6 +27,8 @@ class LocalizationMissing extends LocalizationAbstract
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
+	 *
+	 * @return void
 	 */
 	public function __construct( Repository $configRepository )
 	{
@@ -39,6 +42,9 @@ class LocalizationMissing extends LocalizationAbstract
 	 */
 	public function fire()
 	{
+		define( 'SUCCESS' , 0 );
+		define( 'ERROR' , 1 );
+
 		$folders       = $this->get_path( $this->folders );
 		$this->display = ! $this->option( 'silent' );
 
@@ -48,12 +54,10 @@ class LocalizationMissing extends LocalizationAbstract
 		if ( $this->option( 'verbose' ) )
 		{
 			$this->writeLine( "Lemmas will be searched in the following directories:" );
-
 			foreach ( $folders as $path )
 			{
 				$this->writeLine( '    <info>' . $path . '</info>' );
 			}
-
 			$this->writeLine( '' );
 		}
 
@@ -200,12 +204,12 @@ class LocalizationMissing extends LocalizationAbstract
 							die();
 						}
 
-						/** @noinspection PhpIncludeInspection */
 						$a                        = include( $file_lang_path );
 						$old_lemmas               = ( is_array( $a ) ) ? array_dot( $a ) : array();
 						$new_lemmas               = array_dot( $array );
 						$final_lemmas             = array();
 						$display_already_comment  = false;
+						$display_obsolete_comment = false;
 						$something_to_do          = false;
 						$i                        = 0;
 						$obsolete_lemmas          = array_diff_key( $old_lemmas , $new_lemmas );
@@ -281,6 +285,7 @@ class LocalizationMissing extends LocalizationAbstract
 						if ( count( $obsolete_lemmas ) > 0 )
 						{
 							$display_already_comment  = true;
+							$display_obsolete_comment = ( $this->option( 'no-obsolete' ) ) ? false : true;
 							$something_to_do          = true;
 							$this->writeComment( $this->option( 'no-obsolete' )
 								? "        " . count( $obsolete_lemmas ) . " obsolete strings (will be deleted)"
@@ -351,11 +356,11 @@ class LocalizationMissing extends LocalizationAbstract
 		{
 			if ( $there_are_new === true )
 			{
-				return self::ERROR;
+				return ERROR;
 			}
 			else
 			{
-				return self::SUCCESS;
+				return SUCCESS;
 			}
 		}
 
@@ -428,15 +433,13 @@ class LocalizationMissing extends LocalizationAbstract
 		{
 			if ( $this->option( 'silent' ) )
 			{
-				return self::SUCCESS;
+				return SUCCESS;
 			}
 
 			$this->writeLine( '' );
 			$this->writeInfo( 'Drink a Piña colada and/or smoke Super Skunk, you have nothing to do!' );
 		}
 		$this->writeLine( '' );
-
-		return self::SUCCESS;
 	}
 
 	/**
@@ -457,15 +460,15 @@ class LocalizationMissing extends LocalizationAbstract
 	protected function getOptions()
 	{
 		return array(
-			array( 'dry-run' , 'r' , InputOption::VALUE_NONE , 'Dry run: run process but do not write anything' ) ,
+			array( 'dry-run' , 'r' , InputOption::VALUE_NONE , 'Dry run : run process but do not write anything' ) ,
 			array( 'editor' , 'e' , InputOption::VALUE_NONE , 'Open files which need to be edited at the end of the process' ) ,
-			array( 'force' , 'f' , InputOption::VALUE_NONE , 'Force files to be rewritten even if there is nothing to do' ) ,
-			array( 'new-value' , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value)' , 'TODO: %LEMMA' ) ,
+			array( 'force' , 'f' , InputOption::VALUE_NONE , 'Force file rewrite even if there is nothing to do' ) ,
+			array( 'new-value' , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value)' , '%LEMMA' ) ,
 			array( 'no-backup' , 'b' , InputOption::VALUE_NONE , 'Do not backup lang file (be careful, I am not a good coder)' ) ,
 			array( 'no-comment' , 'c' , InputOption::VALUE_NONE , 'Do not add comments in lang files for lemma definition' ) ,
 			array( 'no-date' , 'd' , InputOption::VALUE_NONE , 'Do not add the date of execution in the lang files' ) ,
 			array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE , 'Do not write obsolete lemma' ) ,
-			array( 'silent' , 's' , InputOption::VALUE_NONE , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma or nt)' ) ,
+			array( 'silent' , 's' , InputOption::VALUE_NONE , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma)' ) ,
 		);
 	}
 
