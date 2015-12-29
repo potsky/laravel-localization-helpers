@@ -15,7 +15,8 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
 1. [Configuration](#2-configuration)
 1. [Usage](#3-usage)
 1. [Support](#4-support)
-1. [Change Log](#5-change-log)
+1. [Contribute](#5-support)
+1. [Change Log](#6-change-log)
 
 ## 1. Installation
 
@@ -243,7 +244,19 @@ php artisan localization:clear -d 7
 
 Use the [github issue tool](https://github.com/potsky/laravel-localization-helpers/issues) to open an issue or ask for something.
 
-## 5. Change Log
+## 5. Contribute
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+Tests are in `tests`. To run the tests: `vendor/bin/phpunit`.
+
+Coverage cannot decrease next a merge. To track file coverage, run `vendor/bin/phpunit --coverage-html coverage` and open `coverage/index.html` to check uncovered lines of code.
+
+## 6. Change Log
 
 ### v1.4
 
