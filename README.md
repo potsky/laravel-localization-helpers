@@ -26,16 +26,14 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
     ```
 
 - Update your installation : `composer update`
-- Add the following line in the `providers` array of the `app/config/app.php` configuration file :
-    ```
-    'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider'
-    ```
+- Add one of the following line in the `providers` array of the configuration file :
+	- **Laravel 4**: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',`
+	- **Laravel 5**: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',`
 
 - Now execute `php artisan list` and you should view the new *localization* commands:
     ```
     ...
     localization
-    localization:clear          Remove lang backup files
     localization:find           Display all files where the argument is used as a lemma
     localization:missing        Parse all translations in app directory and build all lang files
     ...
@@ -219,26 +217,6 @@ php artisan localization:find -s -r "/.*me$/"
 ```
 
 > PCRE functions are used
-
-### 3.3 Command `localization:clear`
-
-This command will remove all backup lang files.
-
-Use `php artisan help localization:clear` for more informations about options.
-
-#### *Examples*
-
-##### Remove all backups
-
-```
-php artisan localization:clear
-```
-
-##### Remove backups older than 7 days
-
-```
-php artisan localization:clear -d 7
-```
 
 ## 4. Support
 
