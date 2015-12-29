@@ -15,7 +15,7 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
 1. [Configuration](#2-configuration)
 1. [Usage](#3-usage)
 1. [Support](#4-support)
-1. [Contribute](#5-support)
+1. [Contribute](#5-contribute)
 1. [Change Log](#6-change-log)
 
 ## 1. Installation

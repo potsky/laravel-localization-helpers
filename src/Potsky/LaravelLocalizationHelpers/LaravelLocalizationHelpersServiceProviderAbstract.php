@@ -20,18 +20,6 @@ abstract class LaravelLocalizationHelpersServiceProviderAbstract extends Service
 	 */
 	public function boot()
 	{
-		if ( Tools::isLaravel5() )
-		{
-			/** @noinspection PhpUndefinedMethodInspection */
-			/** @noinspection PhpUndefinedFunctionInspection */
-			$this->publishes( array(
-				__DIR__ . '/../../config/config-laravel5.php' => config_path( 'laravel-localization-helpers.php' ) ,
-			) );
-		}
-		else
-		{
-			$this->package( 'potsky/laravel-localization-helpers' );
-		}
 	}
 
 	/**
@@ -62,19 +50,10 @@ abstract class LaravelLocalizationHelpersServiceProviderAbstract extends Service
 			'localization.command.clear'
 		);
 
-		/*
 		$this->app[ 'localization.helpers' ] = $this->app->share( function ( $app )
 		{
+			return new Factory\Manager( $app[ 'config' ] );
 		} );
-		*/
-
-		if ( Tools::isLaravel5() )
-		{
-			/** @noinspection PhpUndefinedMethodInspection */
-			$this->mergeConfigFrom(
-				__DIR__ . '/../../config/config-laravel5.php' , 'laravel-localization-helpers'
-			);
-		}
 	}
 
 	/**

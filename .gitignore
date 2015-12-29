@@ -3,5 +3,4 @@ composer.phar
 composer.lock
 .DS_Store
 .idea
-_ide_helper.php
 coverage
