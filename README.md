@@ -15,8 +15,9 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
 1. [Configuration](#2-configuration)
 1. [Usage](#3-usage)
 1. [Support](#4-support)
-1. [Contribute](#5-contribute)
+1. [Upgrade Notices](#5-upgrade-notice)
 1. [Change Log](#6-change-log)
+1. [Contribute](#7-contribute)
 
 ## 1. Installation
 
@@ -244,32 +245,23 @@ php artisan localization:clear -d 7
 
 Use the [github issue tool](https://github.com/potsky/laravel-localization-helpers/issues) to open an issue or ask for something.
 
-## 5. Contribute
+## 5. Upgrade notices
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+### From v1.* to x.x.1
 
-Tests are in `tests`. To run the tests: `vendor/bin/phpunit`.
 
-Coverage cannot decrease next a merge. To track file coverage, run `vendor/bin/phpunit --coverage-html coverage` and open `coverage/index.html` to check uncovered lines of code.
 
-Dev badges :
-[![Dev Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=dev)](https://travis-ci.org/potsky/laravel-localization-helpers)
-[![Dev Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=dev&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=dev)
 
 ## 6. Change Log
 
-### v1.4
+### x.x.1
 
 - new command `localization:clear` to remove backups
 - new command `localization:translate` to translate a sentence with Bing Translator
 - new options to specify output formatting
+- new option to specify flat arrays style output ([https://github.com/potsky/laravel-localization-helpers/issues/18](18))
 - new option to let the command translate sentences for you with Bing Translator
 - new lemma are now marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
-- simplified service provider, no need to load distinct providers according to Laravel version 
 
 Internally :
 
@@ -305,3 +297,18 @@ Internally :
 - support for Laravel 5 (4.3)
 - add `ignore_lang_files` parameter in configuration file to ignore lang files (useful for `validation` file for example)
 
+## 7. Contribute
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+Tests are in `tests`. To run the tests: `vendor/bin/phpunit`.
+
+Coverage cannot decrease next a merge. To track file coverage, run `vendor/bin/phpunit --coverage-html coverage` and open `coverage/index.html` to check uncovered lines of code.
+
+Dev badges :
+[![Dev Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=dev)](https://travis-ci.org/potsky/laravel-localization-helpers)
+[![Dev Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=dev&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=dev)
