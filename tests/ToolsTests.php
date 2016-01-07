@@ -6,8 +6,8 @@ class ToolsTests extends TestCase
 {
 	public function testLaravelVersion()
 	{
-		$this->assertEquals( 4 , Tools::getLaravelMajorVersion() );
-		$this->assertFalse( Tools::isLaravel5() );
+		$this->assertEquals( 5 , Tools::getLaravelMajorVersion() );
+		$this->assertTrue( Tools::isLaravel5() );
 	}
 
 }

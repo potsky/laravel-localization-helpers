@@ -17,12 +17,12 @@ class TestCase extends Orchestra\Testbench\TestCase
 	 *
 	 * @return array
 	 */
-	protected function getPackageProviders()
+	protected function getPackageProviders( $app )
 	{
 		return array( 'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider' );
 	}
 
-	protected function tearDown()
+	public function tearDown()
 	{
 		Mockery::close();
 	}
