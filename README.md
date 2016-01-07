@@ -21,13 +21,22 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
 
 ## 1. Installation
 
-- Add the following line in the `require-dev` array of the `composer.json` file :
+- Choose your version according to the version compatibility matrix:
+
+| Laravel  | Package
+|:---------|:----------
+| 4.2.x    | 2.0.x
+| 5.0.x    | 2.1.x
+| 5.1.x    | 2.1.x
+| 5.2.x    | 2.1.x
+
+- Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```
-    "potsky/laravel-localization-helpers" : "~1"
+    "potsky/laravel-localization-helpers" : "~2.1"
     ```
 
 - Update your installation : `composer update`
-- Add the following line in the `providers` array of the `app/config/app.php` configuration file :
+- Add the following line in the `providers` array of the `config/app.php` configuration file :
     ```
     'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider'
     ```
@@ -247,14 +256,13 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ## 5. Upgrade notices
 
-### From v1.* to x.x.1
+### From `v1.x.x` to `v2.x.x`
 
-
-
+You need to update your composer file to set the correct version.
 
 ## 6. Change Log
 
-### x.x.1
+### v2.x.1
 
 - new command `localization:clear` to remove backups
 - new command `localization:translate` to translate a sentence with Bing Translator

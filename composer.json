@@ -10,7 +10,7 @@
   ],
   "license"           : "GPL-3.0+",
   "require"           : {
-    "laravel/framework"   : ">=4.2",
+    "laravel/framework"   : "~4.2",
     "fabpot/php-cs-fixer" : "^1.11"
   },
   "require-dev"       : {
