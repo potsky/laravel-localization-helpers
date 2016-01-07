@@ -33,4 +33,29 @@ class Tools
 		return ( self::getLaravelMajorVersion() === 5 );
 	}
 
+
+	/**
+	 * @param string $glob a file glob
+	 *
+	 * @return array the list of deleted files
+	 */
+	public static function unlinkGlobFiles( $glob )
+	{
+		$files  = glob( $glob );
+		$return = array();
+
+		foreach ( $files as $file )
+		{
+			if ( ! is_dir( $file ) )
+			{
+				if ( unlink( $file ) === true )
+				{
+					$return[] = $file;
+				}
+			}
+		}
+
+		return $return;
+	}
+
 }

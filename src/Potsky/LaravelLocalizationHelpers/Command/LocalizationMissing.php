@@ -2,6 +2,7 @@
 
 namespace Potsky\LaravelLocalizationHelpers\Command;
 
+use Config;
 use Illuminate\Config\Repository;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -23,6 +24,41 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $description = 'Parse all translations in app directory and build all lang files';
 
 	/**
+	 * functions and method to catch translations
+	 *
+	 * @var  array
+	 */
+	protected $trans_methods = array();
+
+	/**
+	 * functions and method to catch translations
+	 *
+	 * @var  array
+	 */
+	protected $editor = '';
+
+	/**
+	 * Folders to seek for missing translations
+	 *
+	 * @var  array
+	 */
+	protected $folders = array();
+
+	/**
+	 * Never make lemmas containing these keys obsolete
+	 *
+	 * @var  array
+	 */
+	protected $never_obsolete_keys = array();
+
+	/**
+	 * Never manage these lang files
+	 *
+	 * @var  array
+	 */
+	protected $ignore_lang_files = array();
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -30,6 +66,13 @@ class LocalizationMissing extends LocalizationAbstract
 	public function __construct( Repository $configRepository )
 	{
 		parent::__construct( $configRepository );
+
+		$this->trans_methods       = Config::get( 'laravel-localization-helpers::config.trans_methods' );
+		$this->folders             = Config::get( 'laravel-localization-helpers::config.folders' );
+		$this->ignore_lang_files   = Config::get( 'laravel-localization-helpers::config.ignore_lang_files' );
+		$this->lang_folder_path    = Config::get( 'laravel-localization-helpers::config.lang_folder_path' );
+		$this->never_obsolete_keys = Config::get( 'laravel-localization-helpers::config.never_obsolete_keys' );
+		$this->editor              = Config::get( 'laravel-localization-helpers::config.editor_command_line' );
 	}
 
 	/**
@@ -39,7 +82,7 @@ class LocalizationMissing extends LocalizationAbstract
 	 */
 	public function fire()
 	{
-		$folders       = $this->get_path( $this->folders );
+		$folders       = $this->manager->getPath( $this->folders );
 		$this->display = ! $this->option( 'silent' );
 
 		//////////////////////////////////////////////////
@@ -64,11 +107,11 @@ class LocalizationMissing extends LocalizationAbstract
 
 		foreach ( $folders as $path )
 		{
-			foreach ( $this->get_php_files( $path ) as $php_file_path => $dumb )
+			foreach ( $this->manager->getFilesWithExtension( $path ) as $php_file_path => $dumb )
 			{
 				$lemma = array();
 
-				foreach ( $this->extract_translation_from_php_file( $php_file_path ) as $k => $v )
+				foreach ( $this->manager->extractTranslationFromPhpFile( $php_file_path , $this->trans_methods ) as $k => $v )
 				{
 					$real_value           = eval( "return $k;" );
 					$lemma[ $real_value ] = $php_file_path;
@@ -83,7 +126,7 @@ class LocalizationMissing extends LocalizationAbstract
 			$this->writeComment( "No lemma have been found in code." );
 			$this->writeLine( "I have searched recursively in PHP files in these directories:" );
 
-			foreach ( $this->get_path( $this->folders ) as $path )
+			foreach ( $this->manager->getPath( $this->folders ) as $path )
 			{
 				$this->writeLine( "    " . $path );
 			}
@@ -95,7 +138,7 @@ class LocalizationMissing extends LocalizationAbstract
 				$this->writeLine( "    " . $k );
 			}
 
-			die();
+			return self::SUCCESS;
 		}
 
 		$this->writeLine( ( count( $lemmas ) > 1 ) ? count( $lemmas ) . " lemmas have been found in code" : "1 lemma has been found in code" );
@@ -106,7 +149,7 @@ class LocalizationMissing extends LocalizationAbstract
 			{
 				if ( strpos( $key , '.' ) !== false )
 				{
-					$this->writeLine( '    <info>' . $key . '</info> in file <comment>' . $this->get_short_path( $value ) . '</comment>' );
+					$this->writeLine( '    <info>' . $key . '</info> in file <comment>' . $this->manager->getShortPath( $value ) . '</comment>' );
 				}
 			}
 		}
@@ -120,7 +163,7 @@ class LocalizationMissing extends LocalizationAbstract
 		{
 			if ( strpos( $key , '.' ) === false )
 			{
-				$this->writeLine( '    <error>' . $key . '</error> in file <comment>' . $this->get_short_path( $value ) . '</comment> <error>will not be included because it has no parent</error>' );
+				$this->writeLine( '    <error>' . $key . '</error> in file <comment>' . $this->manager->getShortPath( $value ) . '</comment> <error>will not be included because it has no parent</error>' );
 			}
 			else
 			{
@@ -136,11 +179,13 @@ class LocalizationMissing extends LocalizationAbstract
 		// - keep already defined lemmas   //
 		// - add obsolete lemmas on bottom //
 		/////////////////////////////////////
-		$dir_lang      = $this->get_lang_path();
+		$dir_lang = $this->manager->getLangPath( $this->lang_folder_path );
+
 		$job           = array();
 		$there_are_new = false;
 
 		$this->writeLine( 'Scan files:' );
+
 		foreach ( scandir( $dir_lang ) as $lang )
 		{
 
@@ -169,12 +214,13 @@ class LocalizationMissing extends LocalizationAbstract
 						{
 							$this->writeLine( '' );
 						}
-						$this->writeLine( '    ' . $this->get_short_path( $file_lang_path ) );
+						$this->writeLine( '    ' . $this->manager->getShortPath( $file_lang_path ) );
 
 						if ( ! is_writable( dirname( $file_lang_path ) ) )
 						{
 							$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
-							die();
+
+							return self::ERROR;
 						}
 
 						if ( ! file_exists( $file_lang_path ) )
@@ -185,32 +231,35 @@ class LocalizationMissing extends LocalizationAbstract
 						if ( ! touch( $file_lang_path ) )
 						{
 							$this->writeError( "    > Unable to touch file $file_lang_path" );
-							die();
+
+							return self::ERROR;
 						}
 
 						if ( ! is_readable( $file_lang_path ) )
 						{
 							$this->writeError( "    > Unable to read file $file_lang_path" );
-							die();
+
+							return self::ERROR;
 						}
 
 						if ( ! is_writable( $file_lang_path ) )
 						{
 							$this->writeError( "    > Unable to write in file $file_lang_path" );
-							die();
+
+							return self::ERROR;
 						}
 
 						/** @noinspection PhpIncludeInspection */
-						$a                        = include( $file_lang_path );
-						$old_lemmas               = ( is_array( $a ) ) ? array_dot( $a ) : array();
-						$new_lemmas               = array_dot( $array );
-						$final_lemmas             = array();
-						$display_already_comment  = false;
-						$something_to_do          = false;
-						$i                        = 0;
-						$obsolete_lemmas          = array_diff_key( $old_lemmas , $new_lemmas );
-						$welcome_lemmas           = array_diff_key( $new_lemmas , $old_lemmas );
-						$already_lemmas           = array_intersect_key( $old_lemmas , $new_lemmas );
+						$a                       = include( $file_lang_path );
+						$old_lemmas              = ( is_array( $a ) ) ? array_dot( $a ) : array();
+						$new_lemmas              = array_dot( $array );
+						$final_lemmas            = array();
+						$display_already_comment = false;
+						$something_to_do         = false;
+						$i                       = 0;
+						$obsolete_lemmas         = array_diff_key( $old_lemmas , $new_lemmas );
+						$welcome_lemmas          = array_diff_key( $new_lemmas , $old_lemmas );
+						$already_lemmas          = array_intersect_key( $old_lemmas , $new_lemmas );
 						ksort( $obsolete_lemmas );
 						ksort( $welcome_lemmas );
 						ksort( $already_lemmas );
@@ -230,7 +279,7 @@ class LocalizationMissing extends LocalizationAbstract
 							{
 								if ( $this->option( 'verbose' ) )
 								{
-									$this->writeLine( "            <info>" . $key . "</info> in " . $this->get_short_path( $value ) );
+									$this->writeLine( "            <info>" . $key . "</info> in " . $this->manager->getShortPath( $value ) );
 								}
 								if ( ! $this->option( 'no-comment' ) )
 								{
@@ -280,8 +329,8 @@ class LocalizationMissing extends LocalizationAbstract
 
 						if ( count( $obsolete_lemmas ) > 0 )
 						{
-							$display_already_comment  = true;
-							$something_to_do          = true;
+							$display_already_comment = true;
+							$something_to_do         = true;
 							$this->writeComment( $this->option( 'no-obsolete' )
 								? "        " . count( $obsolete_lemmas ) . " obsolete strings (will be deleted)"
 								: "        " . count( $obsolete_lemmas ) . " obsolete strings (can be deleted manually in the generated file)"
@@ -389,7 +438,7 @@ class LocalizationMissing extends LocalizationAbstract
 						{
 							rename( $file_lang_path , $backup_path );
 						}
-						$this->writeLine( "    <info>" . $this->get_short_path( $file_lang_path ) . "</info> -> <info>" . $this->get_short_path( $backup_path ) . "</info>" );
+						$this->writeLine( "    <info>" . $this->manager->getShortPath( $file_lang_path ) . "</info> -> <info>" . $this->manager->getShortPath( $backup_path ) . "</info>" );
 					}
 					$this->writeLine( '' );
 				}
@@ -402,7 +451,7 @@ class LocalizationMissing extends LocalizationAbstract
 					{
 						file_put_contents( $file_lang_path , $file_content );
 					}
-					$this->writeLine( "    <info>" . $this->get_short_path( $file_lang_path ) );
+					$this->writeLine( "    <info>" . $this->manager->getShortPath( $file_lang_path ) );
 					if ( $this->option( 'editor' ) )
 					{
 						$open_files .= ' ' . escapeshellarg( $file_lang_path );
@@ -466,6 +515,8 @@ class LocalizationMissing extends LocalizationAbstract
 			array( 'no-date' , 'd' , InputOption::VALUE_NONE , 'Do not add the date of execution in the lang files' ) ,
 			array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE , 'Do not write obsolete lemma' ) ,
 			array( 'silent' , 's' , InputOption::VALUE_NONE , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma or nt)' ) ,
+			array( 'config-folders' , 'cf' , InputOption::VALUE_REQUIRED , 'Override folder configuration value (avoid using this option and prefer set folders in configuration file' ) ,
+			array( 'config-lang_folder_path' , 'cl' , InputOption::VALUE_REQUIRED , 'Override lang_folder_path configuration value (avoid using this option and prefer set lang_folder_path in configuration file' ) ,
 		);
 	}
 

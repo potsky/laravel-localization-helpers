@@ -2,6 +2,7 @@
 
 namespace Potsky\LaravelLocalizationHelpers\Command;
 
+use Config;
 use Illuminate\Config\Repository;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,6 +25,20 @@ class LocalizationFind extends LocalizationAbstract
 	protected $description = 'Display all files where the argument is used as a lemma';
 
 	/**
+	 * functions and method to catch translations
+	 *
+	 * @var  array
+	 */
+	protected $trans_methods = array();
+
+	/**
+	 * Folders to seek for missing translations
+	 *
+	 * @var  array
+	 */
+	protected $folders = array();
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -31,6 +46,9 @@ class LocalizationFind extends LocalizationAbstract
 	public function __construct( Repository $configRepository )
 	{
 		parent::__construct( $configRepository );
+
+		$this->folders       = Config::get( 'laravel-localization-helpers::config.folders' );
+		$this->trans_methods = Config::get( 'laravel-localization-helpers::config.trans_methods' );
 	}
 
 	/**
@@ -42,7 +60,7 @@ class LocalizationFind extends LocalizationAbstract
 	{
 
 		$lemma   = $this->argument( 'lemma' );
-		$folders = $this->get_path( $this->folders );
+		$folders = $this->manager->getPath( $this->folders );
 
 		//////////////////////////////////////////////////
 		// Display where translatations are searched in //
@@ -66,9 +84,9 @@ class LocalizationFind extends LocalizationAbstract
 
 		foreach ( $folders as $path )
 		{
-			foreach ( $this->get_php_files( $path ) as $php_file_path => $dumb )
+			foreach ( $this->manager->getFilesWithExtension( $path ) as $php_file_path => $dumb )
 			{
-				foreach ( $this->extract_translation_from_php_file( $php_file_path ) as $k => $v )
+				foreach ( $this->manager->extractTranslationFromPhpFile( $php_file_path , $this->trans_methods ) as $k => $v )
 				{
 					$real_value = eval( "return $k;" );
 					$found      = false;
@@ -107,7 +125,7 @@ class LocalizationFind extends LocalizationAbstract
 					{
 						if ( $this->option( 'short' ) )
 						{
-							$php_file_path = $this->get_short_path( $php_file_path );
+							$php_file_path = $this->manager->getShortPath( $php_file_path );
 						}
 						$files[] = $php_file_path;
 						break;
