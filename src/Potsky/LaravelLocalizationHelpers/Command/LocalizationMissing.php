@@ -4,6 +4,9 @@ namespace Potsky\LaravelLocalizationHelpers\Command;
 
 use Config;
 use Illuminate\Config\Repository;
+use Potsky\LaravelLocalizationHelpers\Factory\Exception;
+use Potsky\LaravelLocalizationHelpers\Factory\Localization;
+use Potsky\LaravelLocalizationHelpers\Factory\Tools;
 use Symfony\Component\Console\Input\InputOption;
 
 class LocalizationMissing extends LocalizationAbstract
@@ -103,23 +106,7 @@ class LocalizationMissing extends LocalizationAbstract
 		////////////////////////////////
 		// Parse all lemmas from code //
 		////////////////////////////////
-		$lemmas = array();
-
-		foreach ( $folders as $path )
-		{
-			foreach ( $this->manager->getFilesWithExtension( $path ) as $php_file_path => $dumb )
-			{
-				$lemma = array();
-
-				foreach ( $this->manager->extractTranslationFromPhpFile( $php_file_path , $this->trans_methods ) as $k => $v )
-				{
-					$real_value           = eval( "return $k;" );
-					$lemma[ $real_value ] = $php_file_path;
-				}
-
-				$lemmas = array_merge( $lemmas , $lemma );
-			}
-		}
+		$lemmas = $this->manager->extractTranslationsFromFolders( $folders , $this->trans_methods );
 
 		if ( count( $lemmas ) === 0 )
 		{
@@ -154,24 +141,21 @@ class LocalizationMissing extends LocalizationAbstract
 			}
 		}
 
+
 		/////////////////////////////////////////////
 		// Convert dot lemmas to structured lemmas //
 		/////////////////////////////////////////////
-		$lemmas_structured = array();
-
-		foreach ( $lemmas as $key => $value )
+		if ( $this->option( 'output-flat' ) )
 		{
-			if ( strpos( $key , '.' ) === false )
-			{
-				$this->writeLine( '    <error>' . $key . '</error> in file <comment>' . $this->manager->getShortPath( $value ) . '</comment> <error>will not be included because it has no parent</error>' );
-			}
-			else
-			{
-				array_set( $lemmas_structured , $key , $value );
-			}
+			$lemmas_structured = $this->manager->convertLemmaToFlatArray( $lemmas );
+		}
+		else
+		{
+			$lemmas_structured = $this->manager->convertLemmaToStructuredArray( $lemmas );
 		}
 
 		$this->writeLine( '' );
+
 
 		/////////////////////////////////////
 		// Generate lang files :           //
@@ -179,7 +163,36 @@ class LocalizationMissing extends LocalizationAbstract
 		// - keep already defined lemmas   //
 		// - add obsolete lemmas on bottom //
 		/////////////////////////////////////
-		$dir_lang = $this->manager->getLangPath( $this->lang_folder_path );
+		try
+		{
+			$dir_lang = $this->manager->getLangPath( $this->lang_folder_path );
+		}
+		catch ( Exception $e )
+		{
+			switch ( $e->getCode() )
+			{
+				case Localization::NO_LANG_FOLDER_FOUND_IN_THESE_PATHS:
+					$this->writeError( "No lang folder found in these paths:" );
+					foreach ( $e->getParameter() as $path )
+					{
+						$this->writeError( "- " . $path );
+					}
+					break;
+
+				case Localization::NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH:
+					$this->writeError( 'No lang folder found in your custom path: "' . $e->getParameter() . '"' );
+					break;
+
+				default:
+					$this->writeError( 'Unexpected error' );
+					break;
+			}
+
+			$this->writeLine( '' );
+
+			return self::ERROR;
+		}
+
 
 		$job           = array();
 		$there_are_new = false;
@@ -188,203 +201,202 @@ class LocalizationMissing extends LocalizationAbstract
 
 		foreach ( scandir( $dir_lang ) as $lang )
 		{
-
-			if ( ! in_array( $lang , array( "." , ".." ) ) )
+			if ( Tools::isValidDirectory( $dir_lang , $lang ) )
 			{
-
-				if ( is_dir( $dir_lang . DIRECTORY_SEPARATOR . $lang ) )
+				foreach ( $lemmas_structured as $family => $array )
 				{
-
-					foreach ( $lemmas_structured as $family => $array )
+					if ( in_array( $family , $this->ignore_lang_files ) )
 					{
-
-						if ( in_array( $family , $this->ignore_lang_files ) )
-						{
-							if ( $this->option( 'verbose' ) )
-							{
-								$this->writeLine( '' );
-								$this->writeInfo( "    ! Skip lang file '$family' !" );
-							}
-							continue;
-						}
-
-						$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
-
 						if ( $this->option( 'verbose' ) )
 						{
 							$this->writeLine( '' );
+							$this->writeInfo( "    ! Skip lang file '$family' !" );
 						}
-						$this->writeLine( '    ' . $this->manager->getShortPath( $file_lang_path ) );
+						continue;
+					}
 
-						if ( ! is_writable( dirname( $file_lang_path ) ) )
-						{
-							$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
+					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
 
-							return self::ERROR;
-						}
+					if ( $this->option( 'verbose' ) )
+					{
+						$this->writeLine( '' );
+					}
+					$this->writeLine( '    ' . $this->manager->getShortPath( $file_lang_path ) );
 
-						if ( ! file_exists( $file_lang_path ) )
-						{
-							$this->writeInfo( "    > File has been created" );
-						}
+					if ( ! is_writable( dirname( $file_lang_path ) ) )
+					{
+						$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
 
-						if ( ! touch( $file_lang_path ) )
-						{
-							$this->writeError( "    > Unable to touch file $file_lang_path" );
+						return self::ERROR;
+					}
 
-							return self::ERROR;
-						}
+					if ( ! file_exists( $file_lang_path ) )
+					{
+						$this->writeInfo( "    > File has been created" );
+					}
 
-						if ( ! is_readable( $file_lang_path ) )
-						{
-							$this->writeError( "    > Unable to read file $file_lang_path" );
+					if ( ! touch( $file_lang_path ) )
+					{
+						$this->writeError( "    > Unable to touch file $file_lang_path" );
 
-							return self::ERROR;
-						}
+						return self::ERROR;
+					}
 
-						if ( ! is_writable( $file_lang_path ) )
-						{
-							$this->writeError( "    > Unable to write in file $file_lang_path" );
+					if ( ! is_readable( $file_lang_path ) )
+					{
+						$this->writeError( "    > Unable to read file $file_lang_path" );
 
-							return self::ERROR;
-						}
+						return self::ERROR;
+					}
 
-						/** @noinspection PhpIncludeInspection */
-						$a                       = include( $file_lang_path );
-						$old_lemmas              = ( is_array( $a ) ) ? array_dot( $a ) : array();
-						$new_lemmas              = array_dot( $array );
-						$final_lemmas            = array();
-						$display_already_comment = false;
-						$something_to_do         = false;
-						$i                       = 0;
-						$obsolete_lemmas         = array_diff_key( $old_lemmas , $new_lemmas );
-						$welcome_lemmas          = array_diff_key( $new_lemmas , $old_lemmas );
-						$already_lemmas          = array_intersect_key( $old_lemmas , $new_lemmas );
-						ksort( $obsolete_lemmas );
-						ksort( $welcome_lemmas );
-						ksort( $already_lemmas );
+					if ( ! is_writable( $file_lang_path ) )
+					{
+						$this->writeError( "    > Unable to write in file $file_lang_path" );
 
-						//////////////////////////
-						// Deal with new lemmas //
-						//////////////////////////
-						if ( count( $welcome_lemmas ) > 0 )
-						{
-							$display_already_comment = true;
-							$something_to_do         = true;
-							$there_are_new           = true;
-							$this->writeInfo( "        " . count( $welcome_lemmas ) . " new strings to translate" );
-							$final_lemmas[ "POTSKY___NEW___POTSKY" ] = "POTSKY___NEW___POTSKY";
+						return self::ERROR;
+					}
 
-							foreach ( $welcome_lemmas as $key => $value )
-							{
-								if ( $this->option( 'verbose' ) )
-								{
-									$this->writeLine( "            <info>" . $key . "</info> in " . $this->manager->getShortPath( $value ) );
-								}
-								if ( ! $this->option( 'no-comment' ) )
-								{
-									$final_lemmas[ 'POTSKY___COMMENT___POTSKY' . $i ] = "Defined in file $value";
-									$i                                                = $i + 1;
-								}
+					/** @noinspection PhpIncludeInspection */
+					$a                       = include( $file_lang_path );
+					$old_lemmas              = ( is_array( $a ) ) ? array_dot( $a ) : array();
+					$new_lemmas              = array_dot( $array );
+					$final_lemmas            = array();
+					$display_already_comment = false;
+					$something_to_do         = false;
+					$i                       = 0;
+					$obsolete_lemmas         = array_diff_key( $old_lemmas , $new_lemmas );
+					$welcome_lemmas          = array_diff_key( $new_lemmas , $old_lemmas );
+					$already_lemmas          = array_intersect_key( $old_lemmas , $new_lemmas );
+					ksort( $obsolete_lemmas );
+					ksort( $welcome_lemmas );
+					ksort( $already_lemmas );
 
-								array_set( $final_lemmas , $key , str_replace( '%LEMMA' , $key , $this->option( 'new-value' ) ) );
-							}
-						}
+					//////////////////////////
+					// Deal with new lemmas //
+					//////////////////////////
+					if ( count( $welcome_lemmas ) > 0 )
+					{
+						$display_already_comment = true;
+						$something_to_do         = true;
+						$there_are_new           = true;
+						$this->writeInfo( "        " . count( $welcome_lemmas ) . " new strings to translate" );
+						$final_lemmas[ "POTSKY___NEW___POTSKY" ] = "POTSKY___NEW___POTSKY";
 
-						///////////////////////////////
-						// Deal with existing lemmas //
-						///////////////////////////////
-						if ( count( $already_lemmas ) > 0 )
+						foreach ( $welcome_lemmas as $key => $value )
 						{
 							if ( $this->option( 'verbose' ) )
 							{
-								$this->writeLine( "        " . count( $already_lemmas ) . " already translated strings" );
+								$this->writeLine( "            <info>" . $key . "</info> in " . $this->manager->getShortPath( $value ) );
+							}
+							if ( ! $this->option( 'no-comment' ) )
+							{
+								$final_lemmas[ 'POTSKY___COMMENT___POTSKY' . $i ] = "Defined in file $value";
+								$i                                                = $i + 1;
 							}
 
-							$final_lemmas[ "POTSKY___OLD___POTSKY" ] = "POTSKY___OLD___POTSKY";
+							array_set( $final_lemmas , $key , str_replace( '%LEMMA' , $key , $this->option( 'new-value' ) ) );
+						}
+					}
 
-							foreach ( $already_lemmas as $key => $value )
+					///////////////////////////////
+					// Deal with existing lemmas //
+					///////////////////////////////
+					if ( count( $already_lemmas ) > 0 )
+					{
+						if ( $this->option( 'verbose' ) )
+						{
+							$this->writeLine( "        " . count( $already_lemmas ) . " already translated strings" );
+						}
+
+						$final_lemmas[ "POTSKY___OLD___POTSKY" ] = "POTSKY___OLD___POTSKY";
+
+						foreach ( $already_lemmas as $key => $value )
+						{
+							array_set( $final_lemmas , $key , $value );
+						}
+					}
+
+					///////////////////////////////
+					// Deal with obsolete lemmas //
+					///////////////////////////////
+					if ( count( $obsolete_lemmas ) > 0 )
+					{
+						// Remove all dynamic fields
+						foreach ( $obsolete_lemmas as $key => $value )
+						{
+							foreach ( $this->never_obsolete_keys as $remove )
+							{
+								if ( strpos( $key , '.' . $remove . '.' ) !== false )
+								{
+									unset( $obsolete_lemmas[ $key ] );
+								}
+							}
+						}
+					}
+
+					if ( count( $obsolete_lemmas ) > 0 )
+					{
+						$display_already_comment = true;
+						$something_to_do         = true;
+						$this->writeComment( $this->option( 'no-obsolete' )
+							? "        " . count( $obsolete_lemmas ) . " obsolete strings (will be deleted)"
+							: "        " . count( $obsolete_lemmas ) . " obsolete strings (can be deleted manually in the generated file)"
+						);
+						$final_lemmas[ "POTSKY___OBSOLETE___POTSKY" ] = "POTSKY___OBSOLETE___POTSKY";
+
+						foreach ( $obsolete_lemmas as $key => $value )
+						{
+							if ( $this->option( 'verbose' ) )
+							{
+								$this->writeLine( "            <comment>" . $key . "</comment>" );
+							}
+							if ( ! $this->option( 'no-obsolete' ) )
 							{
 								array_set( $final_lemmas , $key , $value );
 							}
 						}
+					}
 
-						///////////////////////////////
-						// Deal with obsolete lemmas //
-						///////////////////////////////
-						if ( count( $obsolete_lemmas ) > 0 )
+					// Flat style
+					if ( $this->option( 'output-flat' ) )
+					{
+						$final_lemmas = array_dot( $final_lemmas );
+					}
+
+					if ( ( $something_to_do === true ) || ( $this->option( 'force' ) ) )
+					{
+						$content = var_export( $final_lemmas , true );
+						$content = preg_replace( "@'POTSKY___COMMENT___POTSKY[0-9]*' => '(.*)',@" , '// $1' , $content );
+						$content = str_replace(
+							array(
+								"'POTSKY___NEW___POTSKY' => 'POTSKY___NEW___POTSKY'," ,
+								"'POTSKY___OLD___POTSKY' => 'POTSKY___OLD___POTSKY'," ,
+								"'POTSKY___OBSOLETE___POTSKY' => 'POTSKY___OBSOLETE___POTSKY'," ,
+							) ,
+							array(
+								'//============================== New strings to translate ==============================//' ,
+								( $display_already_comment === true ) ? '//==================================== Translations ====================================//' : '' ,
+								'//================================== Obsolete strings ==================================//' ,
+							) ,
+							$content
+						);
+
+						$file_content = "<?php\n";
+
+						if ( ! $this->option( 'no-date' ) )
 						{
-							// Remove all dynamic fields
-							foreach ( $obsolete_lemmas as $key => $value )
-							{
-								foreach ( $this->never_obsolete_keys as $remove )
-								{
-									if ( strpos( $key , '.' . $remove . '.' ) !== false )
-									{
-										unset( $obsolete_lemmas[ $key ] );
-									}
-								}
-							}
+							$a = " Generated via \"php artisan " . $this->argument( 'command' ) . "\" at " . date( "Y/m/d H:i:s" ) . " ";
+							$file_content .= "/" . str_repeat( '*' , strlen( $a ) ) . "\n" . $a . "\n" . str_repeat( '*' , strlen( $a ) ) . "/\n";
 						}
 
-						if ( count( $obsolete_lemmas ) > 0 )
+						$file_content .= "\nreturn " . $content . ";";
+						$job[ $file_lang_path ] = $file_content;
+					}
+					else
+					{
+						if ( $this->option( 'verbose' ) )
 						{
-							$display_already_comment = true;
-							$something_to_do         = true;
-							$this->writeComment( $this->option( 'no-obsolete' )
-								? "        " . count( $obsolete_lemmas ) . " obsolete strings (will be deleted)"
-								: "        " . count( $obsolete_lemmas ) . " obsolete strings (can be deleted manually in the generated file)"
-							);
-							$final_lemmas[ "POTSKY___OBSOLETE___POTSKY" ] = "POTSKY___OBSOLETE___POTSKY";
-
-							foreach ( $obsolete_lemmas as $key => $value )
-							{
-								if ( $this->option( 'verbose' ) )
-								{
-									$this->writeLine( "            <comment>" . $key . "</comment>" );
-								}
-								if ( ! $this->option( 'no-obsolete' ) )
-								{
-									array_set( $final_lemmas , $key , $value );
-								}
-							}
-						}
-
-						if ( ( $something_to_do === true ) || ( $this->option( 'force' ) ) )
-						{
-							$content = var_export( $final_lemmas , true );
-							$content = preg_replace( "@'POTSKY___COMMENT___POTSKY[0-9]*' => '(.*)',@" , '// $1' , $content );
-							$content = str_replace(
-								array(
-									"'POTSKY___NEW___POTSKY' => 'POTSKY___NEW___POTSKY'," ,
-									"'POTSKY___OLD___POTSKY' => 'POTSKY___OLD___POTSKY'," ,
-									"'POTSKY___OBSOLETE___POTSKY' => 'POTSKY___OBSOLETE___POTSKY'," ,
-								) ,
-								array(
-									'//============================== New strings to translate ==============================//' ,
-									( $display_already_comment === true ) ? '//==================================== Translations ====================================//' : '' ,
-									'//================================== Obsolete strings ==================================//' ,
-								) ,
-								$content
-							);
-
-							$file_content = "<?php\n";
-
-							if ( ! $this->option( 'no-date' ) )
-							{
-								$a = " Generated via \"php artisan " . $this->argument( 'command' ) . "\" at " . date( "Y/m/d H:i:s" ) . " ";
-								$file_content .= "/" . str_repeat( '*' , strlen( $a ) ) . "\n" . $a . "\n" . str_repeat( '*' , strlen( $a ) ) . "/\n";
-							}
-
-							$file_content .= "\nreturn " . $content . ";";
-							$job[ $file_lang_path ] = $file_content;
-						}
-						else
-						{
-							if ( $this->option( 'verbose' ) )
-							{
-								$this->writeLine( "        > <comment>Nothing to do for this file</comment>" );
-							}
+							$this->writeLine( "        > <comment>Nothing to do for this file</comment>" );
 						}
 					}
 				}
@@ -514,9 +526,8 @@ class LocalizationMissing extends LocalizationAbstract
 			array( 'no-comment' , 'c' , InputOption::VALUE_NONE , 'Do not add comments in lang files for lemma definition' ) ,
 			array( 'no-date' , 'd' , InputOption::VALUE_NONE , 'Do not add the date of execution in the lang files' ) ,
 			array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE , 'Do not write obsolete lemma' ) ,
+			array( 'output-flat' , 'of' , InputOption::VALUE_NONE , 'Output arrays are flat (do not use sub-arrays and keep dots in lemma)' ) ,
 			array( 'silent' , 's' , InputOption::VALUE_NONE , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma or nt)' ) ,
-			array( 'config-folders' , 'cf' , InputOption::VALUE_REQUIRED , 'Override folder configuration value (avoid using this option and prefer set folders in configuration file' ) ,
-			array( 'config-lang_folder_path' , 'cl' , InputOption::VALUE_REQUIRED , 'Override lang_folder_path configuration value (avoid using this option and prefer set lang_folder_path in configuration file' ) ,
 		);
 	}
 

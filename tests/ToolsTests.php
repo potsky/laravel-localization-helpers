@@ -10,4 +10,19 @@ class ToolsTests extends TestCase
 		$this->assertFalse( Tools::isLaravel5() );
 	}
 
+	public function testArraySetDotFirstLevel()
+	{
+		$array = array();
+
+		Tools::arraySetDotFirstLevel( $array , 'a.b.c' , true );
+		$this->assertTrue( $array['a']['b.c'] );
+
+		Tools::arraySetDotFirstLevel( $array , 'a.b.c' , true );
+		$this->assertNull( @$array['a']['b']['c'] );
+
+		Tools::arraySetDotFirstLevel( $array , null , true );
+		/** @var bool $array */
+		$this->assertTrue( $array );
+	}
+
 }

@@ -2,8 +2,29 @@
 
 class Localization
 {
-	public function __construct()
+	const NO_LANG_FOLDER_FOUND_IN_THESE_PATHS      = 2;
+	const NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH = 3;
+
+	/** @var MessageBagInterface $messageBag */
+	private $messageBag;
+
+	/**
+	 * @param \Potsky\LaravelLocalizationHelpers\Factory\MessageBagInterface $messageBag A message bag or a Console
+	 *                                                                                   object for output reports
+	 */
+	public function __construct( MessageBagInterface $messageBag )
 	{
+		$this->messageBag = $messageBag;
+	}
+
+	/**
+	 * Get the current used message bag for facades essentially
+	 *
+	 * @return \Potsky\LaravelLocalizationHelpers\Factory\MessageBagInterface
+	 */
+	public function getMessageBag()
+	{
+		return $this->messageBag;
 	}
 
 	/**
@@ -31,8 +52,8 @@ class Localization
 				}
 			}
 
-			$e = new Exception( '' , Exception::NO_LANG_FOLDER_FOUND_IN_THESE_PATHS );
-			$e->setParameters( $paths );
+			$e = new Exception( '' , self::NO_LANG_FOLDER_FOUND_IN_THESE_PATHS );
+			$e->setParameter( $paths );
 			throw $e;
 		}
 		else
@@ -42,8 +63,8 @@ class Localization
 				return $lang_folder_path;
 			}
 
-			$e = new Exception( '' , Exception::NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH );
-			$e->setParameters( $lang_folder_path );
+			$e = new Exception( '' , self::NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH );
+			$e->setParameter( $lang_folder_path );
 			throw $e;
 		}
 	}
@@ -105,6 +126,7 @@ class Localization
 	 * Return an iterator of files with specific extension in the provided paths and subpaths
 	 *
 	 * @param string $path a source path
+	 * @param string $ext
 	 *
 	 * @return array a list of file paths
 	 */
@@ -131,6 +153,7 @@ class Localization
 
 	/**
 	 * Extract all translations from the provided file
+	 *
 	 * Remove all translations containing :
 	 * - $  -> auto-generated translation cannot be supported
 	 * - :: -> package translations are not taken in account
@@ -164,6 +187,103 @@ class Localization
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Extract all translations from the provided folders
+	 *
+	 * @param array $folders       a list of folder to search in
+	 * @param array $trans_methods an array of regex to catch
+	 *
+	 * @return array
+	 */
+	public function extractTranslationsFromFolders( $folders , $trans_methods )
+	{
+		$lemmas = array();
+
+		foreach ( $folders as $path )
+		{
+			foreach ( $this->getFilesWithExtension( $path ) as $php_file_path => $dumb )
+			{
+				$lemma = array();
+
+				foreach ( $this->extractTranslationFromPhpFile( $php_file_path , $trans_methods ) as $k => $v )
+				{
+					$real_value           = eval( "return $k;" );
+					$lemma[ $real_value ] = $php_file_path;
+				}
+
+				$lemmas = array_merge( $lemmas , $lemma );
+			}
+		}
+
+		return $lemmas;
+	}
+
+	/**
+	 * @param array $lemmas an array of lemma
+	 *                      eg: [ 'message.lemma.child' => string(83)
+	 *                      "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
+	 *
+	 * @return array a structured array of lemma
+	 *               eg: array(1) {
+	 *                        'message' =>
+	 *                            array(2) {
+	 *                            'lemma' =>
+	 *                                 array(9) {
+	 *                                    'child' => string(83)
+	 *                                    "/Users/potsky/Work/Private/GitHub/laravel-localization-helpers/tests/mock/trans.php"
+	 *                        ...
+	 */
+	public function convertLemmaToStructuredArray( $lemmas )
+	{
+		$lemmas_structured = array();
+
+		foreach ( $lemmas as $key => $value )
+		{
+			if ( strpos( $key , '.' ) === false )
+			{
+				$this->messageBag->writeLine( '    <error>' . $key . '</error> in file <comment>' . $this->getShortPath( $value ) . '</comment> <error>will not be included because it has no family</error>' );
+			}
+			else
+			{
+				array_set( $lemmas_structured , $key , $value );
+			}
+		}
+
+		return $lemmas_structured;
+	}
+
+	/**
+	 * @param array $lemmas an array of lemma
+	 *                      eg: [ 'message.lemma.child' => string(83)
+	 *                      "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
+	 *
+	 * @return array a flat array of lemma
+	 *               eg: array(1) {
+	 *                        'message' =>
+	 *                            array(2) {
+	 *                            'lemma.child' => string(83)
+	 *                            "/Users/potsky/Work/Private/GitHub/laravel-localization-helpers/tests/mock/trans.php"
+	 *                        ...
+	 */
+	public function convertLemmaToFlatArray( $lemmas )
+	{
+		$lemmas_structured = array();
+
+		foreach ( $lemmas as $key => $value )
+		{
+			if ( strpos( $key , '.' ) === false )
+			{
+				$this->messageBag->writeLine( '    <error>' . $key . '</error> in file <comment>' . $this->getShortPath( $value ) . '</comment> <error>will not be included because it has no family</error>' );
+			}
+			else
+			{
+				Tools::arraySetDotFirstLevel( $lemmas_structured , $key , $value );
+			}
+		}
+
+		return $lemmas_structured;
 	}
 
 }

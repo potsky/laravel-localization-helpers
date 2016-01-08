@@ -5,8 +5,9 @@ namespace Potsky\LaravelLocalizationHelpers\Command;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
+use Potsky\LaravelLocalizationHelpers\Factory\MessageBagInterface;
 
-abstract class LocalizationAbstract extends Command
+abstract class LocalizationAbstract extends Command implements MessageBagInterface
 {
 	const SUCCESS = 0;
 	const ERROR   = 1;
@@ -24,7 +25,7 @@ abstract class LocalizationAbstract extends Command
 	 * @var Localization
 	 */
 	protected $manager;
-	
+
 	/**
 	 * Should commands display something
 	 *
@@ -39,7 +40,8 @@ abstract class LocalizationAbstract extends Command
 	 */
 	public function __construct( Repository $configRepository )
 	{
-		$this->manager = new Localization();
+		// Inject this command just to have access to writeLine, writeError, etc... methods
+		$this->manager = new Localization( $this );
 
 		parent::__construct();
 	}

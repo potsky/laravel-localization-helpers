@@ -2,8 +2,9 @@
 
 class TestCase extends Orchestra\Testbench\TestCase
 {
-	const MOCK_DIR_PATH = 'tests/mock';
-	const LANG_DIR_PATH = 'tests/lang';
+	const MOCK_DIR_PATH           = 'tests/mock';
+	const LANG_DIR_PATH           = 'tests/lang';
+	const ORCHESTRA_LANG_DIR_PATH = 'vendor/orchestra/testbench/src/fixture/app/lang';
 
 	/**
 	 *

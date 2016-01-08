@@ -49,9 +49,9 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 			'localization.command.clear'
 		);
 
-		$this->app[ 'localization.helpers' ] = $this->app->share( function ( $app )
+		$this->app[ 'localization.helpers' ] = $this->app->share( function ()
 		{
-			return new Factory\Localization();
+			return new Factory\Localization( new Factory\MessageBag() );
 		} );
 	}
 

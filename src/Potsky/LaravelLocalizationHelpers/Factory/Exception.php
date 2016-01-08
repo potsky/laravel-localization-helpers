@@ -2,9 +2,6 @@
 
 class Exception extends \Exception
 {
-	const NO_LANG_FOLDER_FOUND_IN_THESE_PATHS      = -1;
-	const NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH = -2;
-
 	protected $parameter;
 
 	/**
@@ -22,7 +19,7 @@ class Exception extends \Exception
 	 *
 	 * @param $parameter
 	 */
-	public function setParameters( $parameter )
+	public function setParameter( $parameter )
 	{
 		$this->parameter = $parameter;
 	}
