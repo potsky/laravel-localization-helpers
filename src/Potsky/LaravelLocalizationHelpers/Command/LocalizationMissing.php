@@ -221,35 +221,45 @@ class LocalizationMissing extends LocalizationAbstract
 
 					if ( ! is_writable( dirname( $file_lang_path ) ) )
 					{
+						// @codeCoverageIgnoreStart
 						$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
 
 						return self::ERROR;
+						// @codeCoverageIgnoreEnd
 					}
 
 					if ( ! file_exists( $file_lang_path ) )
 					{
+						// @codeCoverageIgnoreStart
 						$this->writeInfo( "    > File has been created" );
+						// @codeCoverageIgnoreEnd
 					}
 
 					if ( ! touch( $file_lang_path ) )
 					{
+						// @codeCoverageIgnoreStart
 						$this->writeError( "    > Unable to touch file $file_lang_path" );
 
 						return self::ERROR;
+						// @codeCoverageIgnoreEnd
 					}
 
 					if ( ! is_readable( $file_lang_path ) )
 					{
+						// @codeCoverageIgnoreStart
 						$this->writeError( "    > Unable to read file $file_lang_path" );
 
 						return self::ERROR;
+						// @codeCoverageIgnoreEnd
 					}
 
 					if ( ! is_writable( $file_lang_path ) )
 					{
+						// @codeCoverageIgnoreStart
 						$this->writeError( "    > Unable to write in file $file_lang_path" );
 
 						return self::ERROR;
+						// @codeCoverageIgnoreEnd
 					}
 
 					/** @noinspection PhpIncludeInspection */
@@ -412,7 +422,9 @@ class LocalizationMissing extends LocalizationAbstract
 			}
 			else
 			{
+				// @codeCoverageIgnoreStart
 				return self::SUCCESS;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
@@ -428,9 +440,11 @@ class LocalizationMissing extends LocalizationAbstract
 			}
 			else
 			{
+				// @codeCoverageIgnoreStart
 				$this->writeLine( '' );
 				$do = ( $this->ask( 'Do you wish to apply these changes now? [yes|no]' ) === 'yes' );
 				$this->writeLine( '' );
+				// @codeCoverageIgnoreEnd
 			}
 
 			if ( $do === true )
@@ -462,7 +476,9 @@ class LocalizationMissing extends LocalizationAbstract
 					$this->writeLine( "    <info>" . $this->manager->getShortPath( $file_lang_path ) );
 					if ( $this->option( 'editor' ) )
 					{
+						// @codeCoverageIgnoreStart
 						$open_files .= ' ' . escapeshellarg( $file_lang_path );
+						// @codeCoverageIgnoreEnd
 					}
 				}
 				$this->writeLine( '' );
@@ -471,9 +487,12 @@ class LocalizationMissing extends LocalizationAbstract
 
 				if ( $this->option( 'editor' ) )
 				{
+					// @codeCoverageIgnoreStart
 					exec( $this->editor . $open_files );
+					// @codeCoverageIgnoreEnd
 				}
 
+			// @codeCoverageIgnoreStart
 			}
 			else
 			{
@@ -481,13 +500,9 @@ class LocalizationMissing extends LocalizationAbstract
 				$this->writeComment( 'Process aborted. No file has been changed.' );
 			}
 		}
+		// @codeCoverageIgnoreEnd
 		else
 		{
-			if ( $this->option( 'silent' ) )
-			{
-				return self::SUCCESS;
-			}
-
 			$this->writeLine( '' );
 			$this->writeInfo( 'Drink a Piña colada and/or smoke Super Skunk, you have nothing to do!' );
 		}

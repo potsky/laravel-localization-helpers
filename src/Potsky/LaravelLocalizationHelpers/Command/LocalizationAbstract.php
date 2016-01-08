@@ -97,6 +97,8 @@ abstract class LocalizationAbstract extends Command implements MessageBagInterfa
 	 * @param   string $s the message to display
 	 *
 	 * @return  void
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function writeQuestion( $s )
 	{

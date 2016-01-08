@@ -10,6 +10,11 @@ class ToolsTests extends TestCase
 		$this->assertFalse( Tools::isLaravel5() );
 	}
 
+	public function testValidDirectory()
+	{
+		$this->assertFalse( Tools::isValidDirectory( __DIR__ , __FILE__ ) );
+	}
+
 	public function testArraySetDotFirstLevel()
 	{
 		$array = array();
@@ -24,5 +29,4 @@ class ToolsTests extends TestCase
 		/** @var bool $array */
 		$this->assertTrue( $array );
 	}
-
 }
