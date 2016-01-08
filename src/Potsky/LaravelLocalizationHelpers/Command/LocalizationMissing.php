@@ -106,11 +106,11 @@ class LocalizationMissing extends LocalizationAbstract
 		////////////////////////////////
 		// Parse all lemmas from code //
 		////////////////////////////////
-		$lemmas = $this->manager->extractTranslationsFromFolders( $folders , $this->trans_methods );
+		$lemmas = $this->manager->extractTranslationsFromFolders( $folders , $this->trans_methods , $this->option( 'php-file-extension' ) );
 
 		if ( count( $lemmas ) === 0 )
 		{
-			$this->writeComment( "No lemma have been found in code." );
+			$this->writeComment( "No lemma has been found in code." );
 			$this->writeLine( "I have searched recursively in PHP files in these directories:" );
 
 			foreach ( $this->manager->getPath( $this->folders ) as $path )
@@ -181,10 +181,6 @@ class LocalizationMissing extends LocalizationAbstract
 
 				case Localization::NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH:
 					$this->writeError( 'No lang folder found in your custom path: "' . $e->getParameter() . '"' );
-					break;
-
-				default:
-					$this->writeError( 'Unexpected error' );
 					break;
 			}
 
@@ -326,7 +322,7 @@ class LocalizationMissing extends LocalizationAbstract
 						{
 							foreach ( $this->never_obsolete_keys as $remove )
 							{
-								if ( strpos( $key , '.' . $remove . '.' ) !== false )
+								if ( ( strpos( $key , '.' . $remove . '.' ) !== false ) || starts_with( $key , $remove . '.' ) )
 								{
 									unset( $obsolete_lemmas[ $key ] );
 								}
@@ -482,7 +478,7 @@ class LocalizationMissing extends LocalizationAbstract
 			else
 			{
 				$this->writeLine( '' );
-				$this->writeComment( 'Process aborted. No file have been changed.' );
+				$this->writeComment( 'Process aborted. No file has been changed.' );
 			}
 		}
 		else
@@ -528,6 +524,7 @@ class LocalizationMissing extends LocalizationAbstract
 			array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE , 'Do not write obsolete lemma' ) ,
 			array( 'output-flat' , 'of' , InputOption::VALUE_NONE , 'Output arrays are flat (do not use sub-arrays and keep dots in lemma)' ) ,
 			array( 'silent' , 's' , InputOption::VALUE_NONE , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma or nt)' ) ,
+			array( 'php-file-extension' , 'ex' , InputOption::VALUE_OPTIONAL , 'PHP file extension' , 'php' ) ,
 		);
 	}
 

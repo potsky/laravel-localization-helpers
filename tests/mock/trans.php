@@ -7,6 +7,12 @@ trans( 'OUPS lemma without family OUPS' );
 trans( 'message.Char $ can be used for auto-generated lemma' );
 trans( 'message.Double char :: is reserved for packages' );
 
+// This family is ignored
+trans( 'validation.lemma' );
+
+// This lemma will never be set as obsolete
+trans( 'message.fields.lemma' );
+
 // function style
 $a = trans( 'message.lemma' );
 $b = trans( 'message.lemma.child' );

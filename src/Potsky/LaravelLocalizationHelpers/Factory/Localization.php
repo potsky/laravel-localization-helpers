@@ -197,13 +197,13 @@ class Localization
 	 *
 	 * @return array
 	 */
-	public function extractTranslationsFromFolders( $folders , $trans_methods )
+	public function extractTranslationsFromFolders( $folders , $trans_methods , $php_file_extension = 'php' )
 	{
 		$lemmas = array();
 
 		foreach ( $folders as $path )
 		{
-			foreach ( $this->getFilesWithExtension( $path ) as $php_file_path => $dumb )
+			foreach ( $this->getFilesWithExtension( $path , $php_file_extension ) as $php_file_path => $dumb )
 			{
 				$lemma = array();
 

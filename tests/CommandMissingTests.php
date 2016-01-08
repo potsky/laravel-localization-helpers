@@ -130,4 +130,96 @@ class CommandMissingTests extends TestCase
 	}
 
 
+	/**
+	 * - the default lang file array is structured
+	 * - the new-value option works
+	 */
+	public function testVerbose()
+	{
+		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--verbose'        => true ,
+		) , $output );
+
+		$this->assertEquals( 0 , $return );
+		$this->assertContains( 'Lemmas will be searched in the following directories:' , $output->fetch() );
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--verbose'        => true ,
+		) , $output );
+
+		$this->assertEquals( 0 , $return );
+		$this->assertContains( 'Nothing to do for this file' , $output->fetch() );
+	}
+
+
+	/**
+	 *
+	 */
+	public function testNothingToDo()
+	{
+		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH_WO_LEMMA );
+
+		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--verbose'        => true ,
+		) , $output );
+
+		$this->assertEquals( 0 , $return );
+		$this->assertContains( 'No lemma has been found in code.' , $output->fetch() );
+	}
+
+
+	/**
+	 *
+	 */
+	public function testObsoleteLemma()
+	{
+		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+		) , $output );
+
+		$this->assertEquals( 0 , $return );
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction'     => true ,
+			'--verbose'            => true ,
+			'--php-file-extension' => 'copy' ,
+		) , $output );
+
+		$this->assertEquals( 0 , $return );
+	}
+
+
+	/**
+	 *
+	 */
+	public function testSilent()
+	{
+		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--silent'         => true ,
+		) , $output );
+
+		// Exit code is 1 because there are new lemma to translate
+		$this->assertEquals( 1 , $return );
+		$this->assertEmpty( $output->fetch() );
+	}
+
+
 }
