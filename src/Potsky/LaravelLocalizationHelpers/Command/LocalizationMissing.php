@@ -438,14 +438,14 @@ class LocalizationMissing extends LocalizationAbstract
 			{
 				$do = true;
 			}
+			// @codeCoverageIgnoreStart
 			else
 			{
-				// @codeCoverageIgnoreStart
 				$this->writeLine( '' );
 				$do = ( $this->ask( 'Do you wish to apply these changes now? [yes|no]' ) === 'yes' );
 				$this->writeLine( '' );
-				// @codeCoverageIgnoreEnd
 			}
+			// @codeCoverageIgnoreEnd
 
 			if ( $do === true )
 			{
@@ -453,44 +453,52 @@ class LocalizationMissing extends LocalizationAbstract
 				if ( ! $this->option( 'no-backup' ) )
 				{
 					$this->writeLine( 'Backup files:' );
+
 					foreach ( $job as $file_lang_path => $file_content )
 					{
 						$backup_path = preg_replace( '/\..+$/' , '.' . date( "Ymd_His" ) . '.php' , $file_lang_path );
+
 						if ( ! $this->option( 'dry-run' ) )
 						{
 							rename( $file_lang_path , $backup_path );
 						}
+
 						$this->writeLine( "    <info>" . $this->manager->getShortPath( $file_lang_path ) . "</info> -> <info>" . $this->manager->getShortPath( $backup_path ) . "</info>" );
 					}
+
 					$this->writeLine( '' );
 				}
 
 				$this->writeLine( 'Save files:' );
 				$open_files = '';
+
 				foreach ( $job as $file_lang_path => $file_content )
 				{
 					if ( ! $this->option( 'dry-run' ) )
 					{
 						file_put_contents( $file_lang_path , $file_content );
 					}
+
 					$this->writeLine( "    <info>" . $this->manager->getShortPath( $file_lang_path ) );
+
+					// @codeCoverageIgnoreStart
 					if ( $this->option( 'editor' ) )
 					{
-						// @codeCoverageIgnoreStart
 						$open_files .= ' ' . escapeshellarg( $file_lang_path );
-						// @codeCoverageIgnoreEnd
 					}
-				}
-				$this->writeLine( '' );
+					// @codeCoverageIgnoreEnd
 
+				}
+
+				$this->writeLine( '' );
 				$this->writeInfo( 'Process done!' );
 
+				// @codeCoverageIgnoreStart
 				if ( $this->option( 'editor' ) )
 				{
-					// @codeCoverageIgnoreStart
 					exec( $this->editor . $open_files );
-					// @codeCoverageIgnoreEnd
 				}
+				// @codeCoverageIgnoreEnd
 
 			// @codeCoverageIgnoreStart
 			}
