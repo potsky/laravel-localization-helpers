@@ -1,5 +1,8 @@
 <?php
 
+use Potsky\LaravelLocalizationHelpers\Factory\Tools;
+use Symfony\Component\Console\Output\BufferedOutput;
+
 class CommandMissingTests extends TestCase
 {
 	/**
@@ -12,7 +15,7 @@ class CommandMissingTests extends TestCase
 	{
 		parent::setUp();
 
-		\Potsky\LaravelLocalizationHelpers\Factory\Tools::unlinkGlobFiles( self::LANG_DIR_PATH . '/*/message*.php' );
+		Tools::unlinkGlobFiles( self::LANG_DIR_PATH . '/*/message*.php' );
 
 		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH );
 		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH );
@@ -26,7 +29,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testLangFileDoesNotExist()
 	{
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
@@ -36,6 +39,7 @@ class CommandMissingTests extends TestCase
 		$this->assertContains( 'File has been created' , $result );
 		$this->assertContains( 'OUPS' , $result );
 
+		/** @noinspection PhpIncludeInspection */
 		$lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
 		$this->assertEquals( 'TODO: lemma.child' , $lemmas[ 'lemma' ][ 'child' ] );
 	}
@@ -47,7 +51,7 @@ class CommandMissingTests extends TestCase
 	{
 		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH . 'doesnotexist' );
 
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
@@ -63,7 +67,7 @@ class CommandMissingTests extends TestCase
 	{
 		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , null );
 
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
@@ -79,7 +83,7 @@ class CommandMissingTests extends TestCase
 	{
 		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , null );
 
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		@mkdir( self::ORCHESTRA_LANG_DIR_PATH );
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
@@ -99,7 +103,7 @@ class CommandMissingTests extends TestCase
 		touch( self::LANG_DIR_PATH . '/en/message.php' );
 		touch( self::LANG_DIR_PATH . '/fr/message.php' );
 
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
@@ -114,7 +118,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testFlatOutput()
 	{
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
@@ -125,6 +129,7 @@ class CommandMissingTests extends TestCase
 
 		$this->assertEquals( 0 , $return );
 
+		/** @noinspection PhpIncludeInspection */
 		$lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
 		$this->assertEquals( 'lemma.child POTSKY' , $lemmas[ 'lemma.child' ] );
 	}
@@ -136,7 +141,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testVerbose()
 	{
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
@@ -165,7 +170,7 @@ class CommandMissingTests extends TestCase
 	{
 		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH_WO_LEMMA );
 
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
@@ -183,7 +188,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testObsoleteLemma()
 	{
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
@@ -208,7 +213,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testSilent()
 	{
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(

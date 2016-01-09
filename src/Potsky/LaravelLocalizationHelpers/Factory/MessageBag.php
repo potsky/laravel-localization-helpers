@@ -75,7 +75,12 @@ class MessageBag implements MessageBagInterface
 	 */
 	public function writeLine( $s )
 	{
-		$this->bag[] = array( self::LINE , $this->cleanMessage( $s ) );
+		$message = $this->cleanMessage( $s );
+
+		if ( ! empty( $message ) )
+		{
+			$this->bag[] = array( self::LINE , $message );
+		}
 	}
 
 	/**
@@ -87,7 +92,12 @@ class MessageBag implements MessageBagInterface
 	 */
 	public function writeInfo( $s )
 	{
-		$this->bag[] = array( self::INFO , $this->cleanMessage( $s ) );
+		$message = $this->cleanMessage( $s );
+
+		if ( ! empty( $message ) )
+		{
+			$this->bag[] = array( self::INFO , $message );
+		}
 	}
 
 	/**
@@ -99,7 +109,12 @@ class MessageBag implements MessageBagInterface
 	 */
 	public function writeComment( $s )
 	{
-		$this->bag[] = array( self::COMMENT , $this->cleanMessage( $s ) );
+		$message = $this->cleanMessage( $s );
+
+		if ( ! empty( $message ) )
+		{
+			$this->bag[] = array( self::COMMENT , $message );
+		}
 	}
 
 	/**
@@ -111,7 +126,12 @@ class MessageBag implements MessageBagInterface
 	 */
 	public function writeQuestion( $s )
 	{
-		$this->bag[] = array( self::QUESTION , $this->cleanMessage( $s ) );
+		$message = $this->cleanMessage( $s );
+
+		if ( ! empty( $message ) )
+		{
+			$this->bag[] = array( self::QUESTION , $message );
+		}
 	}
 
 	/**
@@ -123,7 +143,12 @@ class MessageBag implements MessageBagInterface
 	 */
 	public function writeError( $s )
 	{
-		$this->bag[] = array( self::ERROR , $this->cleanMessage( $s ) );
+		$message = $this->cleanMessage( $s );
+
+		if ( ! empty( $message ) )
+		{
+			$this->bag[] = array( self::ERROR , $message );
+		}
 	}
 
 	/**

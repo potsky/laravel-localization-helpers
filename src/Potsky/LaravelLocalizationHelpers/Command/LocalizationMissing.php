@@ -62,6 +62,13 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $ignore_lang_files = array();
 
 	/**
+	 * The lang folder path where are stored lang files in locale sub-directory
+	 *
+	 * @var  array
+	 */
+	protected $lang_folder_path = array();
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -454,9 +461,11 @@ class LocalizationMissing extends LocalizationAbstract
 				{
 					$this->writeLine( 'Backup files:' );
 
+					$now = $this->manager->getBackupDate();
+
 					foreach ( $job as $file_lang_path => $file_content )
 					{
-						$backup_path = preg_replace( '/\..+$/' , '.' . date( "Ymd_His" ) . '.php' , $file_lang_path );
+						$backup_path = preg_replace( '/\..+$/' , '.' . $now . '.php' , $file_lang_path );
 
 						if ( ! $this->option( 'dry-run' ) )
 						{

@@ -4,6 +4,7 @@ class Localization
 {
 	const NO_LANG_FOLDER_FOUND_IN_THESE_PATHS      = 2;
 	const NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH = 3;
+	const BACKUP_DATE_FORMAT                       = "Ymd_His";
 
 	/** @var MessageBagInterface $messageBag */
 	private $messageBag;
@@ -284,6 +285,124 @@ class Localization
 		}
 
 		return $lemmas_structured;
+	}
+
+	/**
+	 * @param int $offsetDay the count of days to subtract to the current time
+	 *
+	 * @return bool|string current date
+	 */
+	public function getBackupDate( $offsetDay = 0 )
+	{
+		$now = new \DateTime();
+		$now->sub( new \DateInterval( 'P' . (int)$offsetDay . 'D' ) );
+
+		return $now->format( self::BACKUP_DATE_FORMAT );
+	}
+
+	/**
+	 * Return all lang backup files
+	 *
+	 * @param string $lang_directory the lang directory
+	 *
+	 * @return array
+	 */
+	public function getBackupFiles( $lang_directory )
+	{
+		$files = $lang_directory . '/*/*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9].php';
+
+		return glob( $files );
+	}
+
+
+	public function deleteBackupFiles( $lang_folder_path , $days = 0 , $dryRun = false )
+	{
+		try
+		{
+			$dir_lang = $this->getLangPath( $lang_folder_path );
+		}
+		catch ( Exception $e )
+		{
+			switch ( $e->getCode() )
+			{
+				case self::NO_LANG_FOLDER_FOUND_IN_THESE_PATHS:
+					$this->messageBag->writeError( "No lang folder found in these paths:" );
+					foreach ( $e->getParameter() as $path )
+					{
+						$this->messageBag->writeError( "- " . $path );
+					}
+					break;
+
+				case self::NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH:
+					$this->messageBag->writeError( 'No lang folder found in your custom path: "' . $e->getParameter() . '"' );
+					break;
+			}
+
+			return false;
+		}
+
+		$return = true;
+
+		foreach ( $this->getBackupFiles( $dir_lang ) as $file )
+		{
+			if ( $this->isBackupFileOlderThanDays( $file , $days ) )
+			{
+				if ( $dryRun === true )
+				{
+					$deleted = true;
+				}
+				else
+				{
+					$deleted = unlink( $file );
+				}
+
+				if ( $deleted === true )
+				{
+					$this->messageBag->writeInfo( 'Deleting file ' . $file );
+				}
+				else
+				{
+					$this->messageBag->writeError( 'Unable to delete file ' . $file );
+
+					$return = false;
+				}
+			}
+			else
+			{
+				$this->messageBag->writeInfo( 'Skip file ' . $file . ' (not older than ' . $days . 'day' . Tools::getPlural( $days ) . ')' );
+			}
+
+		}
+
+		return $return;
+	}
+
+	public function isBackupFileOlderThanDays( $file , $days )
+	{
+		$fileDate = $this->getBackupFileDate( $file );
+//TODO::
+		return false;
+	}
+
+	/**
+	 * Return the date of a backup file
+	 *
+	 * @param string $file a backup file path
+	 *
+	 * @return \DateTime|null
+	 */
+	private function getBackupFileDate( $file )
+	{
+		$matches = array();
+
+		if ( preg_match( '@^(.*)([0-9]{8}_[0-9]{6})\\.php$@' , $file , $matches ) === 1 )
+		{
+			return \DateTime::createFromFormat( self::BACKUP_DATE_FORMAT , $matches[2] );
+		}
+		else
+		{
+			return null;
+		}
 	}
 
 }

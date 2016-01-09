@@ -119,4 +119,16 @@ class Tools
 
 		return $array;
 	}
+
+	/**
+	 * Return char 's' if argument is greater than 1
+	 *
+	 * @param float|int|string $number
+	 *
+	 * @return string
+	 */
+	public static function getPlural( $number )
+	{
+		return ( (float)$number >= 2 ) ? 's' : '';
+	}
 }
