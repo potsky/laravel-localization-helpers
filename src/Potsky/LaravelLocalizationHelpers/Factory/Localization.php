@@ -345,7 +345,20 @@ class Localization
 
 		foreach ( $this->getBackupFiles( $dir_lang ) as $file )
 		{
-			if ( $this->isBackupFileOlderThanDays( $file , $days ) )
+			$fileDate = $this->getBackupFileDate( $file );
+
+			// @codeCoverageIgnoreStart
+			// Cannot happen because of glob but safer
+			if ( is_null( $fileDate ) )
+			{
+				$this->messageBag->writeError( 'Unable to detect date in file ' . $file );
+				$return = false;
+
+				continue;
+			}
+			// @codeCoverageIgnoreEnd
+
+			if ( $this->isDateOlderThanDays( $fileDate , $days ) )
 			{
 				if ( $dryRun === true )
 				{
@@ -360,6 +373,7 @@ class Localization
 				{
 					$this->messageBag->writeInfo( 'Deleting file ' . $file );
 				}
+				// @codeCoverageIgnoreStart
 				else
 				{
 					$this->messageBag->writeError( 'Unable to delete file ' . $file );
@@ -367,6 +381,7 @@ class Localization
 					$return = false;
 				}
 			}
+			// @codeCoverageIgnoreEnd
 			else
 			{
 				$this->messageBag->writeInfo( 'Skip file ' . $file . ' (not older than ' . $days . 'day' . Tools::getPlural( $days ) . ')' );
@@ -377,11 +392,17 @@ class Localization
 		return $return;
 	}
 
-	public function isBackupFileOlderThanDays( $file , $days )
+	/**
+	 * @param \DateTime $date
+	 * @param int       $days
+	 *
+	 * @return bool
+	 */
+	public function isDateOlderThanDays( \DateTime $date , $days )
 	{
-		$fileDate = $this->getBackupFileDate( $file );
-//TODO::
-		return false;
+		$now = new \DateTime();
+
+		return ( $now->diff( $date )->format( '%a' ) >= $days );
 	}
 
 	/**
@@ -397,12 +418,15 @@ class Localization
 
 		if ( preg_match( '@^(.*)([0-9]{8}_[0-9]{6})\\.php$@' , $file , $matches ) === 1 )
 		{
-			return \DateTime::createFromFormat( self::BACKUP_DATE_FORMAT , $matches[2] );
+			return \DateTime::createFromFormat( self::BACKUP_DATE_FORMAT , $matches[ 2 ] );
 		}
+		// @codeCoverageIgnoreStart
+		// Cannot happen because of glob but safer
 		else
 		{
 			return null;
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 }

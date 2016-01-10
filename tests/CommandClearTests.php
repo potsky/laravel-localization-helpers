@@ -2,6 +2,7 @@
 
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Potsky\LaravelLocalizationHelpers\Factory\MessageBag;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class CommandClearTests extends TestCase
 {
@@ -32,22 +33,92 @@ class CommandClearTests extends TestCase
 	}
 
 	/**
-	 * - lang files have been created
-	 * - lemma without a family is rejected
-	 * - the default lang file array is structured
-	 * - the default translation is prefixed by TO DO
+	 * All files should be deleted
 	 */
 	public function testCleanAll()
 	{
-		$output = new \Symfony\Component\Console\Output\BufferedOutput;
+		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:clear' , array() , $output );
-		$result = $output->fetch();
 
 		$this->assertEquals( 0 , $return );
 		$this->assertCount( 0 , glob( self::LANG_DIR_PATH . '/*/message*.php' ) );
-		//$this->assertContains( 'File has been created' , $result );
-
 	}
+
+	/**
+	 * Nothing should be deleted
+	 */
+	public function testClean30Days()
+	{
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:clear' , array( '--days' => 30 ) , $output );
+
+		$this->assertEquals( 0 , $return );
+		$this->assertCount( 20 , glob( self::LANG_DIR_PATH . '/*/message*.php' ) );
+	}
+
+	/**
+	 * Only 3*2 files should remain
+	 */
+	public function testClean3Days()
+	{
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:clear' , array( '--days' => 3 ) , $output );
+
+		$this->assertEquals( 0 , $return );
+		$this->assertCount( 6 , glob( self::LANG_DIR_PATH . '/*/message*.php' ) );
+	}
+
+	/**
+	 * Nothing should be deleted
+	 */
+	public function testDryRun()
+	{
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) , $output );
+
+		$this->assertEquals( 0 , $return );
+		$this->assertCount( 20 , glob( self::LANG_DIR_PATH . '/*/message*.php' ) );
+	}
+
+
+	/**
+	 * - Set a non existing lang folder
+	 */
+	public function testLangFolderDoesNotExist()
+	{
+		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH . 'doesnotexist' );
+
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) , $output );
+
+		$this->assertEquals( 1 , $return );
+		$this->assertContains( 'No lang folder found in your custom path:' , $output->fetch() );
+	}
+
+	/**
+	 * - Default lang folders are used when custom land folder path as not been set by user
+	 */
+	public function testDefaultLangFolderDoesNotExist()
+	{
+		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , null );
+
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) , $output );
+
+		$this->assertEquals( 1 , $return );
+		$this->assertContains( 'No lang folder found in these paths:' , $output->fetch() );
+	}
+
 }
