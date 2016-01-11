@@ -193,8 +193,9 @@ class Localization
 	/**
 	 * Extract all translations from the provided folders
 	 *
-	 * @param array $folders       a list of folder to search in
-	 * @param array $trans_methods an array of regex to catch
+	 * @param array  $folders            a list of folder to search in
+	 * @param array  $trans_methods      an array of regex to catch
+	 * @param string $php_file_extension default is php
 	 *
 	 * @return array
 	 */
@@ -317,6 +318,11 @@ class Localization
 
 	public function deleteBackupFiles( $lang_folder_path , $days = 0 , $dryRun = false )
 	{
+		if ( $days < 0 )
+		{
+			return false;
+		}
+
 		try
 		{
 			$dir_lang = $this->getLangPath( $lang_folder_path );
@@ -403,6 +409,81 @@ class Localization
 		$now = new \DateTime();
 
 		return ( $now->diff( $date )->format( '%a' ) >= $days );
+	}
+
+	/**
+	 * Get the list of PHP code files where a lemma is defined
+	 *
+	 * @param string     $lemma         A lemma to search for or a regex to search for
+	 * @param array      $folders       An array of folder to search for lemma in
+	 * @param array      $trans_methods An array of PHP lang functions
+	 * @param bool|false $regex         Is lemma a regex ?
+	 * @param bool|false $shortOutput   Output style for fiel paths
+	 *
+	 * @return array|false
+	 */
+	public function findLemma( $lemma , $folders , $trans_methods , $regex = false , $shortOutput = false )
+	{
+		$files = array();
+
+		foreach ( $folders as $path )
+		{
+			foreach ( $this->getFilesWithExtension( $path ) as $php_file_path => $dumb )
+			{
+				foreach ( $this->extractTranslationFromPhpFile( $php_file_path , $trans_methods ) as $k => $v )
+				{
+					$real_value = eval( "return $k;" );
+					$found      = false;
+
+					if ( $regex )
+					{
+						try
+						{
+							$r = preg_match( $lemma , $real_value );
+						}
+							// Exception is thrown via command
+						catch ( \Exception $e )
+						{
+							$this->messageBag->writeError( "The argument is not a valid regular expression:" . str_replace( 'preg_match():' , '' , $e->getMessage() ) );
+
+							return false;
+						}
+						if ( $r === 1 )
+						{
+							$found = true;
+						}
+						// Normal behavior via method call
+						// @codeCoverageIgnoreStart
+						else if ( $r === false )
+						{
+							$this->messageBag->writeError( "The argument is not a valid regular expression" );
+
+							return false;
+						}
+						// @codeCoverageIgnoreEnd
+					}
+					else
+					{
+						if ( ! ( strpos( $real_value , $lemma ) === false ) )
+						{
+							$found = true;
+						}
+					}
+
+					if ( $found === true )
+					{
+						if ( $shortOutput === true )
+						{
+							$php_file_path = $this->getShortPath( $php_file_path );
+						}
+						$files[] = $php_file_path;
+						break;
+					}
+				}
+			}
+		}
+
+		return $files;
 	}
 
 	/**

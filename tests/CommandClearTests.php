@@ -75,6 +75,21 @@ class CommandClearTests extends TestCase
 	}
 
 	/**
+	 * Error when days is negative
+	 */
+	public function testErrorDaysNegative()
+	{
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:clear' , array( '--days' => -3 ) , $output );
+		$this->assertEquals( 1 , $return );
+
+		$manager = new Localization( new MessageBag() );
+		$this->assertFalse( $manager->deleteBackupFiles( '' , -3 , true ) );
+	}
+
+	/**
 	 * Nothing should be deleted
 	 */
 	public function testDryRun()

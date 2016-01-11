@@ -49,7 +49,16 @@ class LocalizationClear extends LocalizationAbstract
 	 */
 	public function fire()
 	{
-		$success = $this->manager->deleteBackupFiles( $this->lang_folder_path , (int)$this->option( 'days' ) , $this->option( 'dry-run' ) );
+		$days = (int)$this->option( 'days' );
+
+		if ( $days < 0 )
+		{
+			$this->writeError( "days option cannot be negative" );
+
+			return self::ERROR;
+		}
+
+		$success = $this->manager->deleteBackupFiles( $this->lang_folder_path , $days , $this->option( 'dry-run' ) );
 
 		return ( $success === true ) ? self::SUCCESS : self::ERROR;
 	}

@@ -127,6 +127,53 @@ return array(
 	| when using option editor, package will use this command to open your files
 	|
 	*/
-	'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
+	'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl',
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Translator
+	|--------------------------------------------------------------------------
+	|
+	| Use the Microsoft translator by default. This is the only available translator now
+	|
+	*/
+	'translator' => 'Microsoft',
+
+	/*
+	|--------------------------------------------------------------------------
+	| Translator default language
+	|--------------------------------------------------------------------------
+	|
+	| Set the default language used in your PHP code. If set to null, the translator
+	| will try to guess it.
+	|
+	| The default language in your code is the language you use in this PHP line
+	| for example :
+	|
+	| trans( 'message.This is a message in english' );
+	|
+	| Supported languages are : ar, bg, ca, cs, da, de, el, en, es, et, fa, fi, fr,
+	| he, hi, ht, hu, id, it, ja, ko, lt, lv, ms, mww, nl, no, pl, pt, ro, ru, sk,
+	| sl, sv, th, tr, uk, ur, vi, zh-CHS, zh-CHT
+	|
+	*/
+	'translator_default_language' => null,
+
+	/*
+	|--------------------------------------------------------------------------
+	| Microsoft Bing Translator service
+	|--------------------------------------------------------------------------
+	|
+	| Package can automatically translate your lemma. Please create a free API
+	| key at this address : https://datamarket.azure.com/dataset/bing/microsofttranslator
+	|
+	| I never liked M$ but 2.000.000 chars per month is really interesting!
+	|
+	| If you don't want to set this API KEY here, you can set an environment
+	| parameter named LLH_MICROSOFT_TRANSLATOR_API_KEY
+	|
+	*/
+	'translator_microsoft_api_key' => null,
 
 );

@@ -58,7 +58,6 @@ class LocalizationFind extends LocalizationAbstract
 	 */
 	public function fire()
 	{
-
 		$lemma   = $this->argument( 'lemma' );
 		$folders = $this->manager->getPath( $this->folders );
 
@@ -80,67 +79,21 @@ class LocalizationFind extends LocalizationAbstract
 		////////////////////////////////
 		// Parse all lemmas from code //
 		////////////////////////////////
-		$files = array();
+		$files = $this->manager->findLemma( $lemma , $folders , $this->trans_methods , $this->option( 'regex' ) , $this->option( 'short' ) );
 
-		foreach ( $folders as $path )
-		{
-			foreach ( $this->manager->getFilesWithExtension( $path ) as $php_file_path => $dumb )
-			{
-				foreach ( $this->manager->extractTranslationFromPhpFile( $php_file_path , $this->trans_methods ) as $k => $v )
-				{
-					$real_value = eval( "return $k;" );
-					$found      = false;
-
-					if ( $this->option( 'regex' ) )
-					{
-						try
-						{
-							$r = preg_match( $lemma , $real_value );
-						}
-						catch ( \Exception $e )
-						{
-							$this->writeLine( "<error>The argument is not a valid regular expression:</error>" . str_replace( 'preg_match():' , '' , $e->getMessage() ) );
-							die();
-						}
-						if ( $r === 1 )
-						{
-							$found = true;
-						}
-						else if ( $r === false )
-						{
-							$this->writeError( "The argument is not a valid regular expression" );
-							die();
-						}
-					}
-					else
-					{
-						if ( strpos( $real_value , $lemma ) )
-						{
-							$found = true;
-						}
-					}
-
-
-					if ( $found === true )
-					{
-						if ( $this->option( 'short' ) )
-						{
-							$php_file_path = $this->manager->getShortPath( $php_file_path );
-						}
-						$files[] = $php_file_path;
-						break;
-					}
-				}
-			}
-		}
-
-		if ( count( $files ) > 0 )
+		if ( ( is_array( $files ) ) && ( count( $files ) > 0 ) )
 		{
 			$this->writeLine( 'Lemma <info>' . $lemma . '</info> has been found in:' );
 			foreach ( $files as $file )
 			{
 				$this->writeLine( '    <info>' . $file . '</info>' );
 			}
+
+			return self::SUCCESS;
+		}
+		else
+		{
+			return self::ERROR;
 		}
 	}
 
