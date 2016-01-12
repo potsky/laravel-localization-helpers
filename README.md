@@ -7,7 +7,11 @@ Laravel Localization Helpers
 [![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
-LLH is a set of tools to help you manage translations in your Laravel project. Run the `localization:missing` artisan command to automatically generate lang files according to your PHP sources.
+LLH is a set of artisan commands to help you manage translations in your Laravel project. Key features :
+
+- parse your code and generate lang files
+- translate your sentences automatically, thanks to Microsoft Translator API
+- configure output according to your code style
 
 ## Table of contents
 
@@ -108,6 +112,12 @@ php artisan localization:missing -n
 
 ```
 php artisan localization:missing -b
+```
+
+##### Generate all lang files with automatic translations
+
+```
+php artisan localization:missing -t
 ```
 
 ##### Generate all lang files without keeping obsolete lemmas
