@@ -28,3 +28,6 @@ $lc = Lang::get( 'message.lemma.child l1' , array( 'name' => 'potsky' ) );
 $ld = Lang::get( 'message.lemma.child l2' , [ 'name' => 'potsky' ] );
 $le = Lang::choice( 'message.lemma.child l3' , 0 , array( 'name' => 'potsky' , 'count' => 0 ) );
 $lf = Lang::choice( 'message.lemma.child l4' , 2 , [ 'name' => 'potsky', 'count' => 2 ] );
+
+// check translation
+trans( 'message.dog' );

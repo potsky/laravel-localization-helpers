@@ -1,22 +1,57 @@
 <?php namespace Potsky\LaravelLocalizationHelpers\Factory;
 
+use MicrosoftTranslator\Client;
+
 class TranslatorMicrosoft implements TranslatorInterface
 {
 	protected $bingTranslator;
 
+	protected $default_language;
+
 	/**
 	 * @param array $config
+	 *
+	 * @throws \Potsky\LaravelLocalizationHelpers\Factory\Exception
 	 */
 	public function __construct( $config )
 	{
-		if ( isset( $config[ 'api_key' ] ) )
+		if ( ( isset( $config[ 'client_id' ] ) ) && ( ! is_null( $config[ 'client_id' ] ) ) )
 		{
-			$apiKey = $config[ 'api_key' ];
+			$client_id = $config[ 'client_id' ];
 		}
-		else if ( ( $apiKey = getenv( 'LLH_MICROSOFT_TRANSLATOR_API_KEY' ) ) === false )
+		else
 		{
-			throw new Exception( 'Please provide an API key for Microsoft Bing Translator service' );
+			$env = ( isset( $config[ 'env_name_client_id' ] ) ) ? $config[ 'env_name_client_id' ] : 'LLH_MICROSOFT_TRANSLATOR_CLIENT_ID';
+
+			if ( ( $client_id = getenv( $env ) ) === false )
+			{
+				throw new Exception( 'Please provide a client_id for Microsoft Bing Translator service' );
+			}
 		}
+
+		if ( ( isset( $config[ 'client_secret' ] ) ) && ( ! is_null( $config[ 'client_secret' ] ) ) )
+		{
+			$client_secret = $config[ 'client_secret' ];
+		}
+		else
+		{
+			$env = ( isset( $config[ 'env_name_client_secret' ] ) ) ? $config[ 'env_name_client_secret' ] : 'LLH_MICROSOFT_TRANSLATOR_CLIENT_SECRET';
+
+			if ( ( $client_secret = getenv( $env ) ) === false )
+			{
+				throw new Exception( 'Please provide a client_secret for Microsoft Bing Translator service' );
+			}
+		}
+
+		if ( ( isset( $config[ 'default_language' ] ) ) && ( ! is_null( $config[ 'default_language' ] ) ) )
+		{
+			$this->default_language = $config[ 'default_language' ];
+		}
+
+		$this->bingTranslator = new Client( array(
+			'api_client_id'     => $client_id ,
+			'api_client_secret' => $client_secret ,
+		) );
 	}
 
 	/**
@@ -30,16 +65,16 @@ class TranslatorMicrosoft implements TranslatorInterface
 	{
 		try
 		{
-			$translation = $this->bingTranslator->translate( $word , $fromLang , $toLang );
-
-			if ( is_string( $translation ) )
+			if ( ( is_null( $fromLang ) ) && ( ! is_null( $this->default_language ) ) )
 			{
-				return $translation;
+				$fromLang = $this->default_language;
 			}
 
-			return null;
+			$translation = $this->bingTranslator->translate( $word , $toLang , $fromLang );
+
+			return $translation->getBody();
 		}
-		catch ( Exception $e )
+		catch ( \Exception $e )
 		{
 			return null;
 		}

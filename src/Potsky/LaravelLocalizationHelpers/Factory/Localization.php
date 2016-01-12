@@ -1,13 +1,18 @@
 <?php namespace Potsky\LaravelLocalizationHelpers\Factory;
 
+use Config;
+
 class Localization
 {
 	const NO_LANG_FOLDER_FOUND_IN_THESE_PATHS      = 2;
 	const NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH = 3;
 	const BACKUP_DATE_FORMAT                       = "Ymd_His";
 
+	/** @var TranslatorInterface $translator */
+	protected $translator;
+
 	/** @var MessageBagInterface $messageBag */
-	private $messageBag;
+	protected $messageBag;
 
 	/**
 	 * @param \Potsky\LaravelLocalizationHelpers\Factory\MessageBagInterface $messageBag A message bag or a Console
@@ -484,6 +489,36 @@ class Localization
 		}
 
 		return $files;
+	}
+
+	/**
+	 * @param string $word
+	 * @param string $to
+	 * @param null   $from
+	 *
+	 * @return mixed
+	 */
+	public function translate( $word , $to , $from = null )
+	{
+		if ( is_null( $this->translator ) )
+		{
+			$translator = Config::get( 'laravel-localization-helpers::config.translator' );
+
+			$this->translator = new Translator( 'Microsoft' , array(
+				'client_id'        => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . ' .client_id' ) ,
+				'client_secret'    => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . ' .client_secret' ) ,
+				'default_language' => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . ' .default_language' ) ,
+			) );
+		}
+
+		$translation = $this->translator->translate( $word , $to , $from );
+
+		if ( is_null( $translation ) )
+		{
+			$translation = $word;
+		}
+
+		return $translation;
 	}
 
 	/**

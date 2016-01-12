@@ -16,11 +16,11 @@ return array(
 	| No error or exception is thrown when a folder does not exist.
 	|
 	*/
-    'folders' => array(
-        '%APP/Potsky',
-        '%APP/views' ,
-        '%APP/controllers',
-    ),
+	'folders' => array(
+		'%APP/Potsky' ,
+		'%APP/views' ,
+		'%APP/controllers' ,
+	) ,
 
 
 	/*
@@ -31,9 +31,9 @@ return array(
 	| These lang files will not be written
 	|
 	*/
-    'ignore_lang_files' => array(
-        'validation',
-    ),
+	'ignore_lang_files' => array(
+		'validation' ,
+	) ,
 
 
 	/*
@@ -47,7 +47,7 @@ return array(
     | - then  in base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
 	|
 	*/
-    'lang_folder_path' => null,
+	'lang_folder_path' => null ,
 
 
 	/*
@@ -59,34 +59,34 @@ return array(
 	| Several regular expressions can be used for a single method or function.
 	|
 	*/
-    'trans_methods' => array(
-	    'trans' => array(
-	        '@trans\(\s*(\'.*\')\s*(,.*)*\)@U',
-	        '@trans\(\s*(".*")\s*(,.*)*\)@U',
-	    ),
-	    'Lang::Get' => array(
-	        '@Lang::Get\(\s*(\'.*\')\s*(,.*)*\)@U',
-	        '@Lang::Get\(\s*(".*")\s*(,.*)*\)@U',
-	        '@Lang::get\(\s*(\'.*\')\s*(,.*)*\)@U',
-	        '@Lang::get\(\s*(".*")\s*(,.*)*\)@U',
-	    ),
-	    'trans_choice' => array(
-	        '@trans_choice\(\s*(\'.*\')\s*,.*\)@U',
-	        '@trans_choice\(\s*(".*")\s*,.*\)@U',
-	    ),
-	    'Lang::choice' => array(
-	        '@Lang::choice\(\s*(\'.*\')\s*,.*\)@U',
-	        '@Lang::choice\(\s*(".*")\s*,.*\)@U',
-	    ),
-	    '@lang' => array(
-	        '@\@lang\(\s*(\'.*\')\s*(,.*)*\)@U',
-	        '@\@lang\(\s*(".*")\s*(,.*)*\)@U',
-	    ),
-	    '@choice' => array(
-		'@\@choice\(\s*(\'.*\')\s*,.*\)@U',
-		'@\@choice\(\s*(".*")\s*,.*\)@U',
-	    ),
-	),
+	'trans_methods' => array(
+		'trans'        => array(
+			'@trans\(\s*(\'.*\')\s*(,.*)*\)@U' ,
+			'@trans\(\s*(".*")\s*(,.*)*\)@U' ,
+		) ,
+		'Lang::Get'    => array(
+			'@Lang::Get\(\s*(\'.*\')\s*(,.*)*\)@U' ,
+			'@Lang::Get\(\s*(".*")\s*(,.*)*\)@U' ,
+			'@Lang::get\(\s*(\'.*\')\s*(,.*)*\)@U' ,
+			'@Lang::get\(\s*(".*")\s*(,.*)*\)@U' ,
+		) ,
+		'trans_choice' => array(
+			'@trans_choice\(\s*(\'.*\')\s*,.*\)@U' ,
+			'@trans_choice\(\s*(".*")\s*,.*\)@U' ,
+		) ,
+		'Lang::choice' => array(
+			'@Lang::choice\(\s*(\'.*\')\s*,.*\)@U' ,
+			'@Lang::choice\(\s*(".*")\s*,.*\)@U' ,
+		) ,
+		'@lang'        => array(
+			'@\@lang\(\s*(\'.*\')\s*(,.*)*\)@U' ,
+			'@\@lang\(\s*(".*")\s*(,.*)*\)@U' ,
+		) ,
+		'@choice'      => array(
+			'@\@choice\(\s*(\'.*\')\s*,.*\)@U' ,
+			'@\@choice\(\s*(".*")\s*,.*\)@U' ,
+		) ,
+	) ,
 
 
 	/*
@@ -116,7 +116,7 @@ return array(
 	'never_obsolete_keys' => array(
 		'dynamic' ,
 		'fields' ,
-	),
+	) ,
 
 
 	/*
@@ -127,7 +127,7 @@ return array(
 	| when using option editor, package will use this command to open your files
 	|
 	*/
-	'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl',
+	'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl' ,
 
 
 	/*
@@ -138,18 +138,21 @@ return array(
 	| Use the Microsoft translator by default. This is the only available translator now
 	|
 	*/
-	'translator' => 'Microsoft',
+	'translator' => 'Microsoft' ,
+
 
 	/*
 	|--------------------------------------------------------------------------
-	| Translator default language
+	| Translators configuration
 	|--------------------------------------------------------------------------
 	|
-	| Set the default language used in your PHP code. If set to null, the translator
-	| will try to guess it.
+	| Microsoft
 	|
-	| The default language in your code is the language you use in this PHP line
-	| for example :
+	| #### default_language
+	|
+	| Set the default language used in your PHP code. If set to null, the translator
+	| will try to guess it. The default language in your code is the language you use
+	| in this PHP line for example :
 	|
 	| trans( 'message.This is a message in english' );
 	|
@@ -157,23 +160,26 @@ return array(
 	| he, hi, ht, hu, id, it, ja, ko, lt, lv, ms, mww, nl, no, pl, pt, ro, ru, sk,
 	| sl, sv, th, tr, uk, ur, vi, zh-CHS, zh-CHT
 	|
-	*/
-	'translator_default_language' => null,
-
-	/*
-	|--------------------------------------------------------------------------
-	| Microsoft Bing Translator service
-	|--------------------------------------------------------------------------
+	| #### client_id ans client_secret
 	|
-	| Package can automatically translate your lemma. Please create a free API
-	| key at this address : https://datamarket.azure.com/dataset/bing/microsofttranslator
+	| Package can automatically translate your lemma. Please create :
+	| - You need to create an account on Microsoft Translation service
+	|	https://datamarket.azure.com/dataset/bing/microsofttranslator
+	| - Then you need to create an application to get a `client_id` and a `client_secret`
+	|	https://datamarket.azure.com/developer/applications
 	|
-	| I never liked M$ but 2.000.000 chars per month is really interesting!
-	|
-	| If you don't want to set this API KEY here, you can set an environment
-	| parameter named LLH_MICROSOFT_TRANSLATOR_API_KEY
+	| If you don't want to set these credentials here, set both to null and set both
+	| environment parameters on your computer/server:
+	| - LLH_MICROSOFT_TRANSLATOR_CLIENT_ID
+	| - LLH_MICROSOFT_TRANSLATOR_CLIENT_SECRET
 	|
 	*/
-	'translator_microsoft_api_key' => null,
+	'translators' => array(
+		'Microsoft' => array(
+			'default_language' => null ,
+			'client_id'        => null ,
+			'client_secret'    => null ,
+		),
+	) ,
 
 );

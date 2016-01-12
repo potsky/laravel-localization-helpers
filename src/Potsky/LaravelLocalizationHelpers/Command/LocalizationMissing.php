@@ -306,8 +306,19 @@ class LocalizationMissing extends LocalizationAbstract
 								$final_lemmas[ 'POTSKY___COMMENT___POTSKY' . $i ] = "Defined in file $value";
 								$i                                                = $i + 1;
 							}
+							
+							if ( $this->option( 'translation' ) )
+							{
+								$translation = $this->manager->translate( $key , $lang );
+							}
+							else
+							{
+								$translation = $key;
+							}
 
-							array_set( $final_lemmas , $key , str_replace( '%LEMMA' , $key , $this->option( 'new-value' ) ) );
+							$translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
+
+							array_set( $final_lemmas , $key , $translation );
 						}
 					}
 
@@ -509,7 +520,7 @@ class LocalizationMissing extends LocalizationAbstract
 				}
 				// @codeCoverageIgnoreEnd
 
-			// @codeCoverageIgnoreStart
+				// @codeCoverageIgnoreStart
 			}
 			else
 			{
@@ -549,7 +560,8 @@ class LocalizationMissing extends LocalizationAbstract
 			array( 'dry-run' , 'r' , InputOption::VALUE_NONE , 'Dry run: run process but do not write anything' ) ,
 			array( 'editor' , 'e' , InputOption::VALUE_NONE , 'Open files which need to be edited at the end of the process' ) ,
 			array( 'force' , 'f' , InputOption::VALUE_NONE , 'Force files to be rewritten even if there is nothing to do' ) ,
-			array( 'new-value' , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value)' , 'TODO: %LEMMA' ) ,
+			array( 'translation' , 't' , InputOption::VALUE_NONE , 'Try to translate the lemma to the target language' ) ,
+			array( 'new-value' , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value or translation)' , 'TODO: %LEMMA' ) ,
 			array( 'no-backup' , 'b' , InputOption::VALUE_NONE , 'Do not backup lang file (be careful, I am not a good coder)' ) ,
 			array( 'no-comment' , 'c' , InputOption::VALUE_NONE , 'Do not add comments in lang files for lemma definition' ) ,
 			array( 'no-date' , 'd' , InputOption::VALUE_NONE , 'Do not add the date of execution in the lang files' ) ,

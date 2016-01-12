@@ -10,8 +10,9 @@
   ],
   "license"           : "GPL-3.0+",
   "require"           : {
-    "laravel/framework"   : "~4.2",
-    "fabpot/php-cs-fixer" : "^1.11"
+    "laravel/framework"                   : "~4.2",
+    "fabpot/php-cs-fixer"                 : "^1.11",
+    "potsky/microsoft-translator-php-sdk" : "*"
   },
   "require-dev"       : {
     "orchestra/testbench"    : "^2.2",

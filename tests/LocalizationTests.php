@@ -24,4 +24,13 @@ class LocalizationTests extends TestCase
 		$this->assertCount( 0 , $manager->getFilesWithExtension( __FILE__ ) );
 	}
 
+	/**
+	 *
+	 */
+	public function testNoTranslation()
+	{
+		$manager = new Localization( new MessageBag() );
+		$this->assertEquals( 'AAA' , $manager->translate( 'AAA' , 'zz' ) );
+	}
+
 }

@@ -134,6 +134,28 @@ class CommandMissingTests extends TestCase
 		$this->assertEquals( 'lemma.child POTSKY' , $lemmas[ 'lemma.child' ] );
 	}
 
+	/**
+	 * - the default lang file array is structured
+	 * - the new-value option works
+	 */
+	public function testTranslations()
+	{
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--output-flat'    => true ,
+			'--translation'    => true ,
+		) , $output );
+
+		$this->assertEquals( 0 , $return );
+
+		/** @noinspection PhpIncludeInspection */
+		$lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
+		$this->assertEquals( 'TODO: chien' , $lemmas[ 'dog' ] );
+	}
+
 
 	/**
 	 * - the default lang file array is structured
