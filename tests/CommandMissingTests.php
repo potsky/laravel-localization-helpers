@@ -135,8 +135,29 @@ class CommandMissingTests extends TestCase
 	}
 
 	/**
-	 * - the default lang file array is structured
-	 * - the new-value option works
+	 *
+	 */
+	public function testTranslationsNotConfigured()
+	{
+
+// TODO: Pourquoi ces paramtres ne sont pas pris en compte ??? Ca devrait planter mais j'ai null au lieu d'avoir les valeurs ?
+		Config::set( 'laravel-localization-helpers::config.translators.Microsoft.client_id' , 'dumb' );
+		Config::set( 'laravel-localization-helpers::config.translators.Microsoft.client_secret' , 'dumber' );
+
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--output-flat'    => true ,
+			'--translation'    => true ,
+		) , $output );
+
+		$this->assertEquals( 0 , $return );
+	}
+
+	/**
+	 * - check a word is correctly translated
 	 */
 	public function testTranslations()
 	{

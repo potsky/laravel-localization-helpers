@@ -275,8 +275,7 @@ You need to update your composer file to set the correct version.
 ### v2.x.1
 
 - new command `localization:clear` to remove backups
-- new command `localization:translate` to translate a sentence with Bing Translator
-- new options to specify output formatting
+- new option to specify output formatting
 - new option to specify flat arrays style output ([https://github.com/potsky/laravel-localization-helpers/issues/18](18))
 - new option to let the command translate sentences for you with Bing Translator
 - new lemma are now marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
@@ -286,7 +285,7 @@ Internally :
 - totally refactored
 - unit tests
 - test coverage
-- facade to let you use localization helpers in your code
+- facade to let you use localization helpers in your code (translations, find missing translations, etc...)
 
 ### v1.3.2
 

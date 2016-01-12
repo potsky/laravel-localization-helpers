@@ -135,7 +135,7 @@ return array(
 	| Translator
 	|--------------------------------------------------------------------------
 	|
-	| Use the Microsoft translator by default. This is the only available translator now
+	| Use the Microsoft translator by default. This is the only translator available now
 	|
 	*/
 	'translator' => 'Microsoft' ,
