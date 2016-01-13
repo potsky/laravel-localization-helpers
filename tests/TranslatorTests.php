@@ -59,7 +59,6 @@ class TranslatorTests extends TestCase
 		$this->assertEquals( 'Fleisch' , $translator->translate( 'chair' , 'de' ) );
 	}
 
-
 	/**
 	 *
 	 */

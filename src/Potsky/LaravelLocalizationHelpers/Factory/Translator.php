@@ -8,6 +8,8 @@ class Translator implements TranslatorInterface
 	/**
 	 * @param string $translator The translation service name
 	 * @param array  $config     The configuration array for the translation service
+	 *
+	 * @throws \Potsky\LaravelLocalizationHelpers\Factory\Exception
 	 */
 	public function __construct( $translator , $config = array() )
 	{
@@ -23,7 +25,6 @@ class Translator implements TranslatorInterface
 		}
 
 		$this->translator = $translator;
-		$this->config     = $config;
 	}
 
 	public function translate( $word , $toLang , $fromLang = null )

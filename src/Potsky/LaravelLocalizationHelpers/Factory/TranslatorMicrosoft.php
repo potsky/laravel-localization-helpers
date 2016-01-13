@@ -49,6 +49,7 @@ class TranslatorMicrosoft implements TranslatorInterface
 		}
 
 		$this->bingTranslator = new Client( array(
+			//'log_level'         => Logger::LEVEL_DEBUG ,
 			'api_client_id'     => $client_id ,
 			'api_client_secret' => $client_secret ,
 		) );
@@ -59,7 +60,8 @@ class TranslatorMicrosoft implements TranslatorInterface
 	 * @param string $toLang   Target language
 	 * @param null   $fromLang Source language (if set to null, translator will try to guess)
 	 *
-	 * @return string|null     The translated sentence or null if an error occurs
+	 * @return null|string The translated sentence or null if an error occurs
+	 * @throws \MicrosoftTranslator\Exception
 	 */
 	public function translate( $word , $toLang , $fromLang = null )
 	{
@@ -74,10 +76,15 @@ class TranslatorMicrosoft implements TranslatorInterface
 
 			return $translation->getBody();
 		}
-		catch ( \Exception $e )
+		catch ( \MicrosoftTranslator\Exception $e )
 		{
-			return null;
+			if ( ! ( strpos( $e->getMessage() , 'Unable to generate a new access token' ) === false ) )
+			{
+				throw $e;
+			}
 		}
+
+		return null;
 	}
 }
 

@@ -502,12 +502,11 @@ class Localization
 	{
 		if ( is_null( $this->translator ) )
 		{
-			$translator = Config::get( 'laravel-localization-helpers::config.translator' );
-
+			$translator       = Config::get( 'laravel-localization-helpers::config.translator' );
 			$this->translator = new Translator( 'Microsoft' , array(
-				'client_id'        => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . ' .client_id' ) ,
-				'client_secret'    => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . ' .client_secret' ) ,
-				'default_language' => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . ' .default_language' ) ,
+				'client_id'        => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . '.client_id' ) ,
+				'client_secret'    => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . '.client_secret' ) ,
+				'default_language' => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . '.default_language' ) ,
 			) );
 		}
 

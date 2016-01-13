@@ -19,6 +19,13 @@ class CommandMissingTests extends TestCase
 
 		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH );
 		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH );
+
+		// Remove all saved access token for translation API
+		$translator = new \MicrosoftTranslator\Client( array(
+			'api_client_id'     => true ,
+			'api_client_secret' => true ,
+		) );
+		$translator->getAuth()->getGuard()->deleteAllAccessTokens();
 	}
 
 	/**
@@ -134,27 +141,6 @@ class CommandMissingTests extends TestCase
 		$this->assertEquals( 'lemma.child POTSKY' , $lemmas[ 'lemma.child' ] );
 	}
 
-	/**
-	 *
-	 */
-	public function testTranslationsNotConfigured()
-	{
-
-// TODO: Pourquoi ces paramtres ne sont pas pris en compte ??? Ca devrait planter mais j'ai null au lieu d'avoir les valeurs ?
-		Config::set( 'laravel-localization-helpers::config.translators.Microsoft.client_id' , 'dumb' );
-		Config::set( 'laravel-localization-helpers::config.translators.Microsoft.client_secret' , 'dumber' );
-
-		$output = new BufferedOutput;
-
-		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:missing' , array(
-			'--no-interaction' => true ,
-			'--output-flat'    => true ,
-			'--translation'    => true ,
-		) , $output );
-
-		$this->assertEquals( 0 , $return );
-	}
 
 	/**
 	 * - check a word is correctly translated
@@ -270,4 +256,24 @@ class CommandMissingTests extends TestCase
 	}
 
 
+	/**
+	 *
+	 */
+	public function testTranslationsNotConfigured()
+	{
+		Config::set( 'laravel-localization-helpers::config.translators.Microsoft.client_id' , 'dumb' );
+		Config::set( 'laravel-localization-helpers::config.translators.Microsoft.client_secret' , 'dumber' );
+
+		$this->setExpectedException( '\\MicrosoftTranslator\\Exception' );
+
+		$output = new BufferedOutput;
+
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--output-flat'    => true ,
+			'--translation'    => true ,
+		) , $output );
+
+	}
 }

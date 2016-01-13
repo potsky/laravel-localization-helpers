@@ -306,7 +306,7 @@ class LocalizationMissing extends LocalizationAbstract
 								$final_lemmas[ 'POTSKY___COMMENT___POTSKY' . $i ] = "Defined in file $value";
 								$i                                                = $i + 1;
 							}
-							
+
 							if ( $this->option( 'translation' ) )
 							{
 								$translation = $this->manager->translate( $key , $lang );
