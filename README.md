@@ -7,7 +7,7 @@ Laravel Localization Helpers
 [![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
-LLH is a set of artisan commands to help you manage translations in your Laravel project. Key features :
+LLH is a set of artisan commands to manage translations in your Laravel project. Key features :
 
 - parse your code and generate lang files
 - translate your sentences automatically, thanks to Microsoft Translator API
@@ -90,7 +90,7 @@ app/lang/*/[a-zA-Z]*.[0-9_]*.php
 
 ### 3.1 Command `localization:missing`
 
-This command parses all your code and generates according lang files in all `lang/XXX/` directories.
+This command parses all your code and generates translations according to lang files in all `lang/XXX/` directories.
 
 Use `php artisan help localization:missing` for more informations about options.
 
@@ -119,6 +119,9 @@ php artisan localization:missing -b
 ```
 php artisan localization:missing -t
 ```
+
+> You need to set your Microsoft Bing Translator credentials
+> More informations here : <https://github.com/potsky/microsoft-translator-php-sdk#user-content-2-configuration>
 
 ##### Generate all lang files without keeping obsolete lemmas
 
