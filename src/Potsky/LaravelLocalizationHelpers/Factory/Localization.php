@@ -530,20 +530,22 @@ class Localization
 	 */
 	public function fixCodeStyle( array $options )
 	{
-		if ( defined( 'HHVM_VERSION_ID' ) )
+		if ( ( defined( 'HHVM_VERSION_ID' ) ) && ( HHVM_VERSION_ID < 30500 ) )
+		// @codeCoverageIgnoreStart
 		{
-			if ( HHVM_VERSION_ID < 30500 )
-			{
-				throw new Exception( "HHVM needs to be a minimum version of HHVM 3.5.0\n" );
-			}
+			throw new Exception( "HHVM needs to be a minimum version of HHVM 3.5.0\n" );
 		}
+		// @codeCoverageIgnoreEnd
+
 		elseif ( ! defined( 'PHP_VERSION_ID' ) || PHP_VERSION_ID < 50306 )
+		// @codeCoverageIgnoreStart
 		{
 			throw new Exception( "PHP needs to be a minimum version of PHP 5.3.6\n" );
 		}
+		// @codeCoverageIgnoreEnd
 
 		$fullOptions = array(
-			'--no-interaction' => true,
+			'--no-interaction' => true ,
 		);
 
 		$input       = new ArrayInput( array_merge( $options , $fullOptions ) );
