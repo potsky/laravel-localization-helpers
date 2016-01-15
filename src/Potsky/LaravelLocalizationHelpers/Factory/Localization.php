@@ -1,6 +1,8 @@
 <?php namespace Potsky\LaravelLocalizationHelpers\Factory;
 
 use Config;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class Localization
 {
@@ -521,6 +523,39 @@ class Localization
 	}
 
 	/**
+	 * Fix Code Style for a file or a directory
+	 *
+	 * @throws \Exception
+	 * @throws \Potsky\LaravelLocalizationHelpers\Factory\Exception
+	 */
+	public function fixCodeStyle( array $options )
+	{
+		if ( defined( 'HHVM_VERSION_ID' ) )
+		{
+			if ( HHVM_VERSION_ID < 30500 )
+			{
+				throw new Exception( "HHVM needs to be a minimum version of HHVM 3.5.0\n" );
+			}
+		}
+		elseif ( ! defined( 'PHP_VERSION_ID' ) || PHP_VERSION_ID < 50306 )
+		{
+			throw new Exception( "PHP needs to be a minimum version of PHP 5.3.6\n" );
+		}
+
+		$fullOptions = array(
+			'--no-interaction' => true,
+		);
+
+		$input       = new ArrayInput( array_merge( $options , $fullOptions ) );
+		$output      = new BufferedOutput();
+		$application = new \Symfony\CS\Console\Application();
+		$application->setAutoExit( false );
+		$application->run( $input , $output );
+
+		return $output->fetch();
+	}
+
+	/**
 	 * Return the date of a backup file
 	 *
 	 * @param string $file a backup file path
@@ -543,7 +578,6 @@ class Localization
 		}
 		// @codeCoverageIgnoreEnd
 	}
-
 }
 
 
