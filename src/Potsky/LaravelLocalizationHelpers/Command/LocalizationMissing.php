@@ -69,6 +69,20 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $lang_folder_path = array();
 
 	/**
+	 * The code style list of fixers to apply
+	 *
+	 * @var  array
+	 */
+	protected $code_style_fixers = array();
+
+	/**
+	 * The code style level to apply
+	 *
+	 * @var  string
+	 */
+	protected $code_style_level = null;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -83,6 +97,8 @@ class LocalizationMissing extends LocalizationAbstract
 		$this->lang_folder_path    = Config::get( 'laravel-localization-helpers::config.lang_folder_path' );
 		$this->never_obsolete_keys = Config::get( 'laravel-localization-helpers::config.never_obsolete_keys' );
 		$this->editor              = Config::get( 'laravel-localization-helpers::config.editor_command_line' );
+		$this->code_style_fixers   = Config::get( 'laravel-localization-helpers::config.code_style.fixers' );
+		$this->code_style_level    = Config::get( 'laravel-localization-helpers::config.code_style.level' );
 	}
 
 	/**
@@ -427,7 +443,6 @@ class LocalizationMissing extends LocalizationAbstract
 			}
 		}
 
-
 		///////////////////////////////////////////
 		// Silent mode                           //
 		// only return an exit code on new lemma //
@@ -499,7 +514,20 @@ class LocalizationMissing extends LocalizationAbstract
 						file_put_contents( $file_lang_path , $file_content );
 					}
 
-					$this->writeLine( "    <info>" . $this->manager->getShortPath( $file_lang_path ) );
+					$this->writeLine( "    <info>" . $this->manager->getShortPath( $file_lang_path ) . "</info>" );
+
+					// Fix code style
+					if ( ( ! empty( $code_style_level ) ) || ( ! empty( $code_style_fixers ) ) )
+					{
+						try
+						{
+							$this->manager->fixCodeStyle( $file_lang_path , $this->code_style_fixers , $this->code_style_level );
+						}
+						catch ( Exception $e )
+						{
+							$this->writeError( "    Cannot fix code style (" . $e->getMessage() . ")" );
+						}
+					}
 
 					// @codeCoverageIgnoreStart
 					if ( $this->option( 'editor' ) )

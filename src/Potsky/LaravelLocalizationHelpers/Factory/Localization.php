@@ -10,6 +10,106 @@ class Localization
 	const NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH = 3;
 	const BACKUP_DATE_FORMAT                       = "Ymd_His";
 
+	private static $PHP_CS_FIXER_LEVELS = array( 'psr0' , 'psr1' , 'psr2' , 'symfony' );
+	private static $PHP_CS_FIXER_FIXERS = array(
+		'psr0' ,
+		'encoding' ,
+		'short_tag' ,
+		'braces' ,
+		'elseif' ,
+		'eof_ending' ,
+		'function_call_space' ,
+		'function_declaration' ,
+		'indentation' ,
+		'line_after_namespace' ,
+		'linefeed' ,
+		'lowercase_constants' ,
+		'lowercase_keywords' ,
+		'method_argument_space' ,
+		'multiple_use' ,
+		'parenthesis' ,
+		'php_closing_tag' ,
+		'single_line_after_imports' ,
+		'trailing_spaces' ,
+		'visibility' ,
+		'array_element_no_space_before_comma' ,
+		'array_element_white_space_after_comma' ,
+		'blankline_after_open_tag' ,
+		'concat_without_spaces' ,
+		'double_arrow_multiline_whitespaces' ,
+		'duplicate_semicolon' ,
+		'empty_return' ,
+		'extra_empty_lines' ,
+		'function_typehint_space' ,
+		'include' ,
+		'join_function' ,
+		'list_commas' ,
+		'multiline_array_trailing_comma' ,
+		'namespace_no_leading_whitespace' ,
+		'new_with_braces' ,
+		'no_blank_lines_after_class_opening' ,
+		'no_empty_lines_after_phpdocs' ,
+		'object_operator' ,
+		'operators_spaces' ,
+		'phpdoc_indent' ,
+		'phpdoc_inline_tag' ,
+		'phpdoc_no_access' ,
+		'phpdoc_no_empty_return' ,
+		'phpdoc_no_package' ,
+		'phpdoc_params' ,
+		'phpdoc_scalar' ,
+		'phpdoc_separation' ,
+		'phpdoc_short_description' ,
+		'phpdoc_to_comment' ,
+		'phpdoc_trim' ,
+		'phpdoc_type_to_var' ,
+		'phpdoc_types' ,
+		'phpdoc_var_without_name' ,
+		'pre_increment' ,
+		'print_to_echo' ,
+		'remove_leading_slash_use' ,
+		'remove_lines_between_uses' ,
+		'return' ,
+		'self_accessor' ,
+		'short_bool_cast' ,
+		'single_array_no_trailing_comma' ,
+		'single_blank_line_before_namespace' ,
+		'single_quote' ,
+		'spaces_before_semicolon' ,
+		'spaces_cast' ,
+		'standardize_not_equal' ,
+		'ternary_spaces' ,
+		'trim_array_spaces' ,
+		'unalign_double_arrow' ,
+		'unalign_equals' ,
+		'unary_operators_spaces' ,
+		'unneeded_control_parentheses' ,
+		'unused_use' ,
+		'whitespacy_lines' ,
+		'align_double_arrow' ,
+		'align_equals' ,
+		'concat_with_spaces' ,
+		'echo_to_print' ,
+		'ereg_to_preg' ,
+		'header_comment' ,
+		'logical_not_operators_with_spaces' ,
+		'logical_not_operators_with_successor_space' ,
+		'long_array_syntax' ,
+		'multiline_spaces_before_semicolon' ,
+		'newline_after_open_tag' ,
+		'no_blank_lines_before_namespace' ,
+		'ordered_use' ,
+		'php4_constructor' ,
+		'php_unit_construct' ,
+		'php_unit_strict' ,
+		'phpdoc_order' ,
+		'phpdoc_var_to_type' ,
+		'short_array_syntax' ,
+		'short_echo_tag' ,
+		'strict' ,
+		'strict_param' ,
+	);
+
 	/** @var TranslatorInterface $translator */
 	protected $translator;
 
@@ -528,27 +628,49 @@ class Localization
 	 * @throws \Exception
 	 * @throws \Potsky\LaravelLocalizationHelpers\Factory\Exception
 	 */
-	public function fixCodeStyle( array $options )
+	public function fixCodeStyle( $filePath , array $fixers , $level = null )
 	{
 		if ( ( defined( 'HHVM_VERSION_ID' ) ) && ( HHVM_VERSION_ID < 30500 ) )
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		{
-			throw new Exception( "HHVM needs to be a minimum version of HHVM 3.5.0\n" );
+			throw new Exception( "HHVM needs to be a minimum version of HHVM 3.5.0" );
 		}
 		// @codeCoverageIgnoreEnd
 
 		elseif ( ! defined( 'PHP_VERSION_ID' ) || PHP_VERSION_ID < 50306 )
-		// @codeCoverageIgnoreStart
+			// @codeCoverageIgnoreStart
 		{
-			throw new Exception( "PHP needs to be a minimum version of PHP 5.3.6\n" );
+			throw new Exception( "PHP needs to be a minimum version of PHP 5.3.6" );
 		}
 		// @codeCoverageIgnoreEnd
 
-		$fullOptions = array(
+		if ( ! file_exists( $filePath ) )
+		{
+			throw new Exception( 'File "' . $filePath . '" does not exist, cannot fix it' );
+		}
+
+		$options = array(
 			'--no-interaction' => true ,
+			'command'          => 'fix' ,
+			'path'             => $filePath ,
 		);
 
-		$input       = new ArrayInput( array_merge( $options , $fullOptions ) );
+		$fix = array();
+		foreach ( $fixers as $fixer )
+		{
+			if ( $this->isAFixer( $fixer ) )
+			{
+				$fix[] = $fixer;
+			}
+		}
+		$options[ '--fixers' ] = implode( ',' , $fix );
+
+		if ( $this->isALevel( $level ) )
+		{
+			$options[ '--level' ] = $level;
+		}
+
+		$input       = new ArrayInput( $options );
 		$output      = new BufferedOutput();
 		$application = new \Symfony\CS\Console\Application();
 		$application->setAutoExit( false );
@@ -579,6 +701,30 @@ class Localization
 			return null;
 		}
 		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Tell if the provided fixer is a valid fixer
+	 *
+	 * @param string $fixer
+	 *
+	 * @return bool
+	 */
+	public function isAFixer( $fixer )
+	{
+		return in_array( $fixer , self::$PHP_CS_FIXER_FIXERS );
+	}
+
+	/**
+	 * Tell if the provided level is a valid level
+	 *
+	 * @param string $level
+	 *
+	 * @return bool
+	 */
+	public function isALevel( $level )
+	{
+		return in_array( $level , self::$PHP_CS_FIXER_LEVELS );
 	}
 }
 

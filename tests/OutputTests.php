@@ -25,7 +25,7 @@ class OutputTests extends TestCase
 		$output = new BufferedOutput;
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:missing' , array(
+		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--output-flat'    => true ,
 			'--new-value'      => '%LEMMA POTSKY' ,
@@ -45,11 +45,10 @@ class OutputTests extends TestCase
 		$this->assertContains( 'array (' , file_get_contents( self::LANG_DIR_PATH . '/fr/message.php' ) );
 		$this->assertNotContains( '[' , file_get_contents( self::LANG_DIR_PATH . '/fr/message.php' ) );
 
-		$this->assertContains( 'Fixed all files in' , $manager->fixCodeStyle( array(
-			'command'  => 'fix' ,
-			'path'     => self::LANG_DIR_PATH ,
-			'--fixers' => 'align_double_arrow,short_array_syntax' ,
-		) ) );
+		$this->assertContains( 'Fixed all files in' , $manager->fixCodeStyle(
+			self::LANG_DIR_PATH . '/fr/message.php' ,
+			array( 'align_double_arrow' , 'short_array_syntax' )
+		) );
 
 		/** @noinspection PhpIncludeInspection */
 		$this->assertContains( '[' , file_get_contents( self::LANG_DIR_PATH . '/fr/message.php' ) );
