@@ -680,30 +680,6 @@ class Localization
 	}
 
 	/**
-	 * Return the date of a backup file
-	 *
-	 * @param string $file a backup file path
-	 *
-	 * @return \DateTime|null
-	 */
-	private function getBackupFileDate( $file )
-	{
-		$matches = array();
-
-		if ( preg_match( '@^(.*)([0-9]{8}_[0-9]{6})\\.php$@' , $file , $matches ) === 1 )
-		{
-			return \DateTime::createFromFormat( self::BACKUP_DATE_FORMAT , $matches[ 2 ] );
-		}
-		// @codeCoverageIgnoreStart
-		// Cannot happen because of glob but safer
-		else
-		{
-			return null;
-		}
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
 	 * Tell if the provided fixer is a valid fixer
 	 *
 	 * @param string $fixer
@@ -725,6 +701,30 @@ class Localization
 	public function isALevel( $level )
 	{
 		return in_array( $level , self::$PHP_CS_FIXER_LEVELS );
+	}
+
+	/**
+	 * Return the date of a backup file
+	 *
+	 * @param string $file a backup file path
+	 *
+	 * @return \DateTime|null
+	 */
+	private function getBackupFileDate( $file )
+	{
+		$matches = array();
+
+		if ( preg_match( '@^(.*)([0-9]{8}_[0-9]{6})\\.php$@' , $file , $matches ) === 1 )
+		{
+			return \DateTime::createFromFormat( self::BACKUP_DATE_FORMAT , $matches[ 2 ] );
+		}
+		// @codeCoverageIgnoreStart
+		// Cannot happen because of glob but safer
+		else
+		{
+			return null;
+		}
+		// @codeCoverageIgnoreEnd
 	}
 }
 

@@ -517,16 +517,18 @@ class LocalizationMissing extends LocalizationAbstract
 					$this->writeLine( "    <info>" . $this->manager->getShortPath( $file_lang_path ) . "</info>" );
 
 					// Fix code style
-					if ( ( ! empty( $code_style_level ) ) || ( ! empty( $code_style_fixers ) ) )
+					if ( ( ! empty( $this->code_style_level ) ) || ( ! empty( $this->code_style_fixers ) ) )
 					{
 						try
 						{
 							$this->manager->fixCodeStyle( $file_lang_path , $this->code_style_fixers , $this->code_style_level );
 						}
+							// @codeCoverageIgnoreStart
 						catch ( Exception $e )
 						{
 							$this->writeError( "    Cannot fix code style (" . $e->getMessage() . ")" );
 						}
+						// @codeCoverageIgnoreEnd
 					}
 
 					// @codeCoverageIgnoreStart

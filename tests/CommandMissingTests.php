@@ -19,6 +19,7 @@ class CommandMissingTests extends TestCase
 
 		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH );
 		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH );
+		Config::set( 'laravel-localization-helpers::config.code_style.fixers' , array( 'align_double_arrow' , 'short_array_syntax' ) );
 
 		// Remove all saved access token for translation API
 		$translator = new \MicrosoftTranslator\Client( array(

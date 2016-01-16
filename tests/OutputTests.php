@@ -47,12 +47,29 @@ class OutputTests extends TestCase
 
 		$this->assertContains( 'Fixed all files in' , $manager->fixCodeStyle(
 			self::LANG_DIR_PATH . '/fr/message.php' ,
-			array( 'align_double_arrow' , 'short_array_syntax' )
+			array( 'align_double_arrow' , 'short_array_syntax' ),
+			'psr2'
 		) );
 
 		/** @noinspection PhpIncludeInspection */
 		$this->assertContains( '[' , file_get_contents( self::LANG_DIR_PATH . '/fr/message.php' ) );
 		$this->assertNotContains( 'array (' , file_get_contents( self::LANG_DIR_PATH . '/fr/message.php' ) );
+	}
+
+	/**
+	 *
+	 */
+	public function testPathDoesNotExist()
+	{
+		$messageBag = new MessageBag();
+		$manager    = new Localization( $messageBag );
+
+		$this->setExpectedException( '\\Potsky\\LaravelLocalizationHelpers\\Factory\\Exception' );
+
+		$manager->fixCodeStyle(
+			self::LANG_DIR_PATH . '/file_does_not_exist' ,
+			array( 'align_double_arrow' , 'short_array_syntax' )
+		);
 	}
 
 }
