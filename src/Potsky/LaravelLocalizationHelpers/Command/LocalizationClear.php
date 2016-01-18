@@ -4,6 +4,7 @@ namespace Potsky\LaravelLocalizationHelpers\Command;
 
 use Config;
 use Illuminate\Config\Repository;
+use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Symfony\Component\Console\Input\InputOption;
 
 class LocalizationClear extends LocalizationAbstract
@@ -37,7 +38,7 @@ class LocalizationClear extends LocalizationAbstract
 	 */
 	public function __construct( Repository $configRepository )
 	{
-		$this->lang_folder_path = Config::get( 'laravel-localization-helpers::config.lang_folder_path' );
+		$this->lang_folder_path = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
 
 		parent::__construct( $configRepository );
 	}
