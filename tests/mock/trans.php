@@ -31,3 +31,4 @@ $lf = Lang::choice( 'message.lemma.child l4' , 2 , [ 'name' => 'potsky', 'count'
 
 // check translation
 trans( 'message.dog' );
+trans( 'message.child.dog' );

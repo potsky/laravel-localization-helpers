@@ -275,13 +275,16 @@ You need to update your composer file to set the correct version.
 
 ## 6. Change Log
 
-### v2.x.1
+### v2.x.0
 
 - new command `localization:clear` to remove backups
 - new option to specify output formatting ([#17](https://github.com/potsky/laravel-localization-helpers/issues/17))
 - new option to specify flat arrays style output ([#18](https://github.com/potsky/laravel-localization-helpers/issues/18))
 - new option to let the command translate sentences for you with Bing Translator
-- new lemma are now marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
+- new translations are now:
+	- marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
+	- translated of course if option `t` is used
+	- shorten to their minimal value ( `trans( 'message.child.this is a text' )` will now generate `['child'] => 'TODO: this is a text',` and no more `['child'] => 'TODO: child.this is a text',`)   
 
 Internally :
 

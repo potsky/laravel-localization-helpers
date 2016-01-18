@@ -49,7 +49,7 @@ class CommandMissingTests extends TestCase
 
 		/** @noinspection PhpIncludeInspection */
 		$lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
-		$this->assertEquals( 'TODO: lemma.child' , $lemmas[ 'lemma' ][ 'child' ] );
+		$this->assertEquals( 'TODO: child' , $lemmas[ 'lemma' ][ 'child' ] );
 	}
 
 	/**
@@ -139,7 +139,7 @@ class CommandMissingTests extends TestCase
 
 		/** @noinspection PhpIncludeInspection */
 		$lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
-		$this->assertEquals( 'lemma.child POTSKY' , $lemmas[ 'lemma.child' ] );
+		$this->assertEquals( 'child POTSKY' , $lemmas[ 'lemma.child' ] );
 	}
 
 
@@ -162,6 +162,7 @@ class CommandMissingTests extends TestCase
 		/** @noinspection PhpIncludeInspection */
 		$lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
 		$this->assertEquals( 'TODO: chien' , $lemmas[ 'dog' ] );
+		$this->assertEquals( 'TODO: chien' , $lemmas[ 'child.dog' ] );
 	}
 
 
