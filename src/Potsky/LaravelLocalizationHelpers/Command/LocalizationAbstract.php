@@ -2,16 +2,15 @@
 
 namespace Potsky\LaravelLocalizationHelpers\Command;
 
-use Config;
 use Illuminate\Config\Repository;
 use Illuminate\Console\Command;
-use Potsky\LaravelLocalizationHelpers\Factory\Tools;
+use Potsky\LaravelLocalizationHelpers\Factory\Localization;
+use Potsky\LaravelLocalizationHelpers\Factory\MessageBagInterface;
 
-abstract class LocalizationAbstract extends Command
+abstract class LocalizationAbstract extends Command implements MessageBagInterface
 {
 	const SUCCESS = 0;
 	const ERROR   = 1;
-
 
 	/**
 	 * Config repository.
@@ -21,39 +20,11 @@ abstract class LocalizationAbstract extends Command
 	protected $configRepository;
 
 	/**
-	 * functions and method to catch translations
+	 * The localization manager
 	 *
-	 * @var  array
+	 * @var Localization
 	 */
-	protected $trans_methods = array();
-
-	/**
-	 * functions and method to catch translations
-	 *
-	 * @var  array
-	 */
-	protected $editor = '';
-
-	/**
-	 * Folders to parse for missing translations
-	 *
-	 * @var  array
-	 */
-	protected $folders = array();
-
-	/**
-	 * Never make lemmas containing these keys obsolete
-	 *
-	 * @var  array
-	 */
-	protected $never_obsolete_keys = array();
-
-	/**
-	 * Never manage these lang files
-	 *
-	 * @var  array
-	 */
-	protected $ignore_lang_files = array();
+	protected $manager;
 
 	/**
 	 * Should commands display something
@@ -69,12 +40,8 @@ abstract class LocalizationAbstract extends Command
 	 */
 	public function __construct( Repository $configRepository )
 	{
-		$this->trans_methods       = Config::get( 'laravel-localization-helpers.trans_methods' );
-		$this->folders             = Config::get( 'laravel-localization-helpers.folders' );
-		$this->ignore_lang_files   = Config::get( 'laravel-localization-helpers.ignore_lang_files' );
-		$this->lang_folder_path    = Config::get( 'laravel-localization-helpers.lang_folder_path' );
-		$this->never_obsolete_keys = Config::get( 'laravel-localization-helpers.never_obsolete_keys' );
-		$this->editor              = Config::get( 'laravel-localization-helpers.editor_command_line' );
+		// Inject this command just to have access to writeLine, writeError, etc... methods
+		$this->manager = new Localization( $this );
 
 		parent::__construct();
 	}
@@ -130,6 +97,8 @@ abstract class LocalizationAbstract extends Command
 	 * @param   string $s the message to display
 	 *
 	 * @return  void
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public function writeQuestion( $s )
 	{
@@ -153,153 +122,4 @@ abstract class LocalizationAbstract extends Command
 			parent::error( $s );
 		}
 	}
-
-	/**
-	 * Get the lang directory path
-	 *
-	 * @return string the path
-	 */
-	protected function get_lang_path()
-	{
-		if ( empty( $this->lang_folder_path ) )
-		{
-			$paths = array(
-				app_path() . DIRECTORY_SEPARATOR . 'lang' ,
-				base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang' ,
-			);
-			foreach ( $paths as $path )
-			{
-				if ( file_exists( $path ) )
-				{
-					return $path;
-				}
-			}
-
-			$this->writeError( "No lang folder found in these paths:" );
-			foreach ( $paths as $path )
-			{
-				$this->writeError( "- " . $path );
-			}
-			$this->writeLine( '' );
-			die();
-		}
-		else
-		{
-			if ( file_exists( $this->lang_folder_path ) )
-			{
-				return $this->lang_folder_path;
-			}
-
-			$this->writeError( 'No lang folder found in your custom path: "' . $this->lang_folder_path . '"' );
-			$this->writeLine( '' );
-
-			die();
-		}
-	}
-
-	/**
-	 * Return an absolute path without predefined variables
-	 *
-	 * @param string|array $path the relative path
-	 *
-	 * @return array the absolute path
-	 */
-	protected function get_path( $path )
-	{
-		if ( ! is_array( $path ) )
-		{
-			$path = array( $path );
-		}
-
-		return str_replace(
-			array(
-				'%APP' ,
-				'%BASE' ,
-				'%PUBLIC' ,
-				'%STORAGE' ,
-			) ,
-			array(
-				app_path() ,
-				base_path() ,
-				public_path() ,
-				storage_path() ,
-			) ,
-			$path
-		);
-	}
-
-	/**
-	 * Return an relative path to the laravel directory
-	 *
-	 * @param string $path the absolute path
-	 *
-	 * @return string the relative path
-	 */
-	protected function get_short_path( $path )
-	{
-		return str_replace( base_path() , '' , $path );
-	}
-
-	/**
-	 * return an iterator of php files in the provided paths and subpaths
-	 *
-	 * @param string $path a source path
-	 *
-	 * @return array a list of php file paths
-	 */
-	protected function get_php_files( $path )
-	{
-		if ( is_dir( $path ) )
-		{
-			return new \RegexIterator(
-				new \RecursiveIteratorIterator(
-					new \RecursiveDirectoryIterator( $path , \RecursiveDirectoryIterator::SKIP_DOTS ) ,
-					\RecursiveIteratorIterator::SELF_FIRST ,
-					\RecursiveIteratorIterator::CATCH_GET_CHILD // Ignore "Permission denied"
-				) ,
-				'/^.+\.php$/i' ,
-				\RecursiveRegexIterator::GET_MATCH
-			);
-		}
-		else
-		{
-			return array();
-		}
-	}
-
-	/**
-	 * Extract all translations from the provided file
-	 * Remove all translations containing :
-	 * - $  -> auto-generated translation cannot be supported
-	 * - :: -> package translations are not taken in account
-	 *
-	 * @param string $path the file path
-	 *
-	 * @return array an array dot of found translations
-	 */
-	protected function extract_translation_from_php_file( $path )
-	{
-		$result = array();
-		$string = file_get_contents( $path );
-		foreach ( array_flatten( $this->trans_methods ) as $method )
-		{
-			preg_match_all( $method , $string , $matches );
-
-			foreach ( $matches[ 1 ] as $k => $v )
-			{
-				if ( strpos( $v , '$' ) !== false )
-				{
-					unset( $matches[ 1 ][ $k ] );
-				}
-				if ( strpos( $v , '::' ) !== false )
-				{
-					unset( $matches[ 1 ][ $k ] );
-				}
-			}
-			$result = array_merge( $result , array_flip( $matches[ 1 ] ) );
-		}
-
-		return $result;
-	}
-
 }

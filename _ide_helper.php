@@ -12626,8 +12626,17 @@ namespace {
 
 	class LocalizationHelpers extends \Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers
 	{
-		public static function test() {
-			return true;
+
+		/**
+		 * Get the lang directory path
+		 *
+		 * @param $lang_folder_path
+		 *
+		 * @return string the path
+		 * @throws \Potsky\LaravelLocalizationHelpers\Factory\Exception
+		 */
+		public static function getLangPath( $lang_folder_path = null )
+		{
 		}
 	}
 

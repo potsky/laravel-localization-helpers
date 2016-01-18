@@ -7,8 +7,9 @@ class FacadeTests extends TestCase
 	public function testFacade()
 	{
 		$loader = AliasLoader::getInstance();
-		$loader->alias( 'LocalizationHelpers', 'Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers' );
+		$loader->alias( 'LocalizationHelpers' , 'Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers' );
 
-		$this->assertTrue( LocalizationHelpers::test() );
+		$this->setExpectedException( 'Potsky\LaravelLocalizationHelpers\Factory\Exception' );
+		LocalizationHelpers::getLangPath();
 	}
 }

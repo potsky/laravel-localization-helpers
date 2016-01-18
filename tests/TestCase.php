@@ -2,11 +2,22 @@
 
 class TestCase extends Orchestra\Testbench\TestCase
 {
+	const MOCK_DIR_PATH           = 'tests/mock';
+	const MOCK_DIR_PATH_WO_LEMMA  = 'tests/mock/wo_lemma';
+	const LANG_DIR_PATH           = 'tests/lang';
+	const ORCHESTRA_LANG_DIR_PATH = 'vendor/orchestra/testbench/src/fixture/app/lang';
+
+	/**
+	 *
+	 */
 	public static function setUpBeforeClass()
 	{
 		parent::setUpBeforeClass();
 	}
 
+	/**
+	 *
+	 */
 	public static function tearDownAfterClass()
 	{
 		parent::tearDownAfterClass();
@@ -22,6 +33,9 @@ class TestCase extends Orchestra\Testbench\TestCase
 		return array( 'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider' );
 	}
 
+	/**
+	 *
+	 */
 	public function tearDown()
 	{
 		Mockery::close();
