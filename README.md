@@ -83,7 +83,7 @@ In your `laravel` folder, add this in `.gitignore` file :
 
 ```bash
 # Do not include backup lang files
-app/lang/*/[a-zA-Z]*.[0-9_]*.php
+app/lang/*/[a-zA-Z]*20[0-9][0-9][0-1][0-9][0-3][0-9]_[0-2][0-9][0-5][0-9][0-5][0-9].php
 ```
 
 ## 3. Usage
