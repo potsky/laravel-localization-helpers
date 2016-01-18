@@ -37,18 +37,18 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 | 5.2.x    | 2.3.x
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
-    ```
+    ```php
     "potsky/laravel-localization-helpers" : "2.0.*"
     ```
 
 - Update your installation : `composer update`
 - Add the following line in the `providers` array of the `config/app.php` configuration file :
-    ```
+    ```php
     'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider'
     ```
 
 - Now execute `php artisan list` and you should view the new *localization* commands:
-    ```
+    ```bash
     ...
     localization
     localization:clear          Remove lang backup files
@@ -59,7 +59,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 
 You can add the facade in the Aliases if you need to manage translations in your code :
 
-```
+```php
 'LocalizationHelpers' => 'Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers'
 ```
 
