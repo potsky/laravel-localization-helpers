@@ -323,13 +323,15 @@ class LocalizationMissing extends LocalizationAbstract
 								$i                                                = $i + 1;
 							}
 
+							$key_last_token = explode( '.' , $key );
+
 							if ( $this->option( 'translation' ) )
 							{
-								$translation = $this->manager->translate( $key , $lang );
+								$translation = $this->manager->translate( end( $key_last_token ) , $lang );
 							}
 							else
 							{
-								$translation = $key;
+								$translation = end( $key_last_token );
 							}
 
 							$translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
