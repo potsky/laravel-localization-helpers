@@ -2,7 +2,9 @@
 
 namespace Potsky\LaravelLocalizationHelpers\Command;
 
+use Config;
 use Illuminate\Config\Repository;
+use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -24,6 +26,20 @@ class LocalizationFind extends LocalizationAbstract
 	protected $description = 'Display all files where the argument is used as a lemma';
 
 	/**
+	 * functions and method to catch translations
+	 *
+	 * @var  array
+	 */
+	protected $trans_methods = array();
+
+	/**
+	 * Folders to seek for missing translations
+	 *
+	 * @var  array
+	 */
+	protected $folders = array();
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -31,6 +47,9 @@ class LocalizationFind extends LocalizationAbstract
 	public function __construct( Repository $configRepository )
 	{
 		parent::__construct( $configRepository );
+
+		$this->folders       = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
+		$this->trans_methods = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
 	}
 
 	/**
@@ -40,9 +59,8 @@ class LocalizationFind extends LocalizationAbstract
 	 */
 	public function fire()
 	{
-
 		$lemma   = $this->argument( 'lemma' );
-		$folders = $this->get_path( $this->folders );
+		$folders = $this->manager->getPath( $this->folders );
 
 		//////////////////////////////////////////////////
 		// Display where translatations are searched in //
@@ -62,67 +80,21 @@ class LocalizationFind extends LocalizationAbstract
 		////////////////////////////////
 		// Parse all lemmas from code //
 		////////////////////////////////
-		$files = array();
+		$files = $this->manager->findLemma( $lemma , $folders , $this->trans_methods , $this->option( 'regex' ) , $this->option( 'short' ) );
 
-		foreach ( $folders as $path )
-		{
-			foreach ( $this->get_php_files( $path ) as $php_file_path => $dumb )
-			{
-				foreach ( $this->extract_translation_from_php_file( $php_file_path ) as $k => $v )
-				{
-					$real_value = eval( "return $k;" );
-					$found      = false;
-
-					if ( $this->option( 'regex' ) )
-					{
-						try
-						{
-							$r = preg_match( $lemma , $real_value );
-						}
-						catch ( \Exception $e )
-						{
-							$this->writeLine( "<error>The argument is not a valid regular expression:</error>" . str_replace( 'preg_match():' , '' , $e->getMessage() ) );
-							die();
-						}
-						if ( $r === 1 )
-						{
-							$found = true;
-						}
-						else if ( $r === false )
-						{
-							$this->writeError( "The argument is not a valid regular expression" );
-							die();
-						}
-					}
-					else
-					{
-						if ( strpos( $real_value , $lemma ) )
-						{
-							$found = true;
-						}
-					}
-
-
-					if ( $found === true )
-					{
-						if ( $this->option( 'short' ) )
-						{
-							$php_file_path = $this->get_short_path( $php_file_path );
-						}
-						$files[] = $php_file_path;
-						break;
-					}
-				}
-			}
-		}
-
-		if ( count( $files ) > 0 )
+		if ( ( is_array( $files ) ) && ( count( $files ) > 0 ) )
 		{
 			$this->writeLine( 'Lemma <info>' . $lemma . '</info> has been found in:' );
 			foreach ( $files as $file )
 			{
 				$this->writeLine( '    <info>' . $file . '</info>' );
 			}
+
+			return self::SUCCESS;
+		}
+		else
+		{
+			return self::ERROR;
 		}
 	}
 
