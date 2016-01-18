@@ -15,7 +15,7 @@ class CommandFindTests extends TestCase
 	{
 		parent::setUp();
 
-		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH );
 	}
 
 	/**

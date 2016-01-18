@@ -16,8 +16,8 @@ class CommandClearTests extends TestCase
 	{
 		parent::setUp();
 
-		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH );
-		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH );
 
 		\Potsky\LaravelLocalizationHelpers\Factory\Tools::unlinkGlobFiles( self::LANG_DIR_PATH . '/*/message*.php' );
 
@@ -109,7 +109,7 @@ class CommandClearTests extends TestCase
 	 */
 	public function testLangFolderDoesNotExist()
 	{
-		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH . 'doesnotexist' );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH . 'doesnotexist' );
 
 		$output = new BufferedOutput;
 
@@ -125,7 +125,7 @@ class CommandClearTests extends TestCase
 	 */
 	public function testDefaultLangFolderDoesNotExist()
 	{
-		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , null );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , null );
 
 		$output = new BufferedOutput;
 
