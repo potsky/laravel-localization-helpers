@@ -3,11 +3,11 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=5.0)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=5.0)
-[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=5.0&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=5.0)
+[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=5.1)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=5.1)
+[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=5.1&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=5.1)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
-## This branch is for Laravel 5.0
+## This branch is for Laravel 5.1
 
 LLH is a set of artisan commands to manage translations in your Laravel project. Key features :
 
@@ -38,7 +38,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
-    "potsky/laravel-localization-helpers" : "2.1.*"
+    "potsky/laravel-localization-helpers" : "2.2.*"
     ```
 
 - Update your installation : `composer update`
