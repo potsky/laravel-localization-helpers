@@ -3,9 +3,11 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
-[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
+[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=5.0)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=5.0)
+[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=5.0&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=5.0)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
+
+## This branch is for Laravel 5.0
 
 LLH is a set of artisan commands to manage translations in your Laravel project. Key features :
 
@@ -36,7 +38,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
-    "potsky/laravel-localization-helpers" : "~2.1"
+    "potsky/laravel-localization-helpers" : "2.1.*"
     ```
 
 - Update your installation : `composer update`
@@ -65,13 +67,15 @@ You can add the facade in the Aliases if you need to manage translations in your
 
 To configure your fresh installed package, please create a configuration file by executing :
 
-- Laravel 4: `php artisan config:publish potsky/laravel-localization-helpers`
-- Laravel 5: `php artisan vendor:publish`
+```bash
+php artisan vendor:publish
+```
 
 Then you can modify the configuration in file :
 
-- Laravel 4: `app/config/packages/potsky/laravel-localization-helpers/config.php`
-- Laravel 5: `app/config/laravel-localization-helpers.php`
+```bash
+app/config/laravel-localization-helpers.php
+```
 
 Add new folders to search for, add your own lang methods or functions, ...
 

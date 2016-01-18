@@ -11,7 +11,7 @@
   "license"           : "GPL-3.0+",
   "require"           : {
     "laravel/framework"   : "5.0.*",
-    "fabpot/php-cs-fixer" : "^1.11"
+    "fabpot/php-cs-fixer" : "^1.11",
     "potsky/microsoft-translator-php-sdk" : "*"
   },
   "require-dev"       : {
