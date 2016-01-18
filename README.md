@@ -85,9 +85,9 @@ You should not include backup lang files in GIT or other versioning systems.
 
 In your `laravel` folder, add this in `.gitignore` file :
 
-```
+```bash
 # Do not include backup lang files
-app/lang/*/[a-zA-Z]*.[0-9_]*.php
+app/lang/*/[a-zA-Z]*20[0-9][0-9][0-1][0-9][0-3][0-9]_[0-2][0-9][0-5][0-9][0-5][0-9].php
 ```
 
 ## 3. Usage
@@ -102,25 +102,25 @@ Use `php artisan help localization:missing` for more informations about options.
 
 ##### Generate all lang files
 
-```
+```bash
 php artisan localization:missing
 ```
 
 ##### Generate all lang files without prompt
 
-```
+```bash
 php artisan localization:missing -n
 ```
 
 ##### Generate all lang files without backuping old files
 
-```
+```bash
 php artisan localization:missing -b
 ```
 
 ##### Generate all lang files with automatic translations
 
-```
+```bash
 php artisan localization:missing -t
 ```
 
@@ -129,19 +129,19 @@ php artisan localization:missing -t
 
 ##### Generate all lang files without keeping obsolete lemmas
 
-```
+```bash
 php artisan localization:missing -o
 ```
 
 ##### Generate all lang files without any comment for new found lemmas
 
-```
+```bash
 php artisan localization:missing -c
 ```
 
 ##### Generate all lang files without header comment
 
-```
+```bash
 php artisan localization:missing -d
 ```
 
@@ -149,7 +149,7 @@ php artisan localization:missing -d
 
 3 commands below produce the same output:
 
-```
+```bash
 php artisan localization:missing
 php artisan localization:missing -l
 php artisan localization:missing -l "TODO: %LEMMA"
@@ -159,25 +159,25 @@ You can customize the default generated values for unknown lemmas.
 
 The following command let new values empty:
 
-```
+```bash
 php artisan localization:missing -l ""
 ```
 
 The following command prefixes all lemma values with "Please translate this : "
 
-```
+```bash
 php artisan localization:missing -l "Please translate this : %LEMMA"
 ```
 
 The following command set all lemma values to "Please translate this !"
 
-```
+```bash
 php artisan localization:missing -l 'Please translate this !'
 ```
 
 ##### Silent option for shell integration
 
-```
+```bash
 #!/bin/bash
 
 php artisan localization:missing -s
@@ -190,25 +190,25 @@ fi
 
 ##### Simulate all operations (do not write anything) with a dry run
 
-```
+```bash
 php artisan localization:missing -r
 ```
 
 ##### Open all must-edit files at the end of the process
 
-```
+```bash
 php artisan localization:missing -e
 ```
 
 You can edit the editor path in your configuration file. By default, editor is *Sublime Text* on *Mac OS X* :
 
-```
+```php
 'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
 ```
 
 For *PHPStorm* on *Mac OS X*:
 
-```
+```php
 'editor_command_line' => '/usr/local/bin/phpstorm'
 ```
 
@@ -222,25 +222,25 @@ Use `php artisan help localization:find` for more informations about options.
 
 ##### Find regular lemma
 
-```
+```bash
 php artisan localization:find Search
 ```
 
 ##### Find regular lemma with verbose
 
-```
+```bash
 php artisan localization:find -v Search
 ```
 
 ##### Find regular lemma with short path displayed
 
-```
+```bash
 php artisan localization:find -s "Search me"
 ```
 
 ##### Find lemma with a regular expression
 
-```
+```bash
 php artisan localization:find -s -r "@Search.*@"
 php artisan localization:find -s -r "/.*me$/"
 ```
@@ -257,13 +257,13 @@ Use `php artisan help localization:clear` for more informations about options.
 
 ##### Remove all backups
 
-```
+```bash
 php artisan localization:clear
 ```
 
 ##### Remove backups older than 7 days
 
-```
+```bash
 php artisan localization:clear -d 7
 ```
 
