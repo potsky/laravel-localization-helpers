@@ -108,7 +108,7 @@ php artisan localization:missing
 
 ##### Generate all lang files without prompt
 
-```
+```bash
 php artisan localization:missing -n
 ```
 
