@@ -952,7 +952,15 @@ namespace {
         public static function call($command, $parameters = array(), $output = null){
             \Illuminate\Console\Application::call($command, $parameters, $output);
         }
-        
+
+        /**
+         * @return string
+         * @static
+         */
+        public static function output(){
+            return '';
+        }
+
         /**
          * Add a command to the console.
          *

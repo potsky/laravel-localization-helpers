@@ -9,7 +9,7 @@ class Localization
 	const NO_LANG_FOLDER_FOUND_IN_THESE_PATHS      = 2;
 	const NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH = 3;
 	const BACKUP_DATE_FORMAT                       = "Ymd_His";
-	const PREFIX_LARAVEL_CONFIG                    = 'laravel-localization-helpers::config.';
+	const PREFIX_LARAVEL_CONFIG                    = 'laravel-localization-helpers.';
 
 	private static $PHP_CS_FIXER_LEVELS = array( 'psr0' , 'psr1' , 'psr2' , 'symfony' );
 	private static $PHP_CS_FIXER_FIXERS = array(

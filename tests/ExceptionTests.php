@@ -1,7 +1,5 @@
 <?php
 
-use Potsky\LaravelLocalizationHelpers\Factory\Tools;
-
 class ExceptionTests extends TestCase
 {
 	public function testParameters()

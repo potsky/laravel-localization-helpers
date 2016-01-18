@@ -2,7 +2,6 @@
 
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Potsky\LaravelLocalizationHelpers\Factory\Tools;
-use Symfony\Component\Console\Output\BufferedOutput;
 
 class CommandMissingTests extends TestCase
 {
@@ -38,11 +37,9 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testLangFileDoesNotExist()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
-		$result = $output->fetch();
+		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) );
+		$result = Artisan::output();
 
 		$this->assertEquals( 0 , $return );
 		$this->assertContains( 'File has been created' , $result );
@@ -60,29 +57,26 @@ class CommandMissingTests extends TestCase
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH . 'doesnotexist' );
 
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
+		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) );
 
 		$this->assertEquals( 1 , $return );
-		$this->assertContains( 'No lang folder found in your custom path:' , $output->fetch() );
+		$this->assertContains( 'No lang folder found in your custom path:' , Artisan::output() );
 	}
 
 	/**
 	 * - Default lang folders are used when custom land folder path as not been set by user
+	 *
+	 * In Laravel 5.x, orchestra/testbench has not empty lang en directory, so return code is 0 and not 1
 	 */
 	public function testDefaultLangFolderDoesNotExist()
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , null );
 
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
+		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) );
 
-		$this->assertEquals( 1 , $return );
-		$this->assertContains( 'No lang folder found in these paths:' , $output->fetch() );
+		$this->assertEquals( 0 , $return );
 	}
 
 	/**
@@ -92,15 +86,13 @@ class CommandMissingTests extends TestCase
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , null );
 
-		$output = new BufferedOutput;
-
 		@mkdir( self::ORCHESTRA_LANG_DIR_PATH );
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
-		rmdir( self::ORCHESTRA_LANG_DIR_PATH );
+		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) );
+		unlink( self::ORCHESTRA_LANG_DIR_PATH . '/en/message.php' );
 
 		$this->assertEquals( 0 , $return );
-		$this->assertContains( 'Drink a Piña colada and/or smoke Super Skunk, you have nothing to do!' , $output->fetch() );
+		$this->assertContains( 'Drink a Piña colada and/or smoke Super Skunk, you have nothing to do!' , Artisan::output() );
 
 	}
 
@@ -112,13 +104,11 @@ class CommandMissingTests extends TestCase
 		touch( self::LANG_DIR_PATH . '/en/message.php' );
 		touch( self::LANG_DIR_PATH . '/fr/message.php' );
 
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) , $output );
+		$return = Artisan::call( 'localization:missing' , array( '--no-interaction' => true ) );
 
 		$this->assertEquals( 0 , $return );
-		$this->assertContains( 'Backup files' , $output->fetch() );
+		$this->assertContains( 'Backup files' , Artisan::output() );
 	}
 
 	/**
@@ -127,14 +117,12 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testFlatOutput()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--output-flat'    => true ,
 			'--new-value'      => '%LEMMA POTSKY' ,
-		) , $output );
+		) );
 
 		$this->assertEquals( 0 , $return );
 
@@ -149,14 +137,12 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testTranslations()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--output-flat'    => true ,
 			'--translation'    => true ,
-		) , $output );
+		) );
 
 		$this->assertEquals( 0 , $return );
 
@@ -173,25 +159,23 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testVerbose()
 	{
-		$output = new BufferedOutput;
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--verbose'        => true ,
+		) );
+
+		$this->assertEquals( 0 , $return );
+		$this->assertContains( 'Lemmas will be searched in the following directories:' , Artisan::output() );
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--verbose'        => true ,
-		) , $output );
+		) );
 
 		$this->assertEquals( 0 , $return );
-		$this->assertContains( 'Lemmas will be searched in the following directories:' , $output->fetch() );
-
-		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:missing' , array(
-			'--no-interaction' => true ,
-			'--verbose'        => true ,
-		) , $output );
-
-		$this->assertEquals( 0 , $return );
-		$this->assertContains( 'Nothing to do for this file' , $output->fetch() );
+		$this->assertContains( 'Nothing to do for this file' , Artisan::output() );
 	}
 
 
@@ -202,16 +186,14 @@ class CommandMissingTests extends TestCase
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH_WO_LEMMA );
 
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--verbose'        => true ,
-		) , $output );
+		) );
 
 		$this->assertEquals( 0 , $return );
-		$this->assertContains( 'No lemma has been found in code.' , $output->fetch() );
+		$this->assertContains( 'No lemma has been found in code.' , Artisan::output() );
 	}
 
 
@@ -220,12 +202,10 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testObsoleteLemma()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
-		) , $output );
+		) );
 
 		$this->assertEquals( 0 , $return );
 
@@ -234,7 +214,7 @@ class CommandMissingTests extends TestCase
 			'--no-interaction'     => true ,
 			'--verbose'            => true ,
 			'--php-file-extension' => 'copy' ,
-		) , $output );
+		) );
 
 		$this->assertEquals( 0 , $return );
 	}
@@ -245,17 +225,15 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testSilent()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--silent'         => true ,
-		) , $output );
+		) );
 
 		// Exit code is 1 because there are new lemma to translate
 		$this->assertEquals( 1 , $return );
-		$this->assertEmpty( $output->fetch() );
+		$this->assertEmpty( Artisan::output() );
 	}
 
 
@@ -269,14 +247,12 @@ class CommandMissingTests extends TestCase
 
 		$this->setExpectedException( '\\MicrosoftTranslator\\Exception' );
 
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--output-flat'    => true ,
 			'--translation'    => true ,
-		) , $output );
+		) );
 
 	}
 }

@@ -3,7 +3,6 @@
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Potsky\LaravelLocalizationHelpers\Factory\MessageBag;
 use Potsky\LaravelLocalizationHelpers\Factory\Tools;
-use Symfony\Component\Console\Output\BufferedOutput;
 
 class OutputTests extends TestCase
 {
@@ -22,14 +21,12 @@ class OutputTests extends TestCase
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH );
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH );
 
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--output-flat'    => true ,
 			'--new-value'      => '%LEMMA POTSKY' ,
-		) , $output );
+		) );
 	}
 
 

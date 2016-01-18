@@ -2,7 +2,6 @@
 
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Potsky\LaravelLocalizationHelpers\Factory\MessageBag;
-use Symfony\Component\Console\Output\BufferedOutput;
 
 class CommandClearTests extends TestCase
 {
@@ -37,10 +36,8 @@ class CommandClearTests extends TestCase
 	 */
 	public function testCleanAll()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:clear' , array() , $output );
+		$return = Artisan::call( 'localization:clear' , array() );
 
 		$this->assertEquals( 0 , $return );
 		$this->assertCount( 0 , glob( self::LANG_DIR_PATH . '/*/message*.php' ) );
@@ -51,10 +48,8 @@ class CommandClearTests extends TestCase
 	 */
 	public function testClean30Days()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:clear' , array( '--days' => 30 ) , $output );
+		$return = Artisan::call( 'localization:clear' , array( '--days' => 30 ) );
 
 		$this->assertEquals( 0 , $return );
 		$this->assertCount( 20 , glob( self::LANG_DIR_PATH . '/*/message*.php' ) );
@@ -65,10 +60,8 @@ class CommandClearTests extends TestCase
 	 */
 	public function testClean3Days()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:clear' , array( '--days' => 3 ) , $output );
+		$return = Artisan::call( 'localization:clear' , array( '--days' => 3 ) );
 
 		$this->assertEquals( 0 , $return );
 		$this->assertCount( 6 , glob( self::LANG_DIR_PATH . '/*/message*.php' ) );
@@ -79,10 +72,8 @@ class CommandClearTests extends TestCase
 	 */
 	public function testErrorDaysNegative()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:clear' , array( '--days' => -3 ) , $output );
+		$return = Artisan::call( 'localization:clear' , array( '--days' => -3 ) );
 		$this->assertEquals( 1 , $return );
 
 		$manager = new Localization( new MessageBag() );
@@ -94,10 +85,8 @@ class CommandClearTests extends TestCase
 	 */
 	public function testDryRun()
 	{
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) , $output );
+		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) );
 
 		$this->assertEquals( 0 , $return );
 		$this->assertCount( 20 , glob( self::LANG_DIR_PATH . '/*/message*.php' ) );
@@ -111,29 +100,26 @@ class CommandClearTests extends TestCase
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH . 'doesnotexist' );
 
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) , $output );
+		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) );
 
 		$this->assertEquals( 1 , $return );
-		$this->assertContains( 'No lang folder found in your custom path:' , $output->fetch() );
+		$this->assertContains( 'No lang folder found in your custom path:' , Artisan::output() );
 	}
 
 	/**
 	 * - Default lang folders are used when custom land folder path as not been set by user
+	 *
+	 * In Laravel 5.x, orchestra/testbench has not empty lang en directory, so return code is 0 and not 1
 	 */
 	public function testDefaultLangFolderDoesNotExist()
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , null );
 
-		$output = new BufferedOutput;
-
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
-		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) , $output );
+		$return = Artisan::call( 'localization:clear' , array( '--dry-run' => true ) );
 
-		$this->assertEquals( 1 , $return );
-		$this->assertContains( 'No lang folder found in these paths:' , $output->fetch() );
+		$this->assertEquals( 0 , $return );
 	}
 
 }
