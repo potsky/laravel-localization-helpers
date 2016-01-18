@@ -7,6 +7,8 @@ Laravel Localization Helpers
 [![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
+## This branch is for Laravel 4.2
+
 LLH is a set of artisan commands to manage translations in your Laravel project. Key features :
 
 - parse your code and generate lang files
@@ -31,8 +33,8 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 |:---------|:----------
 | 4.2.x    | 2.0.x
 | 5.0.x    | 2.1.x
-| 5.1.x    | 2.1.x
-| 5.2.x    | 2.1.x
+| 5.1.x    | 2.2.x
+| 5.2.x    | 2.3.x
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```
