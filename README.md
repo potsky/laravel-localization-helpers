@@ -3,8 +3,8 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
-[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
+[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=4.2)](https://travis-ci.org/potsky/laravel-localization-helpers)
+[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=4.2&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=4.2)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
 ## This branch is for Laravel 4.2
@@ -67,13 +67,15 @@ You can add the facade in the Aliases if you need to manage translations in your
 
 To configure your fresh installed package, please create a configuration file by executing :
 
-- Laravel 4: `php artisan config:publish potsky/laravel-localization-helpers`
-- Laravel 5: `php artisan vendor:publish`
+```php
+php artisan config:publish potsky/laravel-localization-helpers
+```
 
 Then you can modify the configuration in file :
 
-- Laravel 4: `app/config/packages/potsky/laravel-localization-helpers/config.php`
-- Laravel 5: `app/config/laravel-localization-helpers.php`
+```php
+app/config/packages/potsky/laravel-localization-helpers/config.php
+```
 
 Add new folders to search for, add your own lang methods or functions, ...
 
@@ -291,6 +293,7 @@ You need to update your composer file to set the correct version.
 Internally :
 
 - totally refactored
+- one branch per version of laravel
 - unit tests
 - test coverage
 - facade to let you use localization helpers in your code (translations, find missing translations, etc...)
