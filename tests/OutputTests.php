@@ -19,8 +19,8 @@ class OutputTests extends TestCase
 
 		Tools::unlinkGlobFiles( self::LANG_DIR_PATH . '/*/message*.php' );
 
-		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH );
-		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH );
 
 		$output = new BufferedOutput;
 

@@ -4,6 +4,7 @@ namespace Potsky\LaravelLocalizationHelpers\Command;
 
 use Config;
 use Illuminate\Config\Repository;
+use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -47,8 +48,8 @@ class LocalizationFind extends LocalizationAbstract
 	{
 		parent::__construct( $configRepository );
 
-		$this->folders       = Config::get( 'laravel-localization-helpers::config.folders' );
-		$this->trans_methods = Config::get( 'laravel-localization-helpers::config.trans_methods' );
+		$this->folders       = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
+		$this->trans_methods = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
 	}
 
 	/**

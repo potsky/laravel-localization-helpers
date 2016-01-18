@@ -1,5 +1,6 @@
 <?php
 
+use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Potsky\LaravelLocalizationHelpers\Factory\Tools;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -17,9 +18,9 @@ class CommandMissingTests extends TestCase
 
 		Tools::unlinkGlobFiles( self::LANG_DIR_PATH . '/*/message*.php' );
 
-		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH );
-		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH );
-		Config::set( 'laravel-localization-helpers::config.code_style.fixers' , array( 'align_double_arrow' , 'short_array_syntax' ) );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' , array( 'align_double_arrow' , 'short_array_syntax' ) );
 
 		// Remove all saved access token for translation API
 		$translator = new \MicrosoftTranslator\Client( array(
@@ -57,7 +58,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testLangFolderDoesNotExist()
 	{
-		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , self::LANG_DIR_PATH . 'doesnotexist' );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH . 'doesnotexist' );
 
 		$output = new BufferedOutput;
 
@@ -73,7 +74,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testDefaultLangFolderDoesNotExist()
 	{
-		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , null );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , null );
 
 		$output = new BufferedOutput;
 
@@ -89,7 +90,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testDefaultLangFolderExists()
 	{
-		Config::set( 'laravel-localization-helpers::config.lang_folder_path' , null );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , null );
 
 		$output = new BufferedOutput;
 
@@ -199,7 +200,7 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testNothingToDo()
 	{
-		Config::set( 'laravel-localization-helpers::config.folders' , self::MOCK_DIR_PATH_WO_LEMMA );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH_WO_LEMMA );
 
 		$output = new BufferedOutput;
 
@@ -263,8 +264,8 @@ class CommandMissingTests extends TestCase
 	 */
 	public function testTranslationsNotConfigured()
 	{
-		Config::set( 'laravel-localization-helpers::config.translators.Microsoft.client_id' , 'dumb' );
-		Config::set( 'laravel-localization-helpers::config.translators.Microsoft.client_secret' , 'dumber' );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'translators.Microsoft.client_id' , 'dumb' );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'translators.Microsoft.client_secret' , 'dumber' );
 
 		$this->setExpectedException( '\\MicrosoftTranslator\\Exception' );
 

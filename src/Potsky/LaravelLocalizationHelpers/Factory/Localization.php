@@ -9,6 +9,7 @@ class Localization
 	const NO_LANG_FOLDER_FOUND_IN_THESE_PATHS      = 2;
 	const NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH = 3;
 	const BACKUP_DATE_FORMAT                       = "Ymd_His";
+	const PREFIX_LARAVEL_CONFIG                    = 'laravel-localization-helpers::config.';
 
 	private static $PHP_CS_FIXER_LEVELS = array( 'psr0' , 'psr1' , 'psr2' , 'symfony' );
 	private static $PHP_CS_FIXER_FIXERS = array(
@@ -604,11 +605,11 @@ class Localization
 	{
 		if ( is_null( $this->translator ) )
 		{
-			$translator       = Config::get( 'laravel-localization-helpers::config.translator' );
+			$translator       = Config::get( self::PREFIX_LARAVEL_CONFIG . 'translator' );
 			$this->translator = new Translator( 'Microsoft' , array(
-				'client_id'        => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . '.client_id' ) ,
-				'client_secret'    => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . '.client_secret' ) ,
-				'default_language' => Config::get( 'laravel-localization-helpers::config.translators.' . $translator . '.default_language' ) ,
+				'client_id'        => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_id' ) ,
+				'client_secret'    => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_secret' ) ,
+				'default_language' => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.default_language' ) ,
 			) );
 		}
 
