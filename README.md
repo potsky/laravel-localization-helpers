@@ -48,7 +48,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
     ```
 
 - Now execute `php artisan list` and you should view the new *localization* commands:
-    ```bash
+    ```
     ...
     localization
     localization:clear          Remove lang backup files
@@ -85,7 +85,7 @@ You should not include backup lang files in GIT or other versioning systems.
 
 In your `laravel` folder, add this in `.gitignore` file :
 
-```
+```bash
 # Do not include backup lang files
 app/lang/*/[a-zA-Z]*.[0-9_]*.php
 ```
@@ -102,7 +102,7 @@ Use `php artisan help localization:missing` for more informations about options.
 
 ##### Generate all lang files
 
-```
+```bash
 php artisan localization:missing
 ```
 
