@@ -7,7 +7,11 @@ Laravel Localization Helpers
 [![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
-LLH is a set of tools to help you manage translations in your Laravel project. Run the `localization:missing` artisan command to automatically generate lang files according to your PHP sources.
+LLH is a set of artisan commands to manage translations in your Laravel project. Key features :
+
+- parse your code and generate lang files
+- translate your sentences automatically, thanks to Microsoft Translator API
+- configure output according to your code style
 
 ## Table of contents
 
@@ -15,25 +19,37 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
 1. [Configuration](#2-configuration)
 1. [Usage](#3-usage)
 1. [Support](#4-support)
-1. [Contribute](#5-contribute)
+1. [Upgrade Notices](#5-upgrade-notice)
 1. [Change Log](#6-change-log)
+1. [Contribute](#7-contribute)
 
 ## 1. Installation
 
-- Add the following line in the `require-dev` array of the `composer.json` file :
+- Choose your version according to the version compatibility matrix:
+
+| Laravel  | Package
+|:---------|:----------
+| 4.2.x    | 2.0.x
+| 5.0.x    | 2.1.x
+| 5.1.x    | 2.1.x
+| 5.2.x    | 2.1.x
+
+- Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```
-    "potsky/laravel-localization-helpers" : "~1"
+    "potsky/laravel-localization-helpers" : "~2.1"
     ```
 
 - Update your installation : `composer update`
-- Add one of the following line in the `providers` array of the configuration file :
-	- **Laravel 4**: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider',`
-	- **Laravel 5**: `'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProviderLaravel5',`
+- Add the following line in the `providers` array of the `config/app.php` configuration file :
+    ```
+    'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider'
+    ```
 
 - Now execute `php artisan list` and you should view the new *localization* commands:
     ```
     ...
     localization
+    localization:clear          Remove lang backup files
     localization:find           Display all files where the argument is used as a lemma
     localization:missing        Parse all translations in app directory and build all lang files
     ...
@@ -74,7 +90,7 @@ app/lang/*/[a-zA-Z]*.[0-9_]*.php
 
 ### 3.1 Command `localization:missing`
 
-This command parses all your code and generates according lang files in all `lang/XXX/` directories.
+This command parses all your code and generates translations according to lang files in all `lang/XXX/` directories.
 
 Use `php artisan help localization:missing` for more informations about options.
 
@@ -97,6 +113,15 @@ php artisan localization:missing -n
 ```
 php artisan localization:missing -b
 ```
+
+##### Generate all lang files with automatic translations
+
+```
+php artisan localization:missing -t
+```
+
+> You need to set your Microsoft Bing Translator credentials
+> More informations here : <https://github.com/potsky/microsoft-translator-php-sdk#user-content-2-configuration>
 
 ##### Generate all lang files without keeping obsolete lemmas
 
@@ -218,27 +243,52 @@ php artisan localization:find -s -r "/.*me$/"
 
 > PCRE functions are used
 
+### 3.3 Command `localization:clear`
+
+This command will remove all backup lang files.
+
+Use `php artisan help localization:clear` for more informations about options.
+
+#### *Examples*
+
+##### Remove all backups
+
+```
+php artisan localization:clear
+```
+
+##### Remove backups older than 7 days
+
+```
+php artisan localization:clear -d 7
+```
+
 ## 4. Support
 
 Use the [github issue tool](https://github.com/potsky/laravel-localization-helpers/issues) to open an issue or ask for something.
 
-## 5. Contribute
+## 5. Upgrade notices
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+### From `v1.x.x` to `v2.x.x`
 
-Tests are in `tests`. To run the tests: `vendor/bin/phpunit`.
-
-Coverage cannot decrease next a merge. To track file coverage, run `vendor/bin/phpunit --coverage-html coverage` and open `coverage/index.html` to check uncovered lines of code.
-
-Dev badges :
-[![Dev Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=dev)](https://travis-ci.org/potsky/laravel-localization-helpers)
-[![Dev Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=dev&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=dev)
+You need to update your composer file to set the correct version.
 
 ## 6. Change Log
+
+### v2.x.1
+
+- new command `localization:clear` to remove backups
+- new option to specify output formatting ([#17](https://github.com/potsky/laravel-localization-helpers/issues/17))
+- new option to specify flat arrays style output ([#18](https://github.com/potsky/laravel-localization-helpers/issues/18))
+- new option to let the command translate sentences for you with Bing Translator
+- new lemma are now marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
+
+Internally :
+
+- totally refactored
+- unit tests
+- test coverage
+- facade to let you use localization helpers in your code (translations, find missing translations, etc...)
 
 ### v1.3.2
 
@@ -267,3 +317,18 @@ Dev badges :
 - support for Laravel 5 (4.3)
 - add `ignore_lang_files` parameter in configuration file to ignore lang files (useful for `validation` file for example)
 
+## 7. Contribute
+
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+Tests are in `tests`. To run the tests: `vendor/bin/phpunit`.
+
+Coverage cannot decrease next a merge. To track file coverage, run `vendor/bin/phpunit --coverage-html coverage` and open `coverage/index.html` to check uncovered lines of code.
+
+Dev badges :
+[![Dev Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=dev)](https://travis-ci.org/potsky/laravel-localization-helpers)
+[![Dev Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=dev&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=dev)

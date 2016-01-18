@@ -4,7 +4,6 @@ use Illuminate\Support\ServiceProvider;
 
 class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 {
-
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
@@ -29,20 +28,31 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app[ 'localization.missing' ] = $this->app->share( function ( $app )
+		$this->app[ 'localization.command.missing' ] = $this->app->share( function ( $app )
 		{
-			return new Commands\LocalizationMissing( $app[ 'config' ] );
+			return new Command\LocalizationMissing( $app[ 'config' ] );
 		} );
 
-		$this->app[ 'localization.find' ] = $this->app->share( function ( $app )
+		$this->app[ 'localization.command.find' ] = $this->app->share( function ( $app )
 		{
-			return new Commands\LocalizationFind( $app[ 'config' ] );
+			return new Command\LocalizationFind( $app[ 'config' ] );
+		} );
+
+		$this->app[ 'localization.command.clear' ] = $this->app->share( function ( $app )
+		{
+			return new Command\LocalizationClear( $app[ 'config' ] );
 		} );
 
 		$this->commands(
-			'localization.missing' ,
-			'localization.find'
+			'localization.command.missing' ,
+			'localization.command.find',
+			'localization.command.clear'
 		);
+
+		$this->app[ 'localization.helpers' ] = $this->app->share( function ()
+		{
+			return new Factory\Localization( new Factory\MessageBag() );
+		} );
 	}
 
 	/**
@@ -54,7 +64,6 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 	{
 		return array();
 	}
-
 }
 
 
