@@ -297,6 +297,10 @@ Internally :
 - test coverage
 - facade to let you use localization helpers in your code (translations, find missing translations, etc...)
 
+### v1.3.3
+
+- End of life. Version 1.x is no more supported and no longer works. Please use the correct version according to your laravel version.
+
 ### v1.3.2
 
 - fix incompatibility with Laravel 5.2 ([#16](https://github.com/potsky/laravel-localization-helpers/issues/16))
