@@ -43,89 +43,10 @@ class LocalizationFind extends LocalizationAbstract
 	 */
 	public function fire()
 	{
-
-		$lemma   = $this->argument( 'lemma' );
-		$folders = $this->get_path( $this->folders );
-
-		//////////////////////////////////////////////////
-		// Display where translatations are searched in //
-		//////////////////////////////////////////////////
-		if ( $this->option( 'verbose' ) )
-		{
-			$this->writeLine( "Lemmas will be searched in the following directories:" );
-			foreach ( $folders as $path )
-			{
-				$this->writeLine( '    <info>' . $path . '</info>' );
-			}
-			$this->writeLine( '' );
-		}
-
-		////////////////////////////////
-		// Parse all lemmas from code //
-		////////////////////////////////
-		$files = array();
-		foreach ( $folders as $path )
-		{
-			foreach ( $this->get_php_files( $path ) as $php_file_path => $dumb )
-			{
-				foreach ( $this->extract_translation_from_php_file( $php_file_path ) as $k => $v )
-				{
-					$real_value = eval( "return $k;" );
-					$found      = false;
-
-					if ( $this->option( 'regex' ) )
-					{
-						try
-						{
-							$r = preg_match( $lemma , $real_value );
-						}
-						catch ( \Exception $e )
-						{
-							$this->writeLine( "<error>The argument is not a valid regular expression:</error>" . str_replace( 'preg_match():' , '' , $e->getMessage() ) );
-							die();
-						}
-						if ( $r === 1 )
-						{
-							$found = true;
-						}
-						else if ( $r === false )
-						{
-							$this->writeError( "The argument is not a valid regular expression" );
-							die();
-						}
-					}
-					else
-					{
-						if ( strpos( $real_value , $lemma ) )
-						{
-							$found = true;
-						}
-					}
-
-
-					if ( $found === true )
-					{
-						if ( $this->option( 'short' ) )
-						{
-							$php_file_path = $this->get_short_path( $php_file_path );
-						}
-						$files[] = $php_file_path;
-						break;
-					}
-				}
-			}
-		}
-
-		if ( count( $files ) > 0 )
-		{
-			$this->writeLine( 'Lemma <info>' . $lemma . '</info> has been found in:' );
-			foreach ( $files as $file )
-			{
-				$this->writeLine( '    <info>' . $file . '</info>' );
-			}
-		}
+		$this->writeError( 'Version 1.x of this package is deprecated and no more works.');
+		$this->writeLine( 'Go to <info>https://github.com/potsky/laravel-localization-helpers</info> and choose the correct package version according to your laravel version');
+		return 1;
 	}
-
 
 	/**
 	 * Get the console command arguments.
