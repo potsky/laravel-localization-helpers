@@ -3,11 +3,17 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
-[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=master&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=master)
+[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=5.1)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=5.1)
+[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=5.1&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=5.1)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
-LLH is a set of tools to help you manage translations in your Laravel project. Run the `localization:missing` artisan command to automatically generate lang files according to your PHP sources.
+## This branch is for Laravel 5.1
+
+LLH is a set of artisan commands to manage translations in your Laravel project. Key features :
+
+- parse your code and generate lang files
+- translate your sentences automatically, thanks to Microsoft Translator API
+- configure output according to your code style
 
 ## Table of contents
 
@@ -27,17 +33,17 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
 |:---------|:----------
 | 4.2.x    | 2.0.x
 | 5.0.x    | 2.1.x
-| 5.1.x    | 2.1.x
-| 5.2.x    | 2.1.x
+| 5.1.x    | 2.2.x
+| 5.2.x    | 2.3.x
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
-    ```
-    "potsky/laravel-localization-helpers" : "~2.1"
+    ```php
+    "potsky/laravel-localization-helpers" : "2.2.*"
     ```
 
 - Update your installation : `composer update`
 - Add the following line in the `providers` array of the `config/app.php` configuration file :
-    ```
+    ```php
     'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider'
     ```
 
@@ -53,7 +59,7 @@ LLH is a set of tools to help you manage translations in your Laravel project. R
 
 You can add the facade in the Aliases if you need to manage translations in your code :
 
-```
+```php
 'LocalizationHelpers' => 'Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers'
 ```
 
@@ -61,13 +67,15 @@ You can add the facade in the Aliases if you need to manage translations in your
 
 To configure your fresh installed package, please create a configuration file by executing :
 
-- Laravel 4: `php artisan config:publish potsky/laravel-localization-helpers`
-- Laravel 5: `php artisan vendor:publish`
+```bash
+php artisan vendor:publish
+```
 
 Then you can modify the configuration in file :
 
-- Laravel 4: `app/config/packages/potsky/laravel-localization-helpers/config.php`
-- Laravel 5: `app/config/laravel-localization-helpers.php`
+```bash
+app/config/laravel-localization-helpers.php
+```
 
 Add new folders to search for, add your own lang methods or functions, ...
 
@@ -77,16 +85,16 @@ You should not include backup lang files in GIT or other versioning systems.
 
 In your `laravel` folder, add this in `.gitignore` file :
 
-```
+```bash
 # Do not include backup lang files
-app/lang/*/[a-zA-Z]*.[0-9_]*.php
+app/lang/*/[a-zA-Z]*20[0-9][0-9][0-1][0-9][0-3][0-9]_[0-2][0-9][0-5][0-9][0-5][0-9].php
 ```
 
 ## 3. Usage
 
 ### 3.1 Command `localization:missing`
 
-This command parses all your code and generates according lang files in all `lang/XXX/` directories.
+This command parses all your code and generates translations according to lang files in all `lang/XXX/` directories.
 
 Use `php artisan help localization:missing` for more informations about options.
 
@@ -94,37 +102,46 @@ Use `php artisan help localization:missing` for more informations about options.
 
 ##### Generate all lang files
 
-```
+```bash
 php artisan localization:missing
 ```
 
 ##### Generate all lang files without prompt
 
-```
+```bash
 php artisan localization:missing -n
 ```
 
 ##### Generate all lang files without backuping old files
 
-```
+```bash
 php artisan localization:missing -b
 ```
 
+##### Generate all lang files with automatic translations
+
+```bash
+php artisan localization:missing -t
+```
+
+> You need to set your Microsoft Bing Translator credentials
+> More informations here : <https://github.com/potsky/microsoft-translator-php-sdk#user-content-2-configuration>
+
 ##### Generate all lang files without keeping obsolete lemmas
 
-```
+```bash
 php artisan localization:missing -o
 ```
 
 ##### Generate all lang files without any comment for new found lemmas
 
-```
+```bash
 php artisan localization:missing -c
 ```
 
 ##### Generate all lang files without header comment
 
-```
+```bash
 php artisan localization:missing -d
 ```
 
@@ -132,7 +149,7 @@ php artisan localization:missing -d
 
 3 commands below produce the same output:
 
-```
+```bash
 php artisan localization:missing
 php artisan localization:missing -l
 php artisan localization:missing -l "TODO: %LEMMA"
@@ -142,25 +159,25 @@ You can customize the default generated values for unknown lemmas.
 
 The following command let new values empty:
 
-```
+```bash
 php artisan localization:missing -l ""
 ```
 
 The following command prefixes all lemma values with "Please translate this : "
 
-```
+```bash
 php artisan localization:missing -l "Please translate this : %LEMMA"
 ```
 
 The following command set all lemma values to "Please translate this !"
 
-```
+```bash
 php artisan localization:missing -l 'Please translate this !'
 ```
 
 ##### Silent option for shell integration
 
-```
+```bash
 #!/bin/bash
 
 php artisan localization:missing -s
@@ -173,25 +190,25 @@ fi
 
 ##### Simulate all operations (do not write anything) with a dry run
 
-```
+```bash
 php artisan localization:missing -r
 ```
 
 ##### Open all must-edit files at the end of the process
 
-```
+```bash
 php artisan localization:missing -e
 ```
 
 You can edit the editor path in your configuration file. By default, editor is *Sublime Text* on *Mac OS X* :
 
-```
+```php
 'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl'
 ```
 
 For *PHPStorm* on *Mac OS X*:
 
-```
+```php
 'editor_command_line' => '/usr/local/bin/phpstorm'
 ```
 
@@ -205,25 +222,25 @@ Use `php artisan help localization:find` for more informations about options.
 
 ##### Find regular lemma
 
-```
+```bash
 php artisan localization:find Search
 ```
 
 ##### Find regular lemma with verbose
 
-```
+```bash
 php artisan localization:find -v Search
 ```
 
 ##### Find regular lemma with short path displayed
 
-```
+```bash
 php artisan localization:find -s "Search me"
 ```
 
 ##### Find lemma with a regular expression
 
-```
+```bash
 php artisan localization:find -s -r "@Search.*@"
 php artisan localization:find -s -r "/.*me$/"
 ```
@@ -240,13 +257,13 @@ Use `php artisan help localization:clear` for more informations about options.
 
 ##### Remove all backups
 
-```
+```bash
 php artisan localization:clear
 ```
 
 ##### Remove backups older than 7 days
 
-```
+```bash
 php artisan localization:clear -d 7
 ```
 
@@ -262,21 +279,23 @@ You need to update your composer file to set the correct version.
 
 ## 6. Change Log
 
-### v2.x.1
+### v2.x.0
 
 - new command `localization:clear` to remove backups
-- new command `localization:translate` to translate a sentence with Bing Translator
-- new options to specify output formatting
-- new option to specify flat arrays style output ([https://github.com/potsky/laravel-localization-helpers/issues/18](18))
+- new option to specify output formatting ([#17](https://github.com/potsky/laravel-localization-helpers/issues/17))
+- new option to specify flat arrays style output ([#18](https://github.com/potsky/laravel-localization-helpers/issues/18))
 - new option to let the command translate sentences for you with Bing Translator
-- new lemma are now marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
+- new translations are now:
+	- marked with the `TODO:` prefix by default (*if you ran two times the missing artisan command without translating lemma next to the first run, your missing translation were lost in the lang file. Now by default, just search for TODO in your lang file!*)
+	- translated of course if option `t` is used
+	- shorten to their minimal value ( `trans( 'message.child.this is a text' )` will now generate `['child'] => 'TODO: this is a text',` and no more `['child'] => 'TODO: child.this is a text',`)   
 
 Internally :
 
 - totally refactored
 - unit tests
 - test coverage
-- facade to let you use localization helpers in your code
+- facade to let you use localization helpers in your code (translations, find missing translations, etc...)
 
 ### v1.3.2
 

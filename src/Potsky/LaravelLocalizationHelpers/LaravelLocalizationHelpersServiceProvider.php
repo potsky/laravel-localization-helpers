@@ -57,7 +57,7 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 
 		$this->app[ 'localization.helpers' ] = $this->app->share( function ( $app )
 		{
-			return new Factory\Manager( $app[ 'config' ] );
+			return new Factory\Localization( new Factory\MessageBag() );
 		} );
 
 		$this->mergeConfigFrom(

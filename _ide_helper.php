@@ -952,7 +952,15 @@ namespace {
         public static function call($command, $parameters = array(), $output = null){
             \Illuminate\Console\Application::call($command, $parameters, $output);
         }
-        
+
+        /**
+         * @return string
+         * @static
+         */
+        public static function output(){
+            return '';
+        }
+
         /**
          * Add a command to the console.
          *
@@ -12626,8 +12634,17 @@ namespace {
 
 	class LocalizationHelpers extends \Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers
 	{
-		public static function test() {
-			return true;
+
+		/**
+		 * Get the lang directory path
+		 *
+		 * @param $lang_folder_path
+		 *
+		 * @return string the path
+		 * @throws \Potsky\LaravelLocalizationHelpers\Factory\Exception
+		 */
+		public static function getLangPath( $lang_folder_path = null )
+		{
 		}
 	}
 

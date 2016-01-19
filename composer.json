@@ -10,11 +10,12 @@
   ],
   "license"           : "GPL-3.0+",
   "require"           : {
-    "laravel/framework"   : "5.2.*",
-    "fabpot/php-cs-fixer" : "^1.11"
+    "laravel/framework"   : "5.1.*",
+    "fabpot/php-cs-fixer" : "^1.11",
+    "potsky/microsoft-translator-php-sdk" : "*"
   },
   "require-dev"       : {
-    "orchestra/testbench"    : "3.2.*",
+    "orchestra/testbench"    : "3.1.*",
     "phpunit/phpunit"        : "^4.0|^5.0",
     "mockery/mockery"        : "^0.9",
     "satooshi/php-coveralls" : "dev-master"
