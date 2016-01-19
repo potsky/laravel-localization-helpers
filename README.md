@@ -38,7 +38,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
-    "potsky/laravel-localization-helpers" : "2.2.*"
+    "potsky/laravel-localization-helpers" : "2.3.*"
     ```
 
 - Update your installation : `composer update`
