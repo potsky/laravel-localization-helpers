@@ -3,8 +3,8 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
-[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers)
+[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=dev)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=dev)
+[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=dev&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=dev&)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
 ## This branch is the current dev branch
