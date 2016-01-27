@@ -21,7 +21,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 1. [Configuration](#2-configuration)
 1. [Usage](#3-usage)
 1. [Support](#4-support)
-1. [Upgrade Notices](#5-upgrade-notice)
+1. [Upgrade Notices](#5-upgrade-notices)
 1. [Change Log](#6-change-log)
 1. [Contribute](#7-contribute)
 
