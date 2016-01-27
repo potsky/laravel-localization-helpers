@@ -275,7 +275,8 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ### From `v1.x.x` to `v2.x.x`
 
-You need to update your composer file to set the correct version.
+- First you need to update your composer file to set the correct version
+- Take a look at the [configuration file](https://github.com/potsky/laravel-localization-helpers/tree/master/src/config) in the package to add new parameters you don't have in your current package configuration file.
 
 ## 6. Change Log
 
