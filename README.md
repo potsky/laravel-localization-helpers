@@ -280,6 +280,10 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ## 6. Change Log
 
+### v2.x.1
+
+- fix a bug when using backup files and when a dot is in your laravel installation path ([#20](https://github.com/potsky/laravel-localization-helpers/issues/20))
+
 ### v2.x.0
 
 - new command `localization:clear` to remove backups
