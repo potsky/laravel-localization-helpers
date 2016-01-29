@@ -413,18 +413,29 @@ class Localization
 	 * Return all lang backup files
 	 *
 	 * @param string $lang_directory the lang directory
+	 * @param string $ext
 	 *
 	 * @return array
 	 */
-	public function getBackupFiles( $lang_directory )
+	public function getBackupFiles( $lang_directory , $ext = 'php' )
 	{
-		$files = $lang_directory . '/*/*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9].php';
+		$files = $lang_directory . '/*/*[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9].' . $ext;
 
 		return glob( $files );
 	}
 
 
-	public function deleteBackupFiles( $lang_folder_path , $days = 0 , $dryRun = false )
+	/**
+	 * Delete backup files
+	 *
+	 * @param string     $lang_folder_path
+	 * @param int        $days
+	 * @param bool|false $dryRun
+	 * @param string     $ext
+	 *
+	 * @return bool
+	 */
+	public function deleteBackupFiles( $lang_folder_path , $days = 0 , $dryRun = false , $ext = 'php' )
 	{
 		if ( $days < 0 )
 		{
@@ -459,7 +470,7 @@ class Localization
 
 		foreach ( $this->getBackupFiles( $dir_lang ) as $file )
 		{
-			$fileDate = $this->getBackupFileDate( $file );
+			$fileDate = $this->getBackupFileDate( $file , $ext );
 
 			// @codeCoverageIgnoreStart
 			// Cannot happen because of glob but safer
@@ -526,17 +537,18 @@ class Localization
 	 * @param array      $folders       An array of folder to search for lemma in
 	 * @param array      $trans_methods An array of PHP lang functions
 	 * @param bool|false $regex         Is lemma a regex ?
-	 * @param bool|false $shortOutput   Output style for fiel paths
+	 * @param bool|false $shortOutput   Output style for file paths
+	 * @param string     $ext
 	 *
 	 * @return array|false
 	 */
-	public function findLemma( $lemma , $folders , $trans_methods , $regex = false , $shortOutput = false )
+	public function findLemma( $lemma , $folders , $trans_methods , $regex = false , $shortOutput = false , $ext = 'php' )
 	{
 		$files = array();
 
 		foreach ( $folders as $path )
 		{
-			foreach ( $this->getFilesWithExtension( $path ) as $php_file_path => $dumb )
+			foreach ( $this->getFilesWithExtension( $path , $ext ) as $php_file_path => $dumb )
 			{
 				foreach ( $this->extractTranslationFromPhpFile( $php_file_path , $trans_methods ) as $k => $v )
 				{
@@ -705,17 +717,32 @@ class Localization
 	}
 
 	/**
+	 * Get the backup file path according to the current file path
+	 *
+	 * @param string $file_lang_path
+	 * @param string $date
+	 * @param string $ext
+	 *
+	 * @return mixed
+	 */
+	public function getBackupPath( $file_lang_path , $date , $ext = 'php' )
+	{
+		return preg_replace( '/\.' . $ext . '$/' , '.' . $date . '.' . $ext , $file_lang_path );
+	}
+
+	/**
 	 * Return the date of a backup file
 	 *
 	 * @param string $file a backup file path
+	 * @param string $ext
 	 *
 	 * @return \DateTime|null
 	 */
-	private function getBackupFileDate( $file )
+	private function getBackupFileDate( $file , $ext = 'php' )
 	{
 		$matches = array();
 
-		if ( preg_match( '@^(.*)([0-9]{8}_[0-9]{6})\\.php$@' , $file , $matches ) === 1 )
+		if ( preg_match( '@^(.*)([0-9]{8}_[0-9]{6})\\.' . $ext . '$@' , $file , $matches ) === 1 )
 		{
 			return \DateTime::createFromFormat( self::BACKUP_DATE_FORMAT , $matches[ 2 ] );
 		}

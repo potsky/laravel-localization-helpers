@@ -110,6 +110,7 @@ class LocalizationMissing extends LocalizationAbstract
 	{
 		$folders       = $this->manager->getPath( $this->folders );
 		$this->display = ! $this->option( 'silent' );
+		$extension     = $this->option( 'php-file-extension' );
 
 		//////////////////////////////////////////////////
 		// Display where translations are searched in //
@@ -129,7 +130,7 @@ class LocalizationMissing extends LocalizationAbstract
 		////////////////////////////////
 		// Parse all lemmas from code //
 		////////////////////////////////
-		$lemmas = $this->manager->extractTranslationsFromFolders( $folders , $this->trans_methods , $this->option( 'php-file-extension' ) );
+		$lemmas = $this->manager->extractTranslationsFromFolders( $folders , $this->trans_methods , $extension );
 
 		if ( count( $lemmas ) === 0 )
 		{
@@ -493,7 +494,7 @@ class LocalizationMissing extends LocalizationAbstract
 
 					foreach ( $job as $file_lang_path => $file_content )
 					{
-						$backup_path = preg_replace( '/\..+$/' , '.' . $now . '.php' , $file_lang_path );
+						$backup_path = $this->manager->getBackupPath( $file_lang_path , $now , $extension );
 
 						if ( ! $this->option( 'dry-run' ) )
 						{
