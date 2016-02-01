@@ -241,6 +241,7 @@ class LocalizationMissing extends LocalizationAbstract
 					{
 						$this->writeLine( '' );
 					}
+
 					$this->writeLine( '    ' . $this->manager->getShortPath( $file_lang_path ) );
 
 					if ( ! is_writable( dirname( $file_lang_path ) ) )
@@ -301,16 +302,29 @@ class LocalizationMissing extends LocalizationAbstract
 					ksort( $welcome_lemmas );
 					ksort( $already_lemmas );
 
+					file_put_contents( '/tmp/caca' , "=============== OLD LEMMA =================\n" );
+					file_put_contents( '/tmp/caca' , print_r( $old_lemmas , true ) , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , "\n=============== NEW LEMMA =================\n" , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , print_r( $new_lemmas , true ) , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , "\n=============== OBSOLETE LEMMA =================\n" , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , print_r( $obsolete_lemmas , true ) , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , "\n=============== WELCOME LEMMA =================\n" , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , print_r( $welcome_lemmas , true ) , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , "\n=============== ALREADY LEMMA =================\n" , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , print_r( $already_lemmas , true ) , FILE_APPEND );
+					file_put_contents( '/tmp/caca' , "\n=============== THEN... =================\n" , FILE_APPEND );
+
 					//////////////////////////
 					// Deal with new lemmas //
 					//////////////////////////
 					if ( count( $welcome_lemmas ) > 0 )
 					{
-						$display_already_comment = true;
-						$something_to_do         = true;
-						$there_are_new           = true;
-						$this->writeInfo( "        " . count( $welcome_lemmas ) . " new strings to translate" );
+						$display_already_comment                 = true;
+						$something_to_do                         = true;
+						$there_are_new                           = true;
 						$final_lemmas[ "POTSKY___NEW___POTSKY" ] = "POTSKY___NEW___POTSKY";
+
+						$this->writeInfo( "        " . count( $welcome_lemmas ) . " new strings to translate" );
 
 						foreach ( $welcome_lemmas as $key => $value )
 						{
@@ -364,6 +378,8 @@ class LocalizationMissing extends LocalizationAbstract
 					///////////////////////////////
 					if ( count( $obsolete_lemmas ) > 0 )
 					{
+						$protected_already_included = false;
+
 						// Remove all dynamic fields
 						foreach ( $obsolete_lemmas as $key => $value )
 						{
@@ -371,7 +387,21 @@ class LocalizationMissing extends LocalizationAbstract
 							{
 								if ( ( strpos( $key , '.' . $remove . '.' ) !== false ) || starts_with( $key , $remove . '.' ) )
 								{
+									if ( $this->option( 'verbose' ) )
+									{
+										$this->writeLine( "        <comment>" . $key . "</comment> is protected as a dynamic lemma" );
+									}
+
 									unset( $obsolete_lemmas[ $key ] );
+
+									if ( $protected_already_included === false )
+									{
+										$final_lemmas[ "POTSKY___PROTECTED___POTSKY" ] = "POTSKY___PROTECTED___POTSKY";
+										$protected_already_included                    = true;
+									}
+
+									// Given that this lemma is never obsolete, we need to send it back to the final lemma array
+									array_set( $final_lemmas , $key , $value );
 								}
 							}
 						}
@@ -414,11 +444,13 @@ class LocalizationMissing extends LocalizationAbstract
 							array(
 								"'POTSKY___NEW___POTSKY' => 'POTSKY___NEW___POTSKY'," ,
 								"'POTSKY___OLD___POTSKY' => 'POTSKY___OLD___POTSKY'," ,
+								"'POTSKY___PROTECTED___POTSKY' => 'POTSKY___PROTECTED___POTSKY'," ,
 								"'POTSKY___OBSOLETE___POTSKY' => 'POTSKY___OBSOLETE___POTSKY'," ,
 							) ,
 							array(
 								'//============================== New strings to translate ==============================//' ,
 								( $display_already_comment === true ) ? '//==================================== Translations ====================================//' : '' ,
+								'//============================== Dynamic protected strings =============================//' ,
 								'//================================== Obsolete strings ==================================//' ,
 							) ,
 							$content

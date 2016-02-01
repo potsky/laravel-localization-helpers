@@ -280,6 +280,12 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ## 6. Change Log
 
+### v2.x.2
+
+- show obsolete lemma when it is in array ([#21](https://github.com/potsky/laravel-localization-helpers/issues/21))
+- fix a bug when using obsolete option ([#22](https://github.com/potsky/laravel-localization-helpers/issues/22))
+
+
 ### v2.x.1
 
 - fix a bug when using backup files and when a dot is in your laravel installation path ([#20](https://github.com/potsky/laravel-localization-helpers/issues/20))
