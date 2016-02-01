@@ -302,18 +302,6 @@ class LocalizationMissing extends LocalizationAbstract
 					ksort( $welcome_lemmas );
 					ksort( $already_lemmas );
 
-					file_put_contents( '/tmp/caca' , "=============== OLD LEMMA =================\n" );
-					file_put_contents( '/tmp/caca' , print_r( $old_lemmas , true ) , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , "\n=============== NEW LEMMA =================\n" , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , print_r( $new_lemmas , true ) , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , "\n=============== OBSOLETE LEMMA =================\n" , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , print_r( $obsolete_lemmas , true ) , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , "\n=============== WELCOME LEMMA =================\n" , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , print_r( $welcome_lemmas , true ) , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , "\n=============== ALREADY LEMMA =================\n" , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , print_r( $already_lemmas , true ) , FILE_APPEND );
-					file_put_contents( '/tmp/caca' , "\n=============== THEN... =================\n" , FILE_APPEND );
-
 					//////////////////////////
 					// Deal with new lemmas //
 					//////////////////////////
