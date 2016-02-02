@@ -1,6 +1,7 @@
 <?php
 
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class Gh22Tests extends TestCase
 {
@@ -45,13 +46,15 @@ return array(
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh22/phase1' );
 
+		$output = new BufferedOutput;
+
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
-		) );
+		) , $output );
 
-		$this->assertContains( '1 obsolete string' , Artisan::output() );
+		$this->assertContains( '1 obsolete string' , $output->fetch() );
 
 		$lemmas = require( self::$langFile );
 
@@ -67,14 +70,16 @@ return array(
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh22/phase1' );
 
+		$output = new BufferedOutput;
+
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
 			'--no-obsolete'    => true ,
-		) );
+		) , $output );
 
-		$this->assertContains( '1 obsolete string' , Artisan::output() );
+		$this->assertContains( '1 obsolete string' , $output->fetch() );
 
 		$lemmas = require( self::$langFile );
 

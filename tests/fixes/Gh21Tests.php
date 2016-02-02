@@ -1,6 +1,7 @@
 <?php
 
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 class Gh21Tests extends TestCase
 {
@@ -65,14 +66,16 @@ return array (
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh21/code' );
 
+		$output = new BufferedOutput;
+
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
 			'--verbose'        => true ,
-		) );
+		) , $output );
 
-		$this->assertContains( '1 obsolete string' , Artisan::output() );
+		$this->assertContains( '1 obsolete string' , $output->fetch() );
 
 		$this->assertArrayHasKey( 'LLH:obsolete' ,  require( self::$langFile ) );
 	}
@@ -88,13 +91,15 @@ return array (
 		// Set content in lang file with obsolete lemma
 		File::put( self::$langFile , self::$defaultLangWithObsoleteContent );
 
+		$output = new BufferedOutput;
+
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
-		) );
+		) , $output );
 
-		$this->assertContains( '1 obsolete string' , Artisan::output() );
+		$this->assertContains( '1 obsolete string' , $output->fetch() );
 
 		$lemmas = require( self::$langFile );
 
