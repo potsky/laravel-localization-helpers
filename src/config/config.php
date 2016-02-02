@@ -121,6 +121,31 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Obsolete lemma prefix
+	|--------------------------------------------------------------------------
+	|
+	| If you want to keep obsolete lemma in your lang file, they will be stored
+	| in a sub-array. If not stored in a sub-array, LLH will not be able to
+	| separate child lemma.
+	|
+	| eg : message.section.dog is used
+	|      message.section.cat is not used anymore
+	| then : message.section.dog will be kept
+	|        LLH:obsolete.message.section.cat will be generated
+	|
+	| : is used in the key because : is a special char in laravel lang lemma and
+	| : are automatically not scanned by LLH.
+	|
+	| Do not change this parameter between 2 commands launch because LLH will not
+	| be able to find obsolete lemma in the second pass and you will need to
+	| clean up obsolete lemma manually
+	|
+	*/
+	'obsolete_array_key' => 'LLH:obsolete',
+
+
+	/*
+	|--------------------------------------------------------------------------
 	| Editor
 	|--------------------------------------------------------------------------
 	|

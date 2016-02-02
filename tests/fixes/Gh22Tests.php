@@ -41,7 +41,7 @@ return array(
 	/**
 	 * https://github.com/potsky/laravel-localization-helpers/issues/22
 	 */
-	public function CACAtestObsoleteKeyIsNotRemoved()
+	public function testObsoleteKeyIsNotRemoved()
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh22/phase1' );
 
@@ -51,16 +51,19 @@ return array(
 			'--no-backup'      => true ,
 		) );
 
-		$this->assertContains( '1 obsolete strings' , Artisan::output() );
+		$this->assertContains( '1 obsolete string' , Artisan::output() );
 
-		$this->assertArrayHasKey( 'section' , require( self::$langFile ) );
+		$lemmas = require( self::$langFile );
+
+		$this->assertArrayHasKey( 'LLH:obsolete' ,  $lemmas );
+		$this->assertArrayHasKey( 'section' ,  $lemmas['LLH:obsolete'] );
 	}
 
 
 	/**
 	 * https://github.com/potsky/laravel-localization-helpers/issues/22
 	 */
-	public function CACAtestObsoleteKeyIsRemovedWhenSettingOption()
+	public function testObsoleteKeyIsRemovedWhenSettingOption()
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh22/phase1' );
 
@@ -71,15 +74,17 @@ return array(
 			'--no-obsolete'    => true ,
 		) );
 
-		$this->assertContains( '1 obsolete strings' , Artisan::output() );
+		$this->assertContains( '1 obsolete string' , Artisan::output() );
 
-		$this->assertArrayNotHasKey( 'section' , require( self::$langFile ) );
+		$lemmas = require( self::$langFile );
+
+		$this->assertArrayNotHasKey( 'LLH:obsolete' ,  $lemmas );
 	}
 
 	/**
 	 * https://github.com/potsky/laravel-localization-helpers/issues/22
 	 */
-	public function CACAtestDynamicFieldShouldNotBeObsoleteWhenNotAddingANewLemma()
+	public function testDynamicFieldShouldNotBeObsoleteWhenNotAddingANewLemma()
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh22/phase1' );
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'never_obsolete_keys' , array( 'section' ) );
