@@ -13,19 +13,23 @@ abstract class LocalizationAbstract extends Command implements MessageBagInterfa
 	const ERROR   = 1;
 
 	/**
+	 * Init log file for first log
+	 *
+	 * @var boolean
+	 */
+	protected static $logInFileFirst = true;
+	/**
 	 * Config repository.
 	 *
 	 * @var \Illuminate\Config\Repository
 	 */
 	protected $configRepository;
-
 	/**
 	 * The localization manager
 	 *
 	 * @var Localization
 	 */
 	protected $manager;
-
 	/**
 	 * Should commands display something
 	 *
@@ -122,4 +126,34 @@ abstract class LocalizationAbstract extends Command implements MessageBagInterfa
 			parent::error( $s );
 		}
 	}
+
+	/**
+	 * Log in a file for debug purpose only
+	 *
+	 * @param mixed  $txt
+	 * @param string $logFile
+	 *
+ 	 * @codeCoverageIgnore
+	 */
+	protected function logInFile( $txt = '' , $logFile = '/tmp/llh.log' )
+	{
+		if ( ! is_string( $txt ) )
+		{
+			$txt = print_r( $txt , true );
+		}
+
+		$txt = '==> ' . date( 'Y/m/d H:i:s' ) . ' ==> ' . $txt . "\n";
+
+		if ( self::$logInFileFirst === true )
+		{
+			file_put_contents( $logFile , $txt );
+
+			self::$logInFileFirst = false;
+		}
+		else
+		{
+			file_put_contents( $logFile , $txt , FILE_APPEND );
+		}
+	}
+
 }

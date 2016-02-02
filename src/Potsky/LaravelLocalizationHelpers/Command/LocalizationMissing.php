@@ -83,6 +83,15 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $code_style_level = null;
 
 	/**
+	 * The obsolete lemma array key in which to store obsolete lemma
+	 *
+	 * @var  string
+	 *
+	 * @since 2.x.2
+	 */
+	protected $obsolete_array_key = 'LLH:obsolete';
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -99,6 +108,14 @@ class LocalizationMissing extends LocalizationAbstract
 		$this->editor              = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
 		$this->code_style_fixers   = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
 		$this->code_style_level    = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
+
+		// @since 2.x.2
+		// Users who have not upgraded their configuration file must have a default
+		// but users may want to set it to null to keep the old buggy behaviour
+		if ( Config::has( Localization::PREFIX_LARAVEL_CONFIG . 'obsolete_array_key' ) )
+		{
+			$this->obsolete_array_key = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'obsolete_array_key' );
+		}
 	}
 
 	/**
@@ -108,9 +125,10 @@ class LocalizationMissing extends LocalizationAbstract
 	 */
 	public function fire()
 	{
-		$folders       = $this->manager->getPath( $this->folders );
-		$this->display = ! $this->option( 'silent' );
-		$extension     = $this->option( 'php-file-extension' );
+		$folders         = $this->manager->getPath( $this->folders );
+		$this->display   = ! $this->option( 'silent' );
+		$extension       = $this->option( 'php-file-extension' );
+		$obsolete_prefix = ( empty( $this->obsolete_array_key ) ) ? '' : $this->obsolete_array_key . '.';
 
 		//////////////////////////////////////////////////
 		// Display where translations are searched in //
@@ -195,6 +213,7 @@ class LocalizationMissing extends LocalizationAbstract
 		{
 			switch ( $e->getCode() )
 			{
+				//@codeCoverageIgnoreStart
 				case Localization::NO_LANG_FOLDER_FOUND_IN_THESE_PATHS:
 					$this->writeError( "No lang folder found in these paths:" );
 					foreach ( $e->getParameter() as $path )
@@ -202,6 +221,7 @@ class LocalizationMissing extends LocalizationAbstract
 						$this->writeError( "- " . $path );
 					}
 					break;
+				//@codeCoverageIgnoreEnd
 
 				case Localization::NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH:
 					$this->writeError( 'No lang folder found in your custom path: "' . $e->getParameter() . '"' );
@@ -241,6 +261,7 @@ class LocalizationMissing extends LocalizationAbstract
 					{
 						$this->writeLine( '' );
 					}
+
 					$this->writeLine( '    ' . $this->manager->getShortPath( $file_lang_path ) );
 
 					if ( ! is_writable( dirname( $file_lang_path ) ) )
@@ -287,16 +308,37 @@ class LocalizationMissing extends LocalizationAbstract
 					}
 
 					/** @noinspection PhpIncludeInspection */
-					$a                       = include( $file_lang_path );
-					$old_lemmas              = ( is_array( $a ) ) ? array_dot( $a ) : array();
-					$new_lemmas              = array_dot( $array );
-					$final_lemmas            = array();
-					$display_already_comment = false;
-					$something_to_do         = false;
-					$i                       = 0;
-					$obsolete_lemmas         = array_diff_key( $old_lemmas , $new_lemmas );
-					$welcome_lemmas          = array_diff_key( $new_lemmas , $old_lemmas );
-					$already_lemmas          = array_intersect_key( $old_lemmas , $new_lemmas );
+					$a                        = include( $file_lang_path );
+					$old_lemmas_with_obsolete = ( is_array( $a ) ) ? array_dot( $a ) : array();
+					$new_lemmas               = array_dot( $array );
+					$final_lemmas             = array();
+					$display_already_comment  = false;
+					$something_to_do          = false;
+					$i                        = 0;
+
+					// Remove the obsolete prefix key
+					$old_lemmas             = array();
+					$obsolete_prefix_length = strlen( $obsolete_prefix );
+					foreach ( $old_lemmas_with_obsolete as $key => $value )
+					{
+						if ( starts_with( $key , $obsolete_prefix ) )
+						{
+							$key = substr( $key , $obsolete_prefix_length );
+							if ( ! isset( $old_lemmas[ $key ] ) )
+							{
+								$old_lemmas[ $key ] = $value;
+							}
+						}
+						else
+						{
+							$old_lemmas[ $key ] = $value;
+						}
+					}
+
+					$obsolete_lemmas = array_diff_key( $old_lemmas , $new_lemmas );
+					$welcome_lemmas  = array_diff_key( $new_lemmas , $old_lemmas );
+					$already_lemmas  = array_intersect_key( $old_lemmas , $new_lemmas );
+
 					ksort( $obsolete_lemmas );
 					ksort( $welcome_lemmas );
 					ksort( $already_lemmas );
@@ -306,11 +348,12 @@ class LocalizationMissing extends LocalizationAbstract
 					//////////////////////////
 					if ( count( $welcome_lemmas ) > 0 )
 					{
-						$display_already_comment = true;
-						$something_to_do         = true;
-						$there_are_new           = true;
-						$this->writeInfo( "        " . count( $welcome_lemmas ) . " new strings to translate" );
+						$display_already_comment                 = true;
+						$something_to_do                         = true;
+						$there_are_new                           = true;
 						$final_lemmas[ "POTSKY___NEW___POTSKY" ] = "POTSKY___NEW___POTSKY";
+
+						$this->writeInfo( '        ' . ( $c = count( $welcome_lemmas ) ) . ' new string' . Tools::getPlural( $c ) . ' to translate' );
 
 						foreach ( $welcome_lemmas as $key => $value )
 						{
@@ -348,7 +391,7 @@ class LocalizationMissing extends LocalizationAbstract
 					{
 						if ( $this->option( 'verbose' ) )
 						{
-							$this->writeLine( "        " . count( $already_lemmas ) . " already translated strings" );
+							$this->writeLine( '        ' . ( $c = count( $already_lemmas ) ) . ' already translated string' . Tools::getPlural( $c ) );
 						}
 
 						$final_lemmas[ "POTSKY___OLD___POTSKY" ] = "POTSKY___OLD___POTSKY";
@@ -364,6 +407,8 @@ class LocalizationMissing extends LocalizationAbstract
 					///////////////////////////////
 					if ( count( $obsolete_lemmas ) > 0 )
 					{
+						$protected_already_included = false;
+
 						// Remove all dynamic fields
 						foreach ( $obsolete_lemmas as $key => $value )
 						{
@@ -371,31 +416,53 @@ class LocalizationMissing extends LocalizationAbstract
 							{
 								if ( ( strpos( $key , '.' . $remove . '.' ) !== false ) || starts_with( $key , $remove . '.' ) )
 								{
+									if ( $this->option( 'verbose' ) )
+									{
+										$this->writeLine( "        <comment>" . $key . "</comment> is protected as a dynamic lemma" );
+									}
+
 									unset( $obsolete_lemmas[ $key ] );
+
+									if ( $protected_already_included === false )
+									{
+										$final_lemmas[ "POTSKY___PROTECTED___POTSKY" ] = "POTSKY___PROTECTED___POTSKY";
+										$protected_already_included                    = true;
+									}
+
+									// Given that this lemma is never obsolete, we need to send it back to the final lemma array
+									array_set( $final_lemmas , $key , $value );
 								}
 							}
 						}
 					}
 
+
+					/////////////////////////////////////
+					// Fill the final lemmas array now //
+					/////////////////////////////////////
 					if ( count( $obsolete_lemmas ) > 0 )
 					{
 						$display_already_comment = true;
 						$something_to_do         = true;
-						$this->writeComment( $this->option( 'no-obsolete' )
-							? "        " . count( $obsolete_lemmas ) . " obsolete strings (will be deleted)"
-							: "        " . count( $obsolete_lemmas ) . " obsolete strings (can be deleted manually in the generated file)"
-						);
-						$final_lemmas[ "POTSKY___OBSOLETE___POTSKY" ] = "POTSKY___OBSOLETE___POTSKY";
 
-						foreach ( $obsolete_lemmas as $key => $value )
+						if ( $this->option( 'no-obsolete' ) )
 						{
-							if ( $this->option( 'verbose' ) )
+							$this->writeComment( "        " . ( $c = count( $obsolete_lemmas ) ) . ' obsolete string' . Tools::getPlural( $c ) . ' (will be deleted)' );
+						}
+						else
+						{
+							$this->writeComment( "        " . ( $c = count( $obsolete_lemmas ) ) . ' obsolete string' . Tools::getPlural( $c ) . ' (can be deleted manually in the generated file)' );
+
+							$final_lemmas[ "POTSKY___OBSOLETE___POTSKY" ] = "POTSKY___OBSOLETE___POTSKY";
+
+							foreach ( $obsolete_lemmas as $key => $value )
 							{
-								$this->writeLine( "            <comment>" . $key . "</comment>" );
-							}
-							if ( ! $this->option( 'no-obsolete' ) )
-							{
-								array_set( $final_lemmas , $key , $value );
+								if ( $this->option( 'verbose' ) )
+								{
+									$this->writeLine( "            <comment>" . $key . "</comment>" );
+								}
+
+								array_set( $final_lemmas , $obsolete_prefix . $key , $value );
 							}
 						}
 					}
@@ -414,11 +481,13 @@ class LocalizationMissing extends LocalizationAbstract
 							array(
 								"'POTSKY___NEW___POTSKY' => 'POTSKY___NEW___POTSKY'," ,
 								"'POTSKY___OLD___POTSKY' => 'POTSKY___OLD___POTSKY'," ,
+								"'POTSKY___PROTECTED___POTSKY' => 'POTSKY___PROTECTED___POTSKY'," ,
 								"'POTSKY___OBSOLETE___POTSKY' => 'POTSKY___OBSOLETE___POTSKY'," ,
 							) ,
 							array(
 								'//============================== New strings to translate ==============================//' ,
 								( $display_already_comment === true ) ? '//==================================== Translations ====================================//' : '' ,
+								'//============================== Dynamic protected strings =============================//' ,
 								'//================================== Obsolete strings ==================================//' ,
 							) ,
 							$content
