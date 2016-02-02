@@ -158,12 +158,14 @@ class Localization
 				if ( file_exists( $path ) )
 				{
 					return $path;
+					//@codeCoverageIgnoreStart
 				}
 			}
 
 			$e = new Exception( '' , self::NO_LANG_FOLDER_FOUND_IN_THESE_PATHS );
 			$e->setParameter( $paths );
 			throw $e;
+			//@codeCoverageIgnoreEnd
 		}
 		else
 		{
@@ -450,6 +452,7 @@ class Localization
 		{
 			switch ( $e->getCode() )
 			{
+				//@codeCoverageIgnoreStart
 				case self::NO_LANG_FOLDER_FOUND_IN_THESE_PATHS:
 					$this->messageBag->writeError( "No lang folder found in these paths:" );
 					foreach ( $e->getParameter() as $path )
@@ -457,6 +460,7 @@ class Localization
 						$this->messageBag->writeError( "- " . $path );
 					}
 					break;
+				//@codeCoverageIgnoreEnd
 
 				case self::NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH:
 					$this->messageBag->writeError( 'No lang folder found in your custom path: "' . $e->getParameter() . '"' );
