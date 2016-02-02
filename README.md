@@ -273,12 +273,21 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ## 5. Upgrade notices
 
+### From `v2.x.1` to `v2.x.2`
+
+- Parameter `obsolete_array_key` has been added in the [configuration file](https://github.com/potsky/laravel-localization-helpers/tree/master/src/config). Add it in your configuration file.
+
 ### From `v1.x.x` to `v2.x.x`
 
 - First you need to update your composer file to set the correct version
 - Take a look at the [configuration file](https://github.com/potsky/laravel-localization-helpers/tree/master/src/config) in the package to add new parameters you don't have in your current package configuration file.
 
 ## 6. Change Log
+
+### v2.x.2
+
+- show obsolete lemma when it is in array ([#21](https://github.com/potsky/laravel-localization-helpers/issues/21))
+- fix a bug when using obsolete option ([#22](https://github.com/potsky/laravel-localization-helpers/issues/22))
 
 ### v2.x.1
 
