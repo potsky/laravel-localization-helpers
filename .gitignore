@@ -5,3 +5,4 @@ composer.lock
 .idea
 coverage
 /tmp*
+_ide_helper.php
