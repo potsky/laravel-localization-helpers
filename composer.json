@@ -3,9 +3,7 @@
     "description" : "An artisan command package for easy translation management",
     "authors"     : [
         {
-            "name"     : "Potsky",
-            "email"    : "potsky@me.com",
-            "homepage" : "http://www.potsky.com"
+            "name"     : "Potsky"
         }
     ],
     "license" : "GPL-3.0+",
