@@ -284,6 +284,11 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ## 6. Change Log
 
+### v2.x.3
+
+- new: adding possibility to disable check for obsolete lemmas ([#27](https://github.com/potsky/laravel-localization-helpers/pull/27))
+- fix: Short-Option for "output-flat" and "php-file-extension" changed because the two-letter-code doesn't work ([#27](https://github.com/potsky/laravel-localization-helpers/pull/27))
+
 ### v2.x.2
 
 - show obsolete lemma when it is in array ([#21](https://github.com/potsky/laravel-localization-helpers/issues/21))
