@@ -339,6 +339,12 @@ class LocalizationMissing extends LocalizationAbstract
 					$welcome_lemmas  = array_diff_key( $new_lemmas , $old_lemmas );
 					$already_lemmas  = array_intersect_key( $old_lemmas , $new_lemmas );
 
+					// disable check for obsolete lemma and consolidate with already_lemmas
+					if ( $this->option( 'disable-obsolete-check' ) ){
+						$already_lemmas = array_unique($obsolete_lemmas + $already_lemmas);
+						$obsolete_lemmas = [];
+					}
+
 					ksort( $obsolete_lemmas );
 					ksort( $welcome_lemmas );
 					ksort( $already_lemmas );
@@ -668,9 +674,10 @@ class LocalizationMissing extends LocalizationAbstract
 			array( 'no-comment' , 'c' , InputOption::VALUE_NONE , 'Do not add comments in lang files for lemma definition' ) ,
 			array( 'no-date' , 'd' , InputOption::VALUE_NONE , 'Do not add the date of execution in the lang files' ) ,
 			array( 'no-obsolete' , 'o' , InputOption::VALUE_NONE , 'Do not write obsolete lemma' ) ,
-			array( 'output-flat' , 'of' , InputOption::VALUE_NONE , 'Output arrays are flat (do not use sub-arrays and keep dots in lemma)' ) ,
+			array( 'output-flat' , 'w' , InputOption::VALUE_NONE , 'Output arrays are flat (do not use sub-arrays and keep dots in lemma)' ) ,
 			array( 'silent' , 's' , InputOption::VALUE_NONE , 'Use this option to only return the exit code (use $? in shell to know whether there are missing lemma or nt)' ) ,
-			array( 'php-file-extension' , 'ex' , InputOption::VALUE_OPTIONAL , 'PHP file extension' , 'php' ) ,
+			array( 'php-file-extension' , 'x' , InputOption::VALUE_OPTIONAL , 'PHP file extension' , 'php' ) ,
+			array( 'disable-obsolete-check' , 'z' , InputOption::VALUE_NONE , 'Use this option to disable check for obsolete lemmas' ) ,
 		);
 	}
 
