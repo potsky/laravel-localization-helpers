@@ -51,30 +51,30 @@ class CommandFindTests extends TestCase
 
 		$trans_methods = array(
 			'trans'        => array(
-				'@trans\(\s*(\'.*\')\s*(,.*)*\)@U' ,
-				'@trans\(\s*(".*")\s*(,.*)*\)@U' ,
+				'@trans\(\s*(\'.*\')\s*(,\s*.*)*\)@U' ,
+				'@trans\(\s*(".*")\s*(,\s*.*)*\)@U' ,
 			) ,
 			'Lang::Get'    => array(
-				'@Lang::Get\(\s*(\'.*\')\s*(,.*)*\)@U' ,
-				'@Lang::Get\(\s*(".*")\s*(,.*)*\)@U' ,
-				'@Lang::get\(\s*(\'.*\')\s*(,.*)*\)@U' ,
-				'@Lang::get\(\s*(".*")\s*(,.*)*\)@U' ,
+				'@Lang::Get\(\s*(\'.*\')\s*(,\s*.*)*\)@U' ,
+				'@Lang::Get\(\s*(".*")\s*(,\s*.*)*\)@U' ,
+				'@Lang::get\(\s*(\'.*\')\s*(,\s*.*)*\)@U' ,
+				'@Lang::get\(\s*(".*")\s*(,\s*.*)*\)@U' ,
 			) ,
 			'trans_choice' => array(
-				'@trans_choice\(\s*(\'.*\')\s*,.*\)@U' ,
-				'@trans_choice\(\s*(".*")\s*,.*\)@U' ,
+				'@trans_choice\(\s*(\'.*\')\s*,\s*.*\)@U' ,
+				'@trans_choice\(\s*(".*")\s*,\s*.*\)@U' ,
 			) ,
 			'Lang::choice' => array(
-				'@Lang::choice\(\s*(\'.*\')\s*,.*\)@U' ,
-				'@Lang::choice\(\s*(".*")\s*,.*\)@U' ,
+				'@Lang::choice\(\s*(\'.*\')\s*,\s*.*\)@U' ,
+				'@Lang::choice\(\s*(".*")\s*,\s*.*\)@U' ,
 			) ,
 			'@lang'        => array(
-				'@\@lang\(\s*(\'.*\')\s*(,.*)*\)@U' ,
-				'@\@lang\(\s*(".*")\s*(,.*)*\)@U' ,
+				'@\@lang\(\s*(\'.*\')\s*(,\s*.*)*\)@U' ,
+				'@\@lang\(\s*(".*")\s*(,\s*.*)*\)@U' ,
 			) ,
 			'@choice'      => array(
-				'@\@choice\(\s*(\'.*\')\s*,.*\)@U' ,
-				'@\@choice\(\s*(".*")\s*,.*\)@U' ,
+				'@\@choice\(\s*(\'.*\')\s*,\s*.*\)@U' ,
+				'@\@choice\(\s*(".*")\s*,\s*.*\)@U' ,
 			) ,
 		);
 

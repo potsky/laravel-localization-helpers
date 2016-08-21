@@ -20,6 +20,11 @@ $c = trans( 'message.lemma.child 1' , array( 'name' => 'potsky' ) );
 $d = trans( 'message.lemma.child 2' , [ 'name' => 'potsky' ] );
 $e = trans_choice( 'message.lemma.child 3' , 0 , array( 'name' => 'potsky' , 'count' => 0 ) );
 $f = trans_choice( 'message.lemma.child 4' , 2 , [ 'name' => 'potsky', 'count' => 2 ] );
+$g = trans_choice(
+	'message.lemma.child 5' , 
+	0 , 
+	array( 'name' => 'potsky' , 'count' => 0 ) 
+);
 
 // method style
 $la = Lang::get( 'message.lemma l' );
@@ -28,6 +33,11 @@ $lc = Lang::get( 'message.lemma.child l1' , array( 'name' => 'potsky' ) );
 $ld = Lang::get( 'message.lemma.child l2' , [ 'name' => 'potsky' ] );
 $le = Lang::choice( 'message.lemma.child l3' , 0 , array( 'name' => 'potsky' , 'count' => 0 ) );
 $lf = Lang::choice( 'message.lemma.child l4' , 2 , [ 'name' => 'potsky', 'count' => 2 ] );
+$lg = Lang::choice(
+	'message.lemma.child l5' , 
+	0 , 
+	array( 'name' => 'potsky' , 'count' => 0 ) 
+);
 
 // check translation
 trans( 'message.dog' );
