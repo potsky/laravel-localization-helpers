@@ -169,6 +169,12 @@ The following command prefixes all lemma values with "Please translate this : "
 php artisan localization:missing -l "Please translate this : %LEMMA"
 ```
 
+The following command set all lemma values to null to provide fallback translations to all missing values.
+
+```bash
+php artisan localization:missing -l null
+```
+
 The following command set all lemma values to "Please translate this !"
 
 ```bash
