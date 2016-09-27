@@ -131,6 +131,24 @@ class CommandMissingTests extends TestCase
 		$this->assertEquals( 'child POTSKY' , $lemmas[ 'lemma.child' ] );
 	}
 
+    /**
+     * - new-value set to null converts translation to null value to provide translation fallback
+     */
+    public function testTranslationFallbacks()
+    {
+        /** @noinspection PhpVoidFunctionResultUsedInspection */
+        $return = Artisan::call( 'localization:missing' , array(
+            '--no-interaction' => true ,
+            '--output-flat'    => true ,
+            '--new-value'      => 'null' ,
+        ) );
+
+        $this->assertEquals( 0 , $return );
+
+        /** @noinspection PhpIncludeInspection */
+        $lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
+        $this->assertEquals( null , $lemmas[ 'lemma.child' ] );
+    }
 
 	/**
 	 * - check a word is correctly translated
