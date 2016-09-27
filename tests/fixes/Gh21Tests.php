@@ -59,7 +59,7 @@ return array (
 
 
 	/**
-	 * https://github.com/potsky/laravel-localization-helpers/issues/22
+	 * https://github.com/potsky/laravel-localization-helpers/issues/21
 	 */
 	public function testObsoleteSubKeyRemoved()
 	{
@@ -80,7 +80,7 @@ return array (
 
 
 	/**
-	 * https://github.com/potsky/laravel-localization-helpers/issues/22
+	 * https://github.com/potsky/laravel-localization-helpers/issues/21
 	 */
 	public function testObsoleteAreKept()
 	{
