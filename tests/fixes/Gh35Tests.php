@@ -26,7 +26,7 @@ class Gh35Tests extends TestCase
 	/**
 	 * https://github.com/potsky/laravel-localization-helpers/issues/35
 	 */
-	public function testObsoleteSubKeyRemoved()
+	public function testMultilineTransShouldBeCatched()
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::$langFolder );
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh35/code' );
@@ -37,8 +37,8 @@ class Gh35Tests extends TestCase
 			'--no-backup'      => true ,
 			'--verbose'        => true ,
 			'--no-date'        => true ,
+			'--no-comment'     => true ,
 		) );
-
 
 		$lemmas = require( self::$langFile );
 

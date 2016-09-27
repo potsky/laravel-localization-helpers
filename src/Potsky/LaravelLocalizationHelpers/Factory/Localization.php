@@ -261,19 +261,6 @@ class Localization
 		}
 	}
 
-    /**
-     * Remove all whitesapces, line-breaks, and tabs from string for better regex recognition
-     *
-     * @param $string
-     *
-     * @return string
-     */
-	protected function minifyString($string){
-        $string = str_replace(PHP_EOL, ' ', $string);
-        $string = preg_replace('/[\r\n]+/', "\n", $string);
-        return preg_replace('/[ \t]+/', ' ', $string);
-    }
-
 	/**
 	 * Extract all translations from the provided file
 	 *
@@ -289,7 +276,7 @@ class Localization
 	public function extractTranslationFromPhpFile( $path , $trans_methods )
 	{
 		$result = array();
-		$string = $this->minifyString(file_get_contents( $path ));
+		$string = Tools::minifyString( file_get_contents( $path ) );
 
 		foreach ( array_flatten( $trans_methods ) as $method )
 		{
@@ -418,7 +405,7 @@ class Localization
 	public function getBackupDate( $offsetDay = 0 )
 	{
 		$now = new \DateTime();
-		$now->sub( new \DateInterval( 'P' . (int)$offsetDay . 'D' ) );
+		$now->sub( new \DateInterval( 'P' . (int) $offsetDay . 'D' ) );
 
 		return $now->format( self::BACKUP_DATE_FORMAT );
 	}
