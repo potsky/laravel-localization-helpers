@@ -133,21 +133,23 @@ class CommandMissingTests extends TestCase
 
     /**
      * - new-value set to null converts translation to null value to provide translation fallback
+     *
+     * https://github.com/potsky/laravel-localization-helpers/issues/38
      */
-    public function testTranslationFallbacks()
+    public function testTranslationFallback()
     {
         /** @noinspection PhpVoidFunctionResultUsedInspection */
         $return = Artisan::call( 'localization:missing' , array(
             '--no-interaction' => true ,
             '--output-flat'    => true ,
-            '--new-value'      => 'null' ,
+            '--new-value'      => 'nUll' ,
         ) );
 
         $this->assertEquals( 0 , $return );
 
         /** @noinspection PhpIncludeInspection */
         $lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
-        $this->assertEquals( null , $lemmas[ 'lemma.child' ] );
+		$this->assertNull( $lemmas[ 'lemma.child' ] );
     }
 
 	/**

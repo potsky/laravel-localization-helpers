@@ -385,10 +385,12 @@ class LocalizationMissing extends LocalizationAbstract
 								$translation = end( $key_last_token );
 							}
 
-							if( $this->option( 'new-value' ) === 'null') {
+							if( strtolower( $this->option( 'new-value' ) ) === 'null')
+							{
 							    $translation = null;
                             }
-                            else {
+                            else
+                            {
                                 $translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
                             }
 
