@@ -70,6 +70,7 @@ return array (
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
 			'--verbose'        => true ,
+			'--no-date'        => true ,
 		) );
 
 		$this->assertContains( '1 obsolete string' , Artisan::output() );
@@ -92,6 +93,7 @@ return array (
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
+			'--no-date'        => true ,
 		) );
 
 		$this->assertContains( '1 obsolete string' , Artisan::output() );
