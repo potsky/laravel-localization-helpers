@@ -52,14 +52,15 @@ return array(
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
+			'--no-date'        => true ,
 		) , $output );
 
 		$this->assertContains( '1 obsolete string' , $output->fetch() );
 
 		$lemmas = require( self::$langFile );
 
-		$this->assertArrayHasKey( 'LLH:obsolete' ,  $lemmas );
-		$this->assertArrayHasKey( 'section' ,  $lemmas['LLH:obsolete'] );
+		$this->assertArrayHasKey( 'LLH:obsolete' , $lemmas );
+		$this->assertArrayHasKey( 'section' , $lemmas[ 'LLH:obsolete' ] );
 	}
 
 
@@ -77,13 +78,14 @@ return array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
 			'--no-obsolete'    => true ,
+			'--no-date'        => true ,
 		) , $output );
 
 		$this->assertContains( '1 obsolete string' , $output->fetch() );
 
 		$lemmas = require( self::$langFile );
 
-		$this->assertArrayNotHasKey( 'LLH:obsolete' ,  $lemmas );
+		$this->assertArrayNotHasKey( 'LLH:obsolete' , $lemmas );
 	}
 
 	/**
@@ -98,7 +100,8 @@ return array(
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
-			'--verbose'      => true ,
+			'--verbose'        => true ,
+			'--no-date'        => true ,
 		) );
 
 		$this->assertEquals( self::$defaultLangContent , File::get( self::$langFile ) );
@@ -116,7 +119,8 @@ return array(
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
-			'--verbose'      => true ,
+			'--verbose'        => true ,
+			'--no-date'        => true ,
 		) );
 
 		$this->assertArrayHasKey( 'section' , require( self::$langFile ) );

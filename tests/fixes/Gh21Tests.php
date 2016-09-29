@@ -38,7 +38,6 @@ return array (
 );";
 
 
-
 	/**
 	 * Setup the test environment.
 	 *
@@ -60,7 +59,7 @@ return array (
 
 
 	/**
-	 * https://github.com/potsky/laravel-localization-helpers/issues/22
+	 * https://github.com/potsky/laravel-localization-helpers/issues/21
 	 */
 	public function testObsoleteSubKeyRemoved()
 	{
@@ -73,16 +72,17 @@ return array (
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
 			'--verbose'        => true ,
+			'--no-date'        => true ,
 		) , $output );
 
 		$this->assertContains( '1 obsolete string' , $output->fetch() );
 
-		$this->assertArrayHasKey( 'LLH:obsolete' ,  require( self::$langFile ) );
+		$this->assertArrayHasKey( 'LLH:obsolete' , require( self::$langFile ) );
 	}
 
 
 	/**
-	 * https://github.com/potsky/laravel-localization-helpers/issues/22
+	 * https://github.com/potsky/laravel-localization-helpers/issues/21
 	 */
 	public function testObsoleteAreKept()
 	{
@@ -97,14 +97,15 @@ return array (
 		Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
 			'--no-backup'      => true ,
-		) , $output );
+			'--no-date'        => true ,
+			) , $output );
 
 		$this->assertContains( '1 obsolete string' , $output->fetch() );
 
 		$lemmas = require( self::$langFile );
 
-		$this->assertArrayHasKey( 'LLH:obsolete' ,  $lemmas );
-		$this->assertArrayNotHasKey( 'LLH:obsolete' ,  $lemmas['LLH:obsolete'] );
+		$this->assertArrayHasKey( 'LLH:obsolete' , $lemmas );
+		$this->assertArrayNotHasKey( 'LLH:obsolete' , $lemmas[ 'LLH:obsolete' ] );
 	}
 
 }

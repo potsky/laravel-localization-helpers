@@ -1,11 +1,8 @@
 <?php
-/*************************************************************************
- Generated via "php artisan localization:missing" at 2016/02/02 17:44:41 
-*************************************************************************/
 
 return array (
   //============================== New strings to translate ==============================//
-  // Defined in file /Users/potsky/Work/Private/GitHub/laravel-localization-helpers/tests/mock/gh22/phase2/trans.php
+  // Defined in file /Users/potsky/Work/GitHub/laravel-localization-helpers/tests/mock/gh22/phase2/trans.php
   'my cat is rich' => 'TODO: my cat is rich',
   //==================================== Translations ====================================//
   'my dog is rich' => 'My dog is rich',
