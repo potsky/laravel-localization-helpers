@@ -3,13 +3,13 @@
   "description"       : "An artisan command package for easy translation management",
   "authors"           : [
     {
-      "name"     : "Potsky"
+      "name" : "Potsky"
     }
   ],
   "license"           : "GPL-3.0+",
   "require"           : {
-    "laravel/framework"   : "5.0.*",
-    "fabpot/php-cs-fixer" : "^1.11",
+    "laravel/framework"                   : "5.0.*",
+    "friendsofphp/php-cs-fixer"           : "^1.11",
     "potsky/microsoft-translator-php-sdk" : "*"
   },
   "require-dev"       : {
