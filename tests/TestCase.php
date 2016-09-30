@@ -3,6 +3,7 @@
 class TestCase extends Orchestra\Testbench\TestCase
 {
 	const MOCK_DIR_PATH           = 'tests/mock';
+	const MOCK_DIR_PATH_GLOBAL    = 'tests/mock/global';
 	const MOCK_DIR_PATH_WO_LEMMA  = 'tests/mock/wo_lemma';
 	const LANG_DIR_PATH           = 'tests/lang';
 	const ORCHESTRA_LANG_DIR_PATH = 'vendor/orchestra/testbench/fixture/resources/lang';
@@ -24,21 +25,23 @@ class TestCase extends Orchestra\Testbench\TestCase
 	}
 
 	/**
+	 *
+	 */
+	public function tearDown()
+	{
+		Mockery::close();
+	}
+
+	/**
 	 * Get package providers.
+	 *
+	 * @param \Illuminate\Foundation\Application $app
 	 *
 	 * @return array
 	 */
 	protected function getPackageProviders( $app )
 	{
 		return array( 'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider' );
-	}
-
-	/**
-	 *
-	 */
-	public function tearDown()
-	{
-		Mockery::close();
 	}
 }
 

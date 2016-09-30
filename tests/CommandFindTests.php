@@ -14,7 +14,7 @@ class CommandFindTests extends TestCase
 	{
 		parent::setUp();
 
-		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH_GLOBAL );
 	}
 
 	/**
@@ -78,7 +78,7 @@ class CommandFindTests extends TestCase
 			) ,
 		);
 
-		$return   = $manager->findLemma( 'not a valid regex' , $manager->getPath( self::MOCK_DIR_PATH ) , $trans_methods , true , true );
+		$return   = $manager->findLemma( 'not a valid regex' , $manager->getPath( self::MOCK_DIR_PATH_GLOBAL ) , $trans_methods , true , true );
 		$messages = $messageBag->getMessages();
 		$this->assertFalse( $return );
 		$this->assertContains( 'The argument is not a valid regular expression:' , $messages[ 0 ][ 1 ] );
