@@ -35,6 +35,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 | 5.0.x    | 2.1.x
 | 5.1.x    | 2.2.x
 | 5.2.x    | 2.3.x
+| 5.3.x    | 2.4.x
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
@@ -289,6 +290,13 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 - Take a look at the [configuration file](https://github.com/potsky/laravel-localization-helpers/tree/master/src/config) in the package to add new parameters you don't have in your current package configuration file.
 
 ## 6. Change Log
+
+### v2.x.4
+
+- new: Support of Laravel 5.3 from the `2.4.4` branch ([#41](https://github.com/potsky/laravel-localization-helpers/issues/41))
+- new: Track multi-line function calls ([#33](https://github.com/potsky/laravel-localization-helpers/issues/33))
+- new: Support translation's fallback by providing null in new value ([#38](https://github.com/potsky/laravel-localization-helpers/issues/38))
+- change: Use package `friendsofphp/php-cs-fixer` instead of `fabpot/php-cs-fixer` ([#28](https://github.com/potsky/laravel-localization-helpers/issues/28))
 
 ### v2.x.3
 
