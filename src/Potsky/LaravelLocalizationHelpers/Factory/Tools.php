@@ -12,7 +12,7 @@ class Tools
 	{
 		$versions = explode( '.' , self::getLaravelVersion() , 1 );
 
-		return @(int)$versions[ 0 ];
+		return @(int) $versions[ 0 ];
 	}
 
 	/**
@@ -129,6 +129,23 @@ class Tools
 	 */
 	public static function getPlural( $number )
 	{
-		return ( (float)$number >= 2 ) ? 's' : '';
+		return ( (float) $number >= 2 ) ? 's' : '';
 	}
+
+
+	/**
+	 * Remove all whitesapces, line-breaks, and tabs from string for better regex recognition
+	 *
+	 * @param $string
+	 *
+	 * @return string
+	 */
+	public static function minifyString( $string )
+	{
+		$string = str_replace( PHP_EOL , ' ' , $string );
+		$string = preg_replace( '/[\r\n]+/' , "\n" , $string );
+
+		return preg_replace( '/[ \t]+/' , ' ' , $string );
+	}
+
 }
