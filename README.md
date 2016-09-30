@@ -291,6 +291,13 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ## 6. Change Log
 
+### v2.x.4
+
+- new: Support of Laravel 5.3 from the `2.4.4` branch ([#41](https://github.com/potsky/laravel-localization-helpers/issues/41))
+- new: Track multi-line function calls ([#33](https://github.com/potsky/laravel-localization-helpers/issues/33))
+- new: Support translation's fallback by providing null in new value ([#38](https://github.com/potsky/laravel-localization-helpers/issues/38))
+- change: Use package `friendsofphp/php-cs-fixer` instead of `fabpot/php-cs-fixer` ([#28](https://github.com/potsky/laravel-localization-helpers/issues/28))
+
 ### v2.x.3
 
 - new: adding possibility to disable check for obsolete lemmas ([#27](https://github.com/potsky/laravel-localization-helpers/pull/27))
