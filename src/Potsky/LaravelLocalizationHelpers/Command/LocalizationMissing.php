@@ -385,7 +385,14 @@ class LocalizationMissing extends LocalizationAbstract
 								$translation = end( $key_last_token );
 							}
 
-							$translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
+							if( strtolower( $this->option( 'new-value' ) ) === 'null')
+							{
+							    $translation = null;
+                            }
+                            else
+                            {
+                                $translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
+                            }
 
 							array_set( $final_lemmas , $key , $translation );
 						}
@@ -670,7 +677,7 @@ class LocalizationMissing extends LocalizationAbstract
 			array( 'editor' , 'e' , InputOption::VALUE_NONE , 'Open files which need to be edited at the end of the process' ) ,
 			array( 'force' , 'f' , InputOption::VALUE_NONE , 'Force files to be rewritten even if there is nothing to do' ) ,
 			array( 'translation' , 't' , InputOption::VALUE_NONE , 'Try to translate the lemma to the target language' ) ,
-			array( 'new-value' , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value or translation)' , 'TODO: %LEMMA' ) ,
+			array( 'new-value' , 'l' , InputOption::VALUE_OPTIONAL , 'Value of new found lemmas (use %LEMMA for the lemma value or translation). Set it to null to provide translation fallbacks.' , 'TODO: %LEMMA' ) ,
 			array( 'no-backup' , 'b' , InputOption::VALUE_NONE , 'Do not backup lang file (be careful, I am not a good coder)' ) ,
 			array( 'no-comment' , 'c' , InputOption::VALUE_NONE , 'Do not add comments in lang files for lemma definition' ) ,
 			array( 'no-date' , 'd' , InputOption::VALUE_NONE , 'Do not add the date of execution in the lang files' ) ,

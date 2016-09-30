@@ -5,6 +5,9 @@ use Potsky\LaravelLocalizationHelpers\Factory\Tools;
 
 class CommandMissingTests extends TestCase
 {
+
+	private static $langFile;
+
 	/**
 	 * Setup the test environment.
 	 *
@@ -17,9 +20,14 @@ class CommandMissingTests extends TestCase
 
 		Tools::unlinkGlobFiles( self::LANG_DIR_PATH . '/*/message*.php' );
 
+		self::$langFile = self::LANG_DIR_PATH . '/en/message.php';
+
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::LANG_DIR_PATH );
-		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH );
-		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' , array( 'align_double_arrow' , 'short_array_syntax' ) );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH_GLOBAL );
+		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' , array(
+			'align_double_arrow' ,
+			'short_array_syntax',
+		) );
 
 		// Remove all saved access token for translation API
 		$translator = new \MicrosoftTranslator\Client( array(
@@ -131,6 +139,26 @@ class CommandMissingTests extends TestCase
 		$this->assertEquals( 'child POTSKY' , $lemmas[ 'lemma.child' ] );
 	}
 
+	/**
+	 * - new-value set to null converts translation to null value to provide translation fallback
+	 *
+	 * https://github.com/potsky/laravel-localization-helpers/issues/38
+	 */
+	public function testTranslationFallback()
+	{
+		/** @noinspection PhpVoidFunctionResultUsedInspection */
+		$return = Artisan::call( 'localization:missing' , array(
+			'--no-interaction' => true ,
+			'--output-flat'    => true ,
+			'--new-value'      => 'nUll' ,
+		) );
+
+		$this->assertEquals( 0 , $return );
+
+		/** @noinspection PhpIncludeInspection */
+		$lemmas = include( self::LANG_DIR_PATH . '/fr/message.php' );
+		$this->assertNull( $lemmas[ 'lemma.child' ] );
+	}
 
 	/**
 	 * - check a word is correctly translated
@@ -205,18 +233,29 @@ class CommandMissingTests extends TestCase
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
 			'--no-interaction' => true ,
+			'--no-backup'      => true ,
 		) );
 
 		$this->assertEquals( 0 , $return );
+
+		$lemmas = require( self::$langFile );
+		$this->assertArrayHasKey( 'child' , $lemmas );
 
 		/** @noinspection PhpVoidFunctionResultUsedInspection */
 		$return = Artisan::call( 'localization:missing' , array(
 			'--no-interaction'     => true ,
 			'--verbose'            => true ,
 			'--php-file-extension' => 'copy' ,
+			'--no-backup'          => true ,
 		) );
 
 		$this->assertEquals( 0 , $return );
+
+		$this->assertContains( '12 obsolete strings' ,  Artisan::output() );
+
+		$lemmas = require( self::$langFile );
+		$this->assertArrayNotHasKey( 'child' , $lemmas );
+		$this->assertArrayHasKey( 'child' , $lemmas[ 'LLH:obsolete' ] );
 	}
 
 
