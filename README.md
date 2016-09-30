@@ -35,6 +35,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 | 5.0.x    | 2.1.x
 | 5.1.x    | 2.2.x
 | 5.2.x    | 2.3.x
+| 5.3.x    | 2.4.x
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
