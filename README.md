@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/potsky/laravel-localization-helpers.png?label=ready&title=Ready)](https://waffle.io/potsky/laravel-localization-helpers)
 Laravel Localization Helpers
 ============================
 
@@ -7,6 +6,7 @@ Laravel Localization Helpers
 [![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
 [![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
+[![Stories in Ready](https://badge.waffle.io/potsky/laravel-localization-helpers.png?label=ready&title=Ready)](https://waffle.io/potsky/laravel-localization-helpers)
 
 ## This branch is the current dev branch
 
