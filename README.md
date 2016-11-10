@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/potsky/laravel-localization-helpers.png?label=ready&title=Ready)](https://waffle.io/potsky/laravel-localization-helpers)
 Laravel Localization Helpers
 ============================
 
