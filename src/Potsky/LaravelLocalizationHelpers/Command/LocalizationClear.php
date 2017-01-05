@@ -61,6 +61,14 @@ class LocalizationClear extends LocalizationAbstract
 
 		$success = $this->manager->deleteBackupFiles( $this->lang_folder_path , $days , $this->option( 'dry-run' ) );
 
+        if(Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'support_modules', false )) // delete backup files for each module
+        {
+            foreach (\Module::all() as $module)
+            {
+                $success = $this->manager->deleteBackupFiles( $module->getExtraPath(Config::get( 'modules.paths.generator.lang')) , $days , $this->option( 'dry-run' ) );
+            }
+        }
+
 		return ( $success === true ) ? self::SUCCESS : self::ERROR;
 	}
 

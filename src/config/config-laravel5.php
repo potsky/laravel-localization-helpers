@@ -21,6 +21,22 @@ return array(
 		'%APP/Http/Controllers' ,
 	) ,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Support extract translations from module files they build use "nWidart/laravel-modules” package
+    |--------------------------------------------------------------------------
+    |
+    | You can enable extract translations from all modules of "nWidart/laravel-modules"
+    | If you want enable/disable extract translations for custom modules add option "auto_localization" in "module.json" file of modules by default is enable
+    |
+    | Example
+    |   "auto_localization": false,
+    |
+    | You should add root folder for modules to above setting "Folders where to search for lemmas" to scan it
+    |
+    |
+    */
+    'support_modules' => false,
 
 	/*
 	|--------------------------------------------------------------------------
