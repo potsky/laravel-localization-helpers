@@ -3,11 +3,11 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
-[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers)
+[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=5.3)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=5.3)
+[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=5.3&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=5.3)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
-## This branch is the current dev branch
+## This branch is for Laravel 5.3
 
 LLH is a set of artisan commands to manage translations in your Laravel project. Key features :
 
@@ -39,13 +39,13 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
-    "potsky/laravel-localization-helpers" : "2.3.*"
+    "potsky/laravel-localization-helpers" : "2.4.*"
     ```
 
 - Update your installation : `composer update`
 - Add the following line in the `providers` array of the `config/app.php` configuration file :
     ```php
-    'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider'
+    Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider::class,
     ```
 
 - Now execute `php artisan list` and you should view the new *localization* commands:
