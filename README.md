@@ -35,7 +35,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 | 5.0.x    | 2.1.x
 | 5.1.x    | 2.2.x
 | 5.2.x    | 2.3.x
-| 5.3.x    | 2.4.x
+| 5.3.x, 5.4.x    | 2.4.x
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
@@ -75,7 +75,7 @@ php artisan vendor:publish
 Then you can modify the configuration in file :
 
 ```bash
-app/config/laravel-localization-helpers.php
+config/laravel-localization-helpers.php
 ```
 
 Add new folders to search for, add your own lang methods or functions, ...
@@ -88,7 +88,7 @@ In your `laravel` folder, add this in `.gitignore` file :
 
 ```bash
 # Do not include backup lang files
-app/lang/*/[a-zA-Z]*20[0-9][0-9][0-1][0-9][0-3][0-9]_[0-2][0-9][0-5][0-9][0-5][0-9].php
+resources/lang/*/[a-zA-Z]*20[0-9][0-9][0-1][0-9][0-3][0-9]_[0-2][0-9][0-5][0-9][0-5][0-9].php
 ```
 
 ## 3. Usage
@@ -217,6 +217,12 @@ For *PHPStorm* on *Mac OS X*:
 
 ```php
 'editor_command_line' => '/usr/local/bin/phpstorm'
+```
+
+or
+
+```php
+'editor_command_line' => ``/Applications/PhpStorm.app/Contents/MacOS/phpstorm`
 ```
 
 ### 3.2 Command `localization:find`
