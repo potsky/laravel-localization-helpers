@@ -1,4 +1,4 @@
-s<?php namespace Potsky\LaravelLocalizationHelpers;
+<?php namespace Potsky\LaravelLocalizationHelpers;
 
 use Illuminate\Support\ServiceProvider;
 
