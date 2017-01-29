@@ -3,12 +3,11 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg)](https://travis-ci.org/potsky/laravel-localization-helpers)
-[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers)
+[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=5.4)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=5.4)
+[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=5.4&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=5.4)
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-[![Stories in Ready](https://badge.waffle.io/potsky/laravel-localization-helpers.png?label=ready&title=Ready)](https://waffle.io/potsky/laravel-localization-helpers)
 
-## This branch is the current dev branch
+## This branch is for Laravel 5.3
 
 LLH is a set of artisan commands to manage translations in your Laravel project. Key features :
 

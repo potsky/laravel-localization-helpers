@@ -34,17 +34,17 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app[ 'localization.command.missing' ] = $this->app->share( function ( $app )
+		$this->app->singleton( 'localization.command.missing' , function ( $app )
 		{
 			return new Command\LocalizationMissing( $app[ 'config' ] );
 		} );
 
-		$this->app[ 'localization.command.find' ] = $this->app->share( function ( $app )
+		$this->app->singleton( 'localization.command.find' , function ( $app )
 		{
 			return new Command\LocalizationFind( $app[ 'config' ] );
 		} );
 
-		$this->app[ 'localization.command.clear' ] = $this->app->share( function ( $app )
+		$this->app->singleton( 'localization.command.clear' , function ( $app )
 		{
 			return new Command\LocalizationClear( $app[ 'config' ] );
 		} );
@@ -55,7 +55,7 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 			'localization.command.clear'
 		);
 
-		$this->app[ 'localization.helpers' ] = $this->app->share( function ( $app )
+		$this->app->singleton( 'localization.helpers' , function ( $app )
 		{
 			return new Factory\Localization( new Factory\MessageBag() );
 		} );
