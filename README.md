@@ -62,7 +62,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 You can add the facade in the Aliases if you need to manage translations in your code :
 
 ```php
-'LocalizationHelpers' => 'Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers'
+'LocalizationHelpers' => Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers::class,
 ```
 
 ## 2. Configuration
