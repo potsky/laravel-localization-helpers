@@ -198,7 +198,6 @@ class LocalizationMissing extends LocalizationAbstract
 
 		$this->writeLine( '' );
 
-
 		/////////////////////////////////////
 		// Generate lang files :           //
 		// - add missing lemmas on top     //
@@ -255,7 +254,17 @@ class LocalizationMissing extends LocalizationAbstract
 						continue;
 					}
 
-					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
+                    if(Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'support_modules', false ) && strpos( $family , '::' ) !== false)
+                    {
+                        list($moduleName,$filename) =  explode('::',$family);
+                        $file_lang_path = \Module::find($moduleName)->getExtraPath(Config::get( 'modules.paths.generator.lang')).DIRECTORY_SEPARATOR.$lang.DIRECTORY_SEPARATOR.$filename.'.php';
+                        if ( ! is_dir( dirname( $file_lang_path ) ) ) // create folder of lang if not exsit in Module
+                        {
+                            mkdir(dirname( $file_lang_path ));
+                        }
+                    }else{
+                        $file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
+                    }
 
 					if ( $this->option( 'verbose' ) )
 					{

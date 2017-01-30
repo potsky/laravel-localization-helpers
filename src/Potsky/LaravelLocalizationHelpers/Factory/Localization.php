@@ -1,6 +1,7 @@
 <?php namespace Potsky\LaravelLocalizationHelpers\Factory;
 
 use Config;
+use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -290,13 +291,23 @@ class Localization
 				}
 				if ( strpos( $v , '::' ) !== false )
 				{
-					unset( $matches[ 1 ][ $k ] );
-				}
+				    if(Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'support_modules' , false))
+                    {
+                        $module_name = $this->extractModuleName($v);
+                        if(\Module::has($module_name)) // if module exsit skip remove translation
+                        {
+                            $module = \Module::find($module_name); // get module info
+                            if(is_null($module->auto_localization) || $module->auto_localization === true)
+                                continue;
+                        }
+                    }
+                    unset( $matches[ 1 ][ $k ] );
+                }
 			}
-			$result = array_merge( $result , array_flip( $matches[ 1 ] ) );
+            $result = array_merge( $result , array_flip( $matches[ 1 ] ) );
 		}
 
-		return $result;
+        return $result;
 	}
 
 	/**
@@ -757,6 +768,19 @@ class Localization
 		}
 		// @codeCoverageIgnoreEnd
 	}
+
+    /**
+     * Extract module name from perfix name exmp. module::user.hello
+     *
+     * @param string $name a name of statment
+     *
+     * @return string
+     */
+    public function extractModuleName($name)
+    {
+        list($module,$translation) = explode('::',$name);
+        return Str::studly(trim($module,"'"));
+    }
 }
 
 
