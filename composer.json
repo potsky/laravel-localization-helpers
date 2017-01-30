@@ -8,7 +8,11 @@
   ],
   "license"           : "GPL-3.0+",
   "require"           : {
+<<<<<<< HEAD
     "laravel/framework"                   : "5.4.*",
+=======
+    "laravel/framework"                   : "5.3.*|5.4.*",
+>>>>>>> potsky/5.3
     "friendsofphp/php-cs-fixer"           : "^1.11",
     "potsky/microsoft-translator-php-sdk" : "*"
   },
