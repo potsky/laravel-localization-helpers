@@ -3,13 +3,8 @@ Laravel Localization Helpers
 
 [![Latest Stable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/stable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 [![Latest Unstable Version](https://poser.pugx.org/potsky/laravel-localization-helpers/v/unstable.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
-<<<<<<< HEAD
 [![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=5.4)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=5.4)
 [![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=5.4&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=5.4)
-=======
-[![Build Status](https://travis-ci.org/potsky/laravel-localization-helpers.svg?branch=5.3)](https://travis-ci.org/potsky/laravel-localization-helpers?branch=5.3)
-[![Coverage Status](https://coveralls.io/repos/potsky/laravel-localization-helpers/badge.svg?branch=5.3&service=github)](https://coveralls.io/github/potsky/laravel-localization-helpers?branch=5.3)
->>>>>>> potsky/5.3
 [![Total Downloads](https://poser.pugx.org/potsky/laravel-localization-helpers/downloads.svg)](https://packagist.org/packages/potsky/laravel-localization-helpers)
 
 ## This branch is for Laravel 5.3
@@ -45,11 +40,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
-<<<<<<< HEAD
     "potsky/laravel-localization-helpers" : "2.5.*"
-=======
-    "potsky/laravel-localization-helpers" : "2.4.*"
->>>>>>> potsky/5.3
     ```
 
 - Update your installation : `composer update`
@@ -71,11 +62,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 You can add the facade in the Aliases if you need to manage translations in your code :
 
 ```php
-<<<<<<< HEAD
 'LocalizationHelpers' => Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers::class
-=======
-'LocalizationHelpers' => Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers::class,
->>>>>>> potsky/5.3
 ```
 
 ## 2. Configuration
@@ -231,12 +218,6 @@ For *PHPStorm* on *Mac OS X*:
 
 ```php
 'editor_command_line' => '/usr/local/bin/phpstorm'
-```
-
-or
-
-```php
-'editor_command_line' => ``/Applications/PhpStorm.app/Contents/MacOS/phpstorm`
 ```
 
 ### 3.2 Command `localization:find`
