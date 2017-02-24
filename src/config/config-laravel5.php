@@ -116,7 +116,23 @@ return array(
 		'dynamic' ,
 		'fields' ,
 	) ,
-
+	
+	
+	/*
+	| Phrases following keys in this array will not get expanded and the translated string will remain as-is.
+	|
+	| Example :
+	|   - in PHP blade code : <span>{{{ trans( "message.phrase.Loading records..." ) }}}</span>
+	|   - in lang/en.message.php :
+	|     - 'phrase.Loading records...' => 'Loading records...',
+	|           ...
+	|   
+	| This only works in conjunction with the -w flag (output-flat)
+	|
+	*/
+	'dont_expand_keys' => array(
+	) ,
+	
 
 	/*
 	|--------------------------------------------------------------------------
