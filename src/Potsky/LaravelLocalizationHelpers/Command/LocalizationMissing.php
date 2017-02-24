@@ -53,6 +53,13 @@ class LocalizationMissing extends LocalizationAbstract
 	 * @var  array
 	 */
 	protected $never_obsolete_keys = array();
+	
+	/**
+	 * Never expand dots following these keys
+	 *
+	 * @var  string
+	 */
+	protected $dont_expand_keys = array();
 
 	/**
 	 * Never manage these lang files
@@ -105,6 +112,7 @@ class LocalizationMissing extends LocalizationAbstract
 		$this->ignore_lang_files   = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'ignore_lang_files' );
 		$this->lang_folder_path    = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
 		$this->never_obsolete_keys = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'never_obsolete_keys' );
+		$this->dont_expand_keys    = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'dont_expand_keys', [] );
 		$this->editor              = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
 		$this->code_style_fixers   = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
 		$this->code_style_level    = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
@@ -375,6 +383,9 @@ class LocalizationMissing extends LocalizationAbstract
 							}
 
 							$key_last_token = explode( '.' , $key );
+							if (in_array($key_last_token[0], $this->dont_expand_keys)) {
+								$key_last_token = explode( '.' , $key, 2 );
+							}
 
 							if ( $this->option( 'translation' ) )
 							{
