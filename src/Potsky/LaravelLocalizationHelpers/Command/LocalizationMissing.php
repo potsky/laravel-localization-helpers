@@ -100,22 +100,19 @@ class LocalizationMissing extends LocalizationAbstract
 	{
 		parent::__construct( $configRepository );
 
-		$this->trans_methods       = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
-		$this->folders             = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
-		$this->ignore_lang_files   = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'ignore_lang_files' );
-		$this->lang_folder_path    = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
-		$this->never_obsolete_keys = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'never_obsolete_keys' );
-		$this->editor              = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
-		$this->code_style_fixers   = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
-		$this->code_style_level    = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
+		$this->trans_methods       = config( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
+		$this->folders             = config( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
+		$this->ignore_lang_files   = config( Localization::PREFIX_LARAVEL_CONFIG . 'ignore_lang_files' );
+		$this->lang_folder_path    = config( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
+		$this->never_obsolete_keys = config( Localization::PREFIX_LARAVEL_CONFIG . 'never_obsolete_keys' );
+		$this->editor              = config( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
+		$this->code_style_fixers   = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
+		$this->code_style_level    = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
 
 		// @since 2.x.2
 		// Users who have not upgraded their configuration file must have a default
 		// but users may want to set it to null to keep the old buggy behaviour
-		if ( Config::has( Localization::PREFIX_LARAVEL_CONFIG . 'obsolete_array_key' ) )
-		{
-			$this->obsolete_array_key = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'obsolete_array_key' );
-		}
+		$this->obsolete_array_key = config( Localization::PREFIX_LARAVEL_CONFIG . 'obsolete_array_key' , $this->obsolete_array_key );
 	}
 
 	/**

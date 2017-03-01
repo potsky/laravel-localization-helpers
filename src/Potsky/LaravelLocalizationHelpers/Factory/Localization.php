@@ -149,9 +149,13 @@ class Localization
 		if ( empty( $lang_folder_path ) )
 		{
 			$paths = array(
-				app_path() . DIRECTORY_SEPARATOR . 'lang' ,
 				base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang' ,
 			);
+
+			if ( function_exists( 'app_path' ) )
+			{
+				$paths[] = app_path() . DIRECTORY_SEPARATOR . 'lang' ;
+			}
 
 			foreach ( $paths as $path )
 			{
@@ -195,21 +199,29 @@ class Localization
 			$path = array( $path );
 		}
 
-		$folders = str_replace(
-			array(
-				'%APP' ,
-				'%BASE' ,
-				'%PUBLIC' ,
-				'%STORAGE' ,
-			) ,
-			array(
-				app_path() ,
-				base_path() ,
-				public_path() ,
-				storage_path() ,
-			) ,
-			$path
+		$search_for = array(
+			'%BASE' ,
+			'%STORAGE' ,
 		);
+
+		$replace_by = array(
+			base_path() ,
+			storage_path() ,
+		);
+
+		if ( function_exists( 'app_path' ) )
+		{
+			$search_for[] = '%APP';
+			$replace_by[] = app_path();
+		}
+
+		if ( function_exists( 'public_path' ) )
+		{
+			$search_for[] = '%PUBLIC';
+			$replace_by[] = public_path();
+		}
+
+		$folders = str_replace( $search_for , $replace_by , $path );
 
 		foreach ( $folders as $k => $v )
 		{
@@ -620,11 +632,11 @@ class Localization
 	{
 		if ( is_null( $this->translator ) )
 		{
-			$translator       = Config::get( self::PREFIX_LARAVEL_CONFIG . 'translator' );
+			$translator       = config( self::PREFIX_LARAVEL_CONFIG . 'translator' );
 			$this->translator = new Translator( 'Microsoft' , array(
-				'client_id'        => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_id' ) ,
-				'client_secret'    => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_secret' ) ,
-				'default_language' => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.default_language' ) ,
+				'client_id'        => config( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_id' ) ,
+				'client_secret'    => config( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_secret' ) ,
+				'default_language' => config( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.default_language' ) ,
 			) );
 		}
 
