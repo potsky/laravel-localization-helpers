@@ -335,9 +335,32 @@ class LocalizationMissing extends LocalizationAbstract
 						}
 					}
 
-					$obsolete_lemmas = array_diff_key( $old_lemmas , $new_lemmas );
-					$welcome_lemmas  = array_diff_key( $new_lemmas , $old_lemmas );
-					$already_lemmas  = array_intersect_key( $old_lemmas , $new_lemmas );
+					// Check if keys from new lemmas are not sub-keys from old_lemma (#47)
+					// Ignore them if this is the case
+					$new_lemmas_clean = $new_lemmas;
+					$old_lemmas_clean = $old_lemmas;
+
+					foreach( $new_lemmas as $new_key => $new_value )
+					{
+						foreach( $old_lemmas as $old_key => $old_value )
+						{
+							if ( starts_with( $old_key , $new_key . '.' ) )
+							{
+								if ( $this->option( 'verbose' ) )
+								{
+									$this->writeLine( "            <info>" . $new_key . "</info> seems to be used to access an array and is already defined in lang file as " . $old_key );
+									$this->writeLine( "            <info>" . $new_key . "</info> not handled!" );
+								}
+
+								unset( $new_lemmas_clean[ $new_key ] );
+								unset( $old_lemmas_clean[ $old_key ] );
+							}
+						}
+					}
+
+					$obsolete_lemmas = array_diff_key( $old_lemmas_clean , $new_lemmas_clean );
+					$welcome_lemmas  = array_diff_key( $new_lemmas_clean , $old_lemmas_clean );
+					$already_lemmas  = array_intersect_key( $old_lemmas_clean , $new_lemmas_clean );
 
 					// disable check for obsolete lemma and consolidate with already_lemmas
 					if ( $this->option( 'disable-obsolete-check' ) )

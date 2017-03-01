@@ -14,7 +14,6 @@ trans( 'validation.lemma' );
 trans( 'message.fields.lemma' );
 
 // function style
-$a = trans( 'message.lemma' );
 $b = trans( 'message.lemma.child' );
 $c = trans( 'message.lemma.child 1' , array( 'name' => 'potsky' ) );
 $d = trans( 'message.lemma.child 2' , [ 'name' => 'potsky' ] );
