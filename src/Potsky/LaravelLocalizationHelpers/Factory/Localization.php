@@ -154,7 +154,7 @@ class Localization
 
 			if ( function_exists( 'app_path' ) )
 			{
-				$paths[] = app_path() . DIRECTORY_SEPARATOR . 'lang' ;
+				$paths[] = app_path() . DIRECTORY_SEPARATOR . 'lang';
 			}
 
 			foreach ( $paths as $path )
@@ -332,8 +332,16 @@ class Localization
 
 				foreach ( $this->extractTranslationFromPhpFile( $php_file_path , $trans_methods ) as $k => $v )
 				{
-					$real_value           = eval( "return $k;" );
-					$lemma[ $real_value ] = $php_file_path;
+					$a = $this->evalString( $k );
+					if ( is_string( $a ) )
+					{
+						$real_value           = $a;
+						$lemma[ $real_value ] = $php_file_path;
+					}
+					else
+					{
+						$this->messageBag->writeError( "Unable to understand string $k" );
+					}
 				}
 
 				$lemmas = array_merge( $lemmas , $lemma );
@@ -342,6 +350,7 @@ class Localization
 
 		return $lemmas;
 	}
+
 
 	/**
 	 * @param array $lemmas an array of lemma
@@ -417,7 +426,7 @@ class Localization
 	public function getBackupDate( $offsetDay = 0 )
 	{
 		$now = new \DateTime();
-		$now->sub( new \DateInterval( 'P' . (int) $offsetDay . 'D' ) );
+		$now->sub( new \DateInterval( 'P' . (int)$offsetDay . 'D' ) );
 
 		return $now->format( self::BACKUP_DATE_FORMAT );
 	}
@@ -545,6 +554,37 @@ class Localization
 		return ( $now->diff( $date )->format( '%a' ) >= $days );
 	}
 
+
+	/**
+	 * Eval a PHP string and catch PHP Parse Error syntax
+	 *
+	 * @param $str
+	 *
+	 * @return bool|mixed
+	 */
+	private function evalString( $str )
+	{
+		$a = false;
+
+		if ( class_exists( 'ParseError' ) )
+		{
+			try
+			{
+				$a = eval( "return $str;" );
+			}
+			catch ( \ParseError $e )
+			{
+			}
+		}
+		else
+		{
+			$a = @eval( "return $str;" );
+		}
+
+		return $a;
+	}
+
+
 	/**
 	 * Get the list of PHP code files where a lemma is defined
 	 *
@@ -567,52 +607,60 @@ class Localization
 			{
 				foreach ( $this->extractTranslationFromPhpFile( $php_file_path , $trans_methods ) as $k => $v )
 				{
-					$real_value = eval( "return $k;" );
-					$found      = false;
-
-					if ( $regex )
+					$a = $this->evalString( $k );
+					if ( is_string( $a ) )
 					{
-						try
-						{
-							$r = preg_match( $lemma , $real_value );
-						}
-							// Exception is thrown via command
-						catch ( \Exception $e )
-						{
-							$this->messageBag->writeError( "The argument is not a valid regular expression:" . str_replace( 'preg_match():' , '' , $e->getMessage() ) );
+						$real_value = $a;
+						$found      = false;
 
-							return false;
-						}
-						if ( $r === 1 )
+						if ( $regex )
 						{
-							$found = true;
-						}
-						// Normal behavior via method call
-						// @codeCoverageIgnoreStart
-						else if ( $r === false )
-						{
-							$this->messageBag->writeError( "The argument is not a valid regular expression" );
+							try
+							{
+								$r = preg_match( $lemma , $real_value );
+							}
+								// Exception is thrown via command
+							catch ( \Exception $e )
+							{
+								$this->messageBag->writeError( "The argument is not a valid regular expression:" . str_replace( 'preg_match():' , '' , $e->getMessage() ) );
 
-							return false;
+								return false;
+							}
+							if ( $r === 1 )
+							{
+								$found = true;
+							}
+							// Normal behavior via method call
+							// @codeCoverageIgnoreStart
+							else if ( $r === false )
+							{
+								$this->messageBag->writeError( "The argument is not a valid regular expression" );
+
+								return false;
+							}
+							// @codeCoverageIgnoreEnd
 						}
-						// @codeCoverageIgnoreEnd
+						else
+						{
+							if ( ! ( strpos( $real_value , $lemma ) === false ) )
+							{
+								$found = true;
+							}
+						}
+
+						if ( $found === true )
+						{
+							if ( $shortOutput === true )
+							{
+								$php_file_path = $this->getShortPath( $php_file_path );
+							}
+							$files[] = $php_file_path;
+							break;
+						}
 					}
 					else
 					{
-						if ( ! ( strpos( $real_value , $lemma ) === false ) )
-						{
-							$found = true;
-						}
-					}
-
-					if ( $found === true )
-					{
-						if ( $shortOutput === true )
-						{
-							$php_file_path = $this->getShortPath( $php_file_path );
-						}
-						$files[] = $php_file_path;
-						break;
+						$this->messageBag->writeError( "Unable to understand string $k" );
 					}
 				}
 			}
