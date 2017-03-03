@@ -28,6 +28,9 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	| These lang files will not be written
+	| You can specify :
+	| - a family like 'message', 'validation', ...
+	| - a specific file path like '/resources/lang/de/cms.php'
 	|
 	*/
 	'ignore_lang_files'   => array(
@@ -343,6 +346,7 @@ return array(
 	| You can set this to null to ignore this feature.
 	|
 	| This parameter will change nothing if you use the output-flat option of course
+	|
 	*/
 	'escape_char'        => '@',
 
@@ -359,6 +363,7 @@ return array(
 	| by space, dot, ! and ?
 	|
 	| This parameter will change nothing if you use the output-flat option of course
+	|
 	*/
 	'dot_notation_split_regex' => null
 

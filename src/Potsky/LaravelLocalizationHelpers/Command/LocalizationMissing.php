@@ -263,7 +263,9 @@ class LocalizationMissing extends LocalizationAbstract
 			{
 				foreach ( $lemmas_structured as $family => $array )
 				{
-					if ( in_array( $family , $this->ignore_lang_files ) )
+					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.' . $extension;
+
+					if ( in_array( $family , $this->ignore_lang_files ) || in_array( $this->manager->getShortPath( $file_lang_path ) , $this->ignore_lang_files ) )
 					{
 						if ( $this->option( 'verbose' ) )
 						{
@@ -272,8 +274,6 @@ class LocalizationMissing extends LocalizationAbstract
 						}
 						continue;
 					}
-
-					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
 
 					if ( $this->option( 'verbose' ) )
 					{

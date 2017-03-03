@@ -94,7 +94,7 @@ class Tools
 	 *
 	 * @return array
 	 */
-	public static function arraySet( &$array , $key , $value , $regex , $escape_char , $level = -1 )
+	public static function arraySet( &$array , $key , $value , $regex = '/\\./' , $escape_char = null , $level = -1 )
 	{
 		if ( is_null( $key ) )
 		{

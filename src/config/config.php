@@ -16,7 +16,7 @@ return array(
 	| No error or exception is thrown when a folder does not exist.
 	|
 	*/
-	'folders'             => array(
+	'folders'                  => array(
 		'%APP/Potsky' ,
 		'%APP/views' ,
 		'%APP/controllers' ,
@@ -29,9 +29,12 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	| These lang files will not be written
+	| You can specify :
+	| - a family like 'message', 'validation', ...
+	| - a specific file path like '/resources/lang/de/cms.php'
 	|
 	*/
-	'ignore_lang_files'   => array(
+	'ignore_lang_files'        => array(
 		'validation' ,
 	) ,
 
@@ -47,7 +50,7 @@ return array(
     | - then  in base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
 	|
 	*/
-	'lang_folder_path'    => null ,
+	'lang_folder_path'         => null ,
 
 
 	/*
@@ -59,7 +62,7 @@ return array(
 	| Several regular expressions can be used for a single method or function.
 	|
 	*/
-	'trans_methods'       => array(
+	'trans_methods'            => array(
 		'trans'        => array(
 			'@trans\(\s*(\'.*\')\s*(,.*)*\)@U' ,
 			'@trans\(\s*(".*")\s*(,.*)*\)@U' ,
@@ -113,7 +116,7 @@ return array(
 	|   translation files.
 	|
 	*/
-	'never_obsolete_keys' => array(
+	'never_obsolete_keys'      => array(
 		'dynamic' ,
 		'fields' ,
 	) ,
@@ -141,7 +144,7 @@ return array(
 	| clean up obsolete lemma manually
 	|
 	*/
-	'obsolete_array_key'  => 'LLH:obsolete' ,
+	'obsolete_array_key'       => 'LLH:obsolete' ,
 
 
 	/*
@@ -152,7 +155,7 @@ return array(
 	| when using option editor, package will use this command to open your files
 	|
 	*/
-	'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl' ,
+	'editor_command_line'      => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl' ,
 
 
 	/*
@@ -266,7 +269,7 @@ return array(
 	|
 	| If both parameters are empty, no Code Style will be applied
 	*/
-	'code_style'          => array(
+	'code_style'               => array(
 		'level'  => null ,
 		'fixers' => array() ,
 	) ,
@@ -280,7 +283,7 @@ return array(
 	| Use the Microsoft translator by default. This is the only translator available now
 	|
 	*/
-	'translator'          => 'Microsoft' ,
+	'translator'               => 'Microsoft' ,
 
 
 	/*
@@ -316,7 +319,7 @@ return array(
 	| - LLH_MICROSOFT_TRANSLATOR_CLIENT_SECRET
 	|
 	*/
-	'translators'         => array(
+	'translators'              => array(
 		'Microsoft' => array(
 			'default_language' => null ,
 			'client_id'        => null ,
@@ -327,38 +330,42 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| Escape chars
+	| Escape char
 	|--------------------------------------------------------------------------
 	|
-	| Escape chars are used to escape dots which mean subarray in the array dot
-	| notation.
+	| The escape char is used to stop the array dot notation when parsing lemma.
+	| As soon as the escape char is encountered next to a dot, the rest of the
+	| string can contain dots
 	|
-	| For example, lemma 'message.To be continued@.@.@.' will be injected in the
-	| message lang file as key 'To be continued@.@.@.'
+	| For example, lemma 'message.@To be continued...' will be injected in the
+	| message lang file as key '@To be continued...'
 	|
-	| For example, lemma 'message.First sentence@. Second sentence' will be injected
-	| in the message lang file as key 'First sentence@. Second sentence' and not as
-	| First sentence@ => [  Second sentence => "TODO:..." ]
+	| For example, lemma 'message.@First sentence. Second sentence' will be injected
+	| in the message lang file as key '@First sentence. Second sentence' and not as
+	| "@First sentence" => [ " Second sentence" => "TODO:..." ]
 	|
-	| You can remove all escape chars to ignore this feature. You can set several escape
-	| chars if you want.
+	| You can set this to null to ignore this feature.
+	|
+	| This parameter will change nothing if you use the output-flat option of course
 	|
 	*/
-	'escape_chars'        => array( '@' ) ,
+	'escape_char'              => '@' ,
 
 
 	/*
 	|--------------------------------------------------------------------------
-	| Ignore in keys
+	| Dot notation split
 	|--------------------------------------------------------------------------
 	|
-	| You can set a list of regex that are patterns to ignore in lemma when building
-	| lang files. It aims to avoid escaping all recurrent dot patterns.
+	| You can set a regex to detect dots in the dot notation.
+	|
+	| The default behavior is /\\./ and null is a shortcut.
+	| I prefer to set it to /\\.(?=[^ .!?])/ which will ignore all dots followed
+	| by space, dot, ! and ?
+	|
+	| This parameter will change nothing if you use the output-flat option of course
 	|
 	*/
-	'ignore_in_keys'      => array(
-		'/\\.$/' ,      // ignore the last point in a lemma, it seems to be the last dot of a sentence.
-		'/\\.\\.\\./' , // ignore 3 continuous dots to manage "To be continued... The end" for example
-		'/\\. /' ,      // ignore a space next to a dot, it seems to be the last dot of a sentence followed by an other sentence
-	),
+	'dot_notation_split_regex' => null,
+
 );
