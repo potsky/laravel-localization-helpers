@@ -282,51 +282,55 @@ class LocalizationMissing extends LocalizationAbstract
 
 					$this->writeLine( '    ' . $this->manager->getShortPath( $file_lang_path ) );
 
-					if ( ! is_writable( dirname( $file_lang_path ) ) )
+					if ( ! $this->option( 'dry-run' ) )
 					{
-						// @codeCoverageIgnoreStart
-						$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
 
-						return self::ERROR;
-						// @codeCoverageIgnoreEnd
-					}
+						if ( ! is_writable( dirname( $file_lang_path ) ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
 
-					if ( ! file_exists( $file_lang_path ) )
-					{
-						// @codeCoverageIgnoreStart
-						$this->writeInfo( "    > File has been created" );
-						// @codeCoverageIgnoreEnd
-					}
+							return self::ERROR;
+							// @codeCoverageIgnoreEnd
+						}
 
-					if ( ! touch( $file_lang_path ) )
-					{
-						// @codeCoverageIgnoreStart
-						$this->writeError( "    > Unable to touch file $file_lang_path" );
+						if ( ! file_exists( $file_lang_path ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeInfo( "    > File has been created" );
+							// @codeCoverageIgnoreEnd
+						}
 
-						return self::ERROR;
-						// @codeCoverageIgnoreEnd
-					}
+						if ( ! touch( $file_lang_path ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeError( "    > Unable to touch file $file_lang_path" );
 
-					if ( ! is_readable( $file_lang_path ) )
-					{
-						// @codeCoverageIgnoreStart
-						$this->writeError( "    > Unable to read file $file_lang_path" );
+							return self::ERROR;
+							// @codeCoverageIgnoreEnd
+						}
 
-						return self::ERROR;
-						// @codeCoverageIgnoreEnd
-					}
+						if ( ! is_readable( $file_lang_path ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeError( "    > Unable to read file $file_lang_path" );
 
-					if ( ! is_writable( $file_lang_path ) )
-					{
-						// @codeCoverageIgnoreStart
-						$this->writeError( "    > Unable to write in file $file_lang_path" );
+							return self::ERROR;
+							// @codeCoverageIgnoreEnd
+						}
 
-						return self::ERROR;
-						// @codeCoverageIgnoreEnd
+						if ( ! is_writable( $file_lang_path ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeError( "    > Unable to write in file $file_lang_path" );
+
+							return self::ERROR;
+							// @codeCoverageIgnoreEnd
+						}
 					}
 
 					/** @noinspection PhpIncludeInspection */
-					$a                        = include( $file_lang_path );
+					$a                        = @include( $file_lang_path );
 					$old_lemmas_with_obsolete = ( is_array( $a ) ) ? array_dot( $a ) : array();
 					$new_lemmas               = array_dot( $array );
 					$final_lemmas             = array();
