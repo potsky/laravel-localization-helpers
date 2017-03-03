@@ -353,9 +353,12 @@ class Localization
 
 
 	/**
-	 * @param array $lemmas an array of lemma
-	 *                      eg: [ 'message.lemma.child' => string(83)
-	 *                      "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
+	 * @param array  $lemmas an array of lemma
+	 *                       eg: [ 'message.lemma.child' => string(83)
+	 *                       "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
+	 *
+	 * @param string $regex
+	 * @param int    $level
 	 *
 	 * @return array a structured array of lemma
 	 *               eg: array(1) {
@@ -367,9 +370,15 @@ class Localization
 	 *                                    "/Users/potsky/Work/Private/GitHub/laravel-localization-helpers/tests/mock/trans.php"
 	 *                        ...
 	 */
-	public function convertLemmaToStructuredArray( $lemmas )
+	public function convertLemmaToStructuredArray( $lemmas , $dot_notation_split_regex , $escape_char , $level = -1 )
 	{
 		$lemmas_structured = array();
+
+		if ( ! is_string( $dot_notation_split_regex ) )
+		{
+			// fallback to dot if provided regex is not a string
+			$dot_notation_split_regex = '/\\./';
+		}
 
 		foreach ( $lemmas as $key => $value )
 		{
@@ -379,7 +388,7 @@ class Localization
 			}
 			else
 			{
-				array_set( $lemmas_structured , $key , $value );
+				Tools::arraySet( $lemmas_structured , $key , $value , $dot_notation_split_regex , $escape_char , $level );
 			}
 		}
 
@@ -387,9 +396,9 @@ class Localization
 	}
 
 	/**
-	 * @param array $lemmas an array of lemma
-	 *                      eg: [ 'message.lemma.child' => string(83)
-	 *                      "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
+	 * @param array  $lemmas an array of lemma
+	 *                       eg: [ 'message.lemma.child' => string(83)
+	 *                       "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
 	 *
 	 * @return array a flat array of lemma
 	 *               eg: array(1) {
@@ -401,21 +410,7 @@ class Localization
 	 */
 	public function convertLemmaToFlatArray( $lemmas )
 	{
-		$lemmas_structured = array();
-
-		foreach ( $lemmas as $key => $value )
-		{
-			if ( strpos( $key , '.' ) === false )
-			{
-				$this->messageBag->writeLine( '    <error>' . $key . '</error> in file <comment>' . $this->getShortPath( $value ) . '</comment> <error>will not be included because it has no family</error>' );
-			}
-			else
-			{
-				Tools::arraySetDotFirstLevel( $lemmas_structured , $key , $value );
-			}
-		}
-
-		return $lemmas_structured;
+		return $this->convertLemmaToStructuredArray( $lemmas , null , null , 2 );
 	}
 
 	/**

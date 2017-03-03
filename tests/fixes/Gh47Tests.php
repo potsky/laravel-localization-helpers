@@ -24,7 +24,7 @@ class Gh47Tests extends TestCase
 
 
 	/**
-	 * https://github.com/potsky/laravel-localization-helpers/issues/35
+	 * https://github.com/potsky/laravel-localization-helpers/issues/47
 	 */
 	public function testWhenAKeyIsUsedToAccessAnArrayAndNotAString()
 	{
@@ -49,7 +49,7 @@ class Gh47Tests extends TestCase
 	}
 
 	/**
-	 * https://github.com/potsky/laravel-localization-helpers/issues/35
+	 * https://github.com/potsky/laravel-localization-helpers/issues/47
 	 */
 	public function testWhenAKeyAccessingAnArrayWasUsed()
 	{

@@ -24,7 +24,7 @@ class Gh53Tests extends TestCase
 
 
 	/**
-	 * https://github.com/potsky/laravel-localization-helpers/issues/35
+	 * https://github.com/potsky/laravel-localization-helpers/issues/53
 	 */
 	public function testOddDynamicFieldsShouldNotGenerateErrors()
 	{

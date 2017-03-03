@@ -140,7 +140,7 @@ return array(
 	| clean up obsolete lemma manually
 	|
 	*/
-	'obsolete_array_key' => 'LLH:obsolete',
+	'obsolete_array_key'  => 'LLH:obsolete' ,
 
 
 	/*
@@ -265,10 +265,10 @@ return array(
 	|
 	| If both parameters are empty, no Code Style will be applied
 	*/
-	'code_style' => array(
+	'code_style'          => array(
 		'level'  => null ,
 		'fixers' => array() ,
-	),
+	) ,
 
 
 	/*
@@ -279,7 +279,7 @@ return array(
 	| Use the Microsoft translator by default. This is the only available translator now
 	|
 	*/
-	'translator' => 'Microsoft' ,
+	'translator'          => 'Microsoft' ,
 
 
 	/*
@@ -315,11 +315,51 @@ return array(
 	| - LLH_MICROSOFT_TRANSLATOR_CLIENT_SECRET
 	|
 	*/
-	'translators' => array(
+	'translators'         => array(
 		'Microsoft' => array(
 			'default_language' => null ,
 			'client_id'        => null ,
 			'client_secret'    => null ,
-		),
+		) ,
 	) ,
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Escape char
+	|--------------------------------------------------------------------------
+	|
+	| The escape char is used to stop the array dot notation when parsing lemma.
+	| As soon as the escape char is encountered next to a dot, the rest of the
+	| string can contain dots
+	|
+	| For example, lemma 'message.@To be continued...' will be injected in the
+	| message lang file as key '@To be continued...'
+	|
+	| For example, lemma 'message.@First sentence. Second sentence' will be injected
+	| in the message lang file as key '@First sentence. Second sentence' and not as
+	| "@First sentence" => [ " Second sentence" => "TODO:..." ]
+	|
+	| You can set this to null to ignore this feature.
+	|
+	| This parameter will change nothing if you use the output-flat option of course
+	*/
+	'escape_char'        => '@',
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Dot notation split
+	|--------------------------------------------------------------------------
+	|
+	| You can set a regex to detect dots in the dot notation.
+	|
+	| The default behavior is /\\./ and null is a shortcut.
+	| I prefer to set it to /\\.(?=[^ .!?])/ which will ignore all dots followed
+	| by space, dot, ! and ?
+	|
+	| This parameter will change nothing if you use the output-flat option of course
+	*/
+	'dot_notation_split_regex' => null
+
 );

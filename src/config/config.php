@@ -16,7 +16,7 @@ return array(
 	| No error or exception is thrown when a folder does not exist.
 	|
 	*/
-	'folders' => array(
+	'folders'             => array(
 		'%APP/Potsky' ,
 		'%APP/views' ,
 		'%APP/controllers' ,
@@ -31,7 +31,7 @@ return array(
 	| These lang files will not be written
 	|
 	*/
-	'ignore_lang_files' => array(
+	'ignore_lang_files'   => array(
 		'validation' ,
 	) ,
 
@@ -47,7 +47,7 @@ return array(
     | - then  in base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
 	|
 	*/
-	'lang_folder_path' => null ,
+	'lang_folder_path'    => null ,
 
 
 	/*
@@ -59,7 +59,7 @@ return array(
 	| Several regular expressions can be used for a single method or function.
 	|
 	*/
-	'trans_methods' => array(
+	'trans_methods'       => array(
 		'trans'        => array(
 			'@trans\(\s*(\'.*\')\s*(,.*)*\)@U' ,
 			'@trans\(\s*(".*")\s*(,.*)*\)@U' ,
@@ -141,7 +141,7 @@ return array(
 	| clean up obsolete lemma manually
 	|
 	*/
-	'obsolete_array_key' => 'LLH:obsolete',
+	'obsolete_array_key'  => 'LLH:obsolete' ,
 
 
 	/*
@@ -266,10 +266,10 @@ return array(
 	|
 	| If both parameters are empty, no Code Style will be applied
 	*/
-	'code_style' => array(
+	'code_style'          => array(
 		'level'  => null ,
 		'fixers' => array() ,
-	),
+	) ,
 
 
 	/*
@@ -280,7 +280,7 @@ return array(
 	| Use the Microsoft translator by default. This is the only translator available now
 	|
 	*/
-	'translator' => 'Microsoft' ,
+	'translator'          => 'Microsoft' ,
 
 
 	/*
@@ -316,12 +316,49 @@ return array(
 	| - LLH_MICROSOFT_TRANSLATOR_CLIENT_SECRET
 	|
 	*/
-	'translators' => array(
+	'translators'         => array(
 		'Microsoft' => array(
 			'default_language' => null ,
 			'client_id'        => null ,
 			'client_secret'    => null ,
-		),
+		) ,
 	) ,
 
+
+	/*
+	|--------------------------------------------------------------------------
+	| Escape chars
+	|--------------------------------------------------------------------------
+	|
+	| Escape chars are used to escape dots which mean subarray in the array dot
+	| notation.
+	|
+	| For example, lemma 'message.To be continued@.@.@.' will be injected in the
+	| message lang file as key 'To be continued@.@.@.'
+	|
+	| For example, lemma 'message.First sentence@. Second sentence' will be injected
+	| in the message lang file as key 'First sentence@. Second sentence' and not as
+	| First sentence@ => [  Second sentence => "TODO:..." ]
+	|
+	| You can remove all escape chars to ignore this feature. You can set several escape
+	| chars if you want.
+	|
+	*/
+	'escape_chars'        => array( '@' ) ,
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Ignore in keys
+	|--------------------------------------------------------------------------
+	|
+	| You can set a list of regex that are patterns to ignore in lemma when building
+	| lang files. It aims to avoid escaping all recurrent dot patterns.
+	|
+	*/
+	'ignore_in_keys'      => array(
+		'/\\.$/' ,      // ignore the last point in a lemma, it seems to be the last dot of a sentence.
+		'/\\.\\.\\./' , // ignore 3 continuous dots to manage "To be continued... The end" for example
+		'/\\. /' ,      // ignore a space next to a dot, it seems to be the last dot of a sentence followed by an other sentence
+	),
 );

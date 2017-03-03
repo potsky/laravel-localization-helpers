@@ -92,6 +92,24 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $obsolete_array_key = 'LLH:obsolete';
 
 	/**
+	 * The escape char
+	 *
+	 * @var  string
+	 *
+	 * @since 2.x.5
+	 */
+	protected $escape_char = null;
+
+	/**
+	 * The dot notation split regex
+	 *
+	 * @var  string
+	 *
+	 * @since 2.x.5
+	 */
+	protected $dot_notation_split_regex = null;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -100,14 +118,16 @@ class LocalizationMissing extends LocalizationAbstract
 	{
 		parent::__construct( $configRepository );
 
-		$this->trans_methods       = config( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
-		$this->folders             = config( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
-		$this->ignore_lang_files   = config( Localization::PREFIX_LARAVEL_CONFIG . 'ignore_lang_files' );
-		$this->lang_folder_path    = config( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
-		$this->never_obsolete_keys = config( Localization::PREFIX_LARAVEL_CONFIG . 'never_obsolete_keys' );
-		$this->editor              = config( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
-		$this->code_style_fixers   = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
-		$this->code_style_level    = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
+		$this->trans_methods            = config( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
+		$this->folders                  = config( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
+		$this->ignore_lang_files        = config( Localization::PREFIX_LARAVEL_CONFIG . 'ignore_lang_files' );
+		$this->lang_folder_path         = config( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
+		$this->never_obsolete_keys      = config( Localization::PREFIX_LARAVEL_CONFIG . 'never_obsolete_keys' );
+		$this->editor                   = config( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
+		$this->code_style_fixers        = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
+		$this->code_style_level         = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
+		$this->escape_char              = config( Localization::PREFIX_LARAVEL_CONFIG . 'escape_char' );
+		$this->dot_notation_split_regex = config( Localization::PREFIX_LARAVEL_CONFIG . 'dot_notation_split_regex' );
 
 		// @since 2.x.2
 		// Users who have not upgraded their configuration file must have a default
@@ -187,10 +207,11 @@ class LocalizationMissing extends LocalizationAbstract
 		if ( $this->option( 'output-flat' ) )
 		{
 			$lemmas_structured = $this->manager->convertLemmaToFlatArray( $lemmas );
+
 		}
 		else
 		{
-			$lemmas_structured = $this->manager->convertLemmaToStructuredArray( $lemmas );
+			$lemmas_structured = $this->manager->convertLemmaToStructuredArray( $lemmas , $this->dot_notation_split_regex , $this->escape_char );
 		}
 
 		$this->writeLine( '' );
@@ -337,9 +358,9 @@ class LocalizationMissing extends LocalizationAbstract
 					$new_lemmas_clean = $new_lemmas;
 					$old_lemmas_clean = $old_lemmas;
 
-					foreach( $new_lemmas as $new_key => $new_value )
+					foreach ( $new_lemmas as $new_key => $new_value )
 					{
-						foreach( $old_lemmas as $old_key => $old_value )
+						foreach ( $old_lemmas as $old_key => $old_value )
 						{
 							if ( starts_with( $old_key , $new_key . '.' ) )
 							{
@@ -405,14 +426,14 @@ class LocalizationMissing extends LocalizationAbstract
 								$translation = end( $key_last_token );
 							}
 
-							if( strtolower( $this->option( 'new-value' ) ) === 'null')
+							if ( strtolower( $this->option( 'new-value' ) ) === 'null' )
 							{
-							    $translation = null;
-                            }
-                            else
-                            {
-                                $translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
-                            }
+								$translation = null;
+							}
+							else
+							{
+								$translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
+							}
 
 							array_set( $final_lemmas , $key , $translation );
 						}
