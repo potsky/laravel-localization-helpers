@@ -2,4 +2,4 @@
 
 // This file is used to test obsolete lemma
 // Only one is remaining
-$a = trans( 'message.lemma' );
+$a = trans( 'message.lemma.child' );
