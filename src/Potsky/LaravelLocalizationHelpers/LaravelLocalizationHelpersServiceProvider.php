@@ -20,9 +20,12 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		$this->publishes( array(
-			__DIR__ . '/../../config/config-laravel5.php' => config_path( 'laravel-localization-helpers.php' ) ,
-		) );
+		if ( function_exists( "config_path" ) )
+		{
+			$this->publishes( array(
+				__DIR__ . '/../../config/config-laravel5.php' => config_path( 'laravel-localization-helpers.php' ) ,
+			) );
+		}
 	}
 
 	/**
@@ -51,7 +54,7 @@ class LaravelLocalizationHelpersServiceProvider extends ServiceProvider
 
 		$this->commands(
 			'localization.command.missing' ,
-			'localization.command.find',
+			'localization.command.find' ,
 			'localization.command.clear'
 		);
 

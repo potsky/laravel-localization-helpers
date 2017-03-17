@@ -149,9 +149,13 @@ class Localization
 		if ( empty( $lang_folder_path ) )
 		{
 			$paths = array(
-				app_path() . DIRECTORY_SEPARATOR . 'lang' ,
 				base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang' ,
 			);
+
+			if ( function_exists( 'app_path' ) )
+			{
+				$paths[] = app_path() . DIRECTORY_SEPARATOR . 'lang';
+			}
 
 			foreach ( $paths as $path )
 			{
@@ -195,21 +199,29 @@ class Localization
 			$path = array( $path );
 		}
 
-		$folders = str_replace(
-			array(
-				'%APP' ,
-				'%BASE' ,
-				'%PUBLIC' ,
-				'%STORAGE' ,
-			) ,
-			array(
-				app_path() ,
-				base_path() ,
-				public_path() ,
-				storage_path() ,
-			) ,
-			$path
+		$search_for = array(
+			'%BASE' ,
+			'%STORAGE' ,
 		);
+
+		$replace_by = array(
+			base_path() ,
+			storage_path() ,
+		);
+
+		if ( function_exists( 'app_path' ) )
+		{
+			$search_for[] = '%APP';
+			$replace_by[] = app_path();
+		}
+
+		if ( function_exists( 'public_path' ) )
+		{
+			$search_for[] = '%PUBLIC';
+			$replace_by[] = public_path();
+		}
+
+		$folders = str_replace( $search_for , $replace_by , $path );
 
 		foreach ( $folders as $k => $v )
 		{
@@ -320,8 +332,16 @@ class Localization
 
 				foreach ( $this->extractTranslationFromPhpFile( $php_file_path , $trans_methods ) as $k => $v )
 				{
-					$real_value           = eval( "return $k;" );
-					$lemma[ $real_value ] = $php_file_path;
+					$a = $this->evalString( $k );
+					if ( is_string( $a ) )
+					{
+						$real_value           = $a;
+						$lemma[ $real_value ] = $php_file_path;
+					}
+					else
+					{
+						$this->messageBag->writeError( "Unable to understand string $k" );
+					}
 				}
 
 				$lemmas = array_merge( $lemmas , $lemma );
@@ -331,10 +351,14 @@ class Localization
 		return $lemmas;
 	}
 
+
 	/**
-	 * @param array $lemmas an array of lemma
-	 *                      eg: [ 'message.lemma.child' => string(83)
-	 *                      "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
+	 * @param array  $lemmas an array of lemma
+	 *                       eg: [ 'message.lemma.child' => string(83)
+	 *                       "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
+	 *
+	 * @param string $dot_notation_split_regex
+	 * @param int    $level
 	 *
 	 * @return array a structured array of lemma
 	 *               eg: array(1) {
@@ -346,9 +370,15 @@ class Localization
 	 *                                    "/Users/potsky/Work/Private/GitHub/laravel-localization-helpers/tests/mock/trans.php"
 	 *                        ...
 	 */
-	public function convertLemmaToStructuredArray( $lemmas )
+	public function convertLemmaToStructuredArray( $lemmas , $dot_notation_split_regex , $level = -1 )
 	{
 		$lemmas_structured = array();
+
+		if ( ! is_string( $dot_notation_split_regex ) )
+		{
+			// fallback to dot if provided regex is not a string
+			$dot_notation_split_regex = '/\\./';
+		}
 
 		foreach ( $lemmas as $key => $value )
 		{
@@ -358,7 +388,7 @@ class Localization
 			}
 			else
 			{
-				array_set( $lemmas_structured , $key , $value );
+				Tools::arraySet( $lemmas_structured , $key , $value , $dot_notation_split_regex , $level );
 			}
 		}
 
@@ -366,9 +396,9 @@ class Localization
 	}
 
 	/**
-	 * @param array $lemmas an array of lemma
-	 *                      eg: [ 'message.lemma.child' => string(83)
-	 *                      "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
+	 * @param array  $lemmas an array of lemma
+	 *                       eg: [ 'message.lemma.child' => string(83)
+	 *                       "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
 	 *
 	 * @return array a flat array of lemma
 	 *               eg: array(1) {
@@ -380,21 +410,7 @@ class Localization
 	 */
 	public function convertLemmaToFlatArray( $lemmas )
 	{
-		$lemmas_structured = array();
-
-		foreach ( $lemmas as $key => $value )
-		{
-			if ( strpos( $key , '.' ) === false )
-			{
-				$this->messageBag->writeLine( '    <error>' . $key . '</error> in file <comment>' . $this->getShortPath( $value ) . '</comment> <error>will not be included because it has no family</error>' );
-			}
-			else
-			{
-				Tools::arraySetDotFirstLevel( $lemmas_structured , $key , $value );
-			}
-		}
-
-		return $lemmas_structured;
+		return $this->convertLemmaToStructuredArray( $lemmas , null , null , 2 );
 	}
 
 	/**
@@ -405,7 +421,7 @@ class Localization
 	public function getBackupDate( $offsetDay = 0 )
 	{
 		$now = new \DateTime();
-		$now->sub( new \DateInterval( 'P' . (int) $offsetDay . 'D' ) );
+		$now->sub( new \DateInterval( 'P' . (int)$offsetDay . 'D' ) );
 
 		return $now->format( self::BACKUP_DATE_FORMAT );
 	}
@@ -533,6 +549,37 @@ class Localization
 		return ( $now->diff( $date )->format( '%a' ) >= $days );
 	}
 
+
+	/**
+	 * Eval a PHP string and catch PHP Parse Error syntax
+	 *
+	 * @param $str
+	 *
+	 * @return bool|mixed
+	 */
+	private function evalString( $str )
+	{
+		$a = false;
+
+		if ( class_exists( 'ParseError' ) )
+		{
+			try
+			{
+				$a = eval( "return $str;" );
+			}
+			catch ( \ParseError $e )
+			{
+			}
+		}
+		else
+		{
+			$a = @eval( "return $str;" );
+		}
+
+		return $a;
+	}
+
+
 	/**
 	 * Get the list of PHP code files where a lemma is defined
 	 *
@@ -555,52 +602,60 @@ class Localization
 			{
 				foreach ( $this->extractTranslationFromPhpFile( $php_file_path , $trans_methods ) as $k => $v )
 				{
-					$real_value = eval( "return $k;" );
-					$found      = false;
-
-					if ( $regex )
+					$a = $this->evalString( $k );
+					if ( is_string( $a ) )
 					{
-						try
-						{
-							$r = preg_match( $lemma , $real_value );
-						}
-							// Exception is thrown via command
-						catch ( \Exception $e )
-						{
-							$this->messageBag->writeError( "The argument is not a valid regular expression:" . str_replace( 'preg_match():' , '' , $e->getMessage() ) );
+						$real_value = $a;
+						$found      = false;
 
-							return false;
-						}
-						if ( $r === 1 )
+						if ( $regex )
 						{
-							$found = true;
-						}
-						// Normal behavior via method call
-						// @codeCoverageIgnoreStart
-						else if ( $r === false )
-						{
-							$this->messageBag->writeError( "The argument is not a valid regular expression" );
+							try
+							{
+								$r = preg_match( $lemma , $real_value );
+							}
+								// Exception is thrown via command
+							catch ( \Exception $e )
+							{
+								$this->messageBag->writeError( "The argument is not a valid regular expression:" . str_replace( 'preg_match():' , '' , $e->getMessage() ) );
 
-							return false;
+								return false;
+							}
+							if ( $r === 1 )
+							{
+								$found = true;
+							}
+							// Normal behavior via method call
+							// @codeCoverageIgnoreStart
+							else if ( $r === false )
+							{
+								$this->messageBag->writeError( "The argument is not a valid regular expression" );
+
+								return false;
+							}
+							// @codeCoverageIgnoreEnd
 						}
-						// @codeCoverageIgnoreEnd
+						else
+						{
+							if ( ! ( strpos( $real_value , $lemma ) === false ) )
+							{
+								$found = true;
+							}
+						}
+
+						if ( $found === true )
+						{
+							if ( $shortOutput === true )
+							{
+								$php_file_path = $this->getShortPath( $php_file_path );
+							}
+							$files[] = $php_file_path;
+							break;
+						}
 					}
 					else
 					{
-						if ( ! ( strpos( $real_value , $lemma ) === false ) )
-						{
-							$found = true;
-						}
-					}
-
-					if ( $found === true )
-					{
-						if ( $shortOutput === true )
-						{
-							$php_file_path = $this->getShortPath( $php_file_path );
-						}
-						$files[] = $php_file_path;
-						break;
+						$this->messageBag->writeError( "Unable to understand string $k" );
 					}
 				}
 			}
@@ -620,11 +675,11 @@ class Localization
 	{
 		if ( is_null( $this->translator ) )
 		{
-			$translator       = Config::get( self::PREFIX_LARAVEL_CONFIG . 'translator' );
+			$translator       = config( self::PREFIX_LARAVEL_CONFIG . 'translator' );
 			$this->translator = new Translator( 'Microsoft' , array(
-				'client_id'        => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_id' ) ,
-				'client_secret'    => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_secret' ) ,
-				'default_language' => Config::get( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.default_language' ) ,
+				'client_id'        => config( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_id' ) ,
+				'client_secret'    => config( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_secret' ) ,
+				'default_language' => config( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.default_language' ) ,
 			) );
 		}
 

@@ -251,7 +251,7 @@ class CommandMissingTests extends TestCase
 
 		$this->assertEquals( 0 , $return );
 
-		$this->assertContains( '12 obsolete strings' ,  Artisan::output() );
+		$this->assertContains( '11 obsolete strings' ,  Artisan::output() );
 
 		$lemmas = require( self::$langFile );
 		$this->assertArrayNotHasKey( 'child' , $lemmas );
