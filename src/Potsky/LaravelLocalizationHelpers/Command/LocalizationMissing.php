@@ -249,6 +249,8 @@ class LocalizationMissing extends LocalizationAbstract
 
 		foreach ( scandir( $dir_lang ) as $lang )
 		{
+			if ( $lang === 'vendor' ) continue;
+
 			if ( Tools::isValidDirectory( $dir_lang , $lang ) )
 			{
 				foreach ( $lemmas_structured as $family => $array )
