@@ -9,6 +9,8 @@ class Gh31Tests extends TestCase
 	private static $langFile;
 
 	private static $langFileVendor;
+	
+	private static $langFileVendor42;
 
 	/**
 	 * Setup the test environment.
@@ -20,9 +22,10 @@ class Gh31Tests extends TestCase
 	{
 		parent::setUp();
 
-		self::$langFolder     = self::MOCK_DIR_PATH . '/gh31/lang';
-		self::$langFile       = self::$langFolder . '/en/message.php';
-		self::$langFileVendor = self::$langFolder . '/vendor/message.php';
+		self::$langFolder       = self::MOCK_DIR_PATH . '/gh31/lang';
+		self::$langFile         = self::$langFolder . '/en/message.php';
+		self::$langFileVendor42 = self::$langFolder . '/packages/message.php';
+		self::$langFileVendor   = self::$langFolder . '/vendor/message.php';
 	}
 
 
@@ -48,6 +51,7 @@ class Gh31Tests extends TestCase
 
 		$this->assertFileExists( self::$langFile );
 		$this->assertFileNotExists( self::$langFileVendor );
+		$this->assertFileNotExists( self::$langFileVendor42 );
 	}
 
 }

@@ -20,6 +20,16 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $name = 'localization:missing';
 
 	/**
+	 * Ignore these lang subfolders
+	 *
+	 * https://laravel.com/docs/4.2/localization
+	 * https://laravel.com/docs/5.1/localization
+	 *
+	 * @var array
+	 */
+	protected $ignoreVendors = array( 'vendor' , 'packages' );
+
+	/**
 	 * The console command description.
 	 *
 	 * @var string
@@ -256,7 +266,7 @@ class LocalizationMissing extends LocalizationAbstract
 
 		foreach ( scandir( $dir_lang ) as $lang )
 		{
-			if ( $lang === 'vendor' ) continue;
+			if ( in_array( $lang , $this->ignoreVendors ) ) continue;
 
 			if ( Tools::isValidDirectory( $dir_lang , $lang ) )
 			{
