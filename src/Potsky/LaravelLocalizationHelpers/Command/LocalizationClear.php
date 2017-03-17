@@ -38,7 +38,7 @@ class LocalizationClear extends LocalizationAbstract
 	 */
 	public function __construct( Repository $configRepository )
 	{
-		$this->lang_folder_path = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
+		$this->lang_folder_path = config( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
 
 		parent::__construct( $configRepository );
 	}

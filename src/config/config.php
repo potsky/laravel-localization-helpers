@@ -16,8 +16,7 @@ return array(
 	| No error or exception is thrown when a folder does not exist.
 	|
 	*/
-	'folders' => array(
-		'%APP/Potsky' ,
+	'folders'                  => array(
 		'%APP/views' ,
 		'%APP/controllers' ,
 	) ,
@@ -29,9 +28,12 @@ return array(
 	|--------------------------------------------------------------------------
 	|
 	| These lang files will not be written
+	| You can specify :
+	| - a family like 'message', 'validation', ...
+	| - a specific file path like '/resources/lang/de/cms.php'
 	|
 	*/
-	'ignore_lang_files' => array(
+	'ignore_lang_files'        => array(
 		'validation' ,
 	) ,
 
@@ -47,7 +49,7 @@ return array(
     | - then  in base_path() . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'lang',
 	|
 	*/
-	'lang_folder_path' => null ,
+	'lang_folder_path'         => null ,
 
 
 	/*
@@ -59,7 +61,7 @@ return array(
 	| Several regular expressions can be used for a single method or function.
 	|
 	*/
-	'trans_methods' => array(
+	'trans_methods'            => array(
 		'trans'        => array(
 			'@trans\(\s*(\'.*\')\s*(,.*)*\)@U' ,
 			'@trans\(\s*(".*")\s*(,.*)*\)@U' ,
@@ -113,7 +115,7 @@ return array(
 	|   translation files.
 	|
 	*/
-	'never_obsolete_keys' => array(
+	'never_obsolete_keys'      => array(
 		'dynamic' ,
 		'fields' ,
 	) ,
@@ -141,7 +143,7 @@ return array(
 	| clean up obsolete lemma manually
 	|
 	*/
-	'obsolete_array_key' => 'LLH:obsolete',
+	'obsolete_array_key'       => 'LLH:obsolete' ,
 
 
 	/*
@@ -152,7 +154,7 @@ return array(
 	| when using option editor, package will use this command to open your files
 	|
 	*/
-	'editor_command_line' => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl' ,
+	'editor_command_line'      => '/Applications/Sublime\\ Text.app/Contents/SharedSupport/bin/subl' ,
 
 
 	/*
@@ -266,10 +268,10 @@ return array(
 	|
 	| If both parameters are empty, no Code Style will be applied
 	*/
-	'code_style' => array(
+	'code_style'               => array(
 		'level'  => null ,
 		'fixers' => array() ,
-	),
+	) ,
 
 
 	/*
@@ -280,7 +282,7 @@ return array(
 	| Use the Microsoft translator by default. This is the only translator available now
 	|
 	*/
-	'translator' => 'Microsoft' ,
+	'translator'               => 'Microsoft' ,
 
 
 	/*
@@ -316,12 +318,30 @@ return array(
 	| - LLH_MICROSOFT_TRANSLATOR_CLIENT_SECRET
 	|
 	*/
-	'translators' => array(
+	'translators'              => array(
 		'Microsoft' => array(
 			'default_language' => null ,
 			'client_id'        => null ,
 			'client_secret'    => null ,
-		),
+		) ,
 	) ,
+
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| Dot notation split
+	|--------------------------------------------------------------------------
+	|
+	| You can set a regex to detect dots in the dot notation.
+	|
+	| The default behavior is /\\./ and null is a shortcut.
+	| I prefer to set it to /\\.(?=[^ .!?])/ which will ignore all dots followed
+	| by space, dot, ! and ?
+	|
+	| This parameter will change nothing if you use the output-flat option of course
+	|
+	*/
+	'dot_notation_split_regex' => null,
 
 );
