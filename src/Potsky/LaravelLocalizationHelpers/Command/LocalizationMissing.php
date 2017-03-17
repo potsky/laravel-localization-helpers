@@ -20,6 +20,16 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $name = 'localization:missing';
 
 	/**
+	 * Ignore these lang subfolders
+	 *
+	 * https://laravel.com/docs/4.2/localization
+	 * https://laravel.com/docs/5.1/localization
+	 *
+	 * @var array
+	 */
+	protected $ignoreVendors = array( 'vendor' , 'packages' );
+
+	/**
 	 * The console command description.
 	 *
 	 * @var string
@@ -92,6 +102,15 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $obsolete_array_key = 'LLH:obsolete';
 
 	/**
+	 * The dot notation split regex
+	 *
+	 * @var  string
+	 *
+	 * @since 2.x.5
+	 */
+	protected $dot_notation_split_regex = null;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -100,22 +119,27 @@ class LocalizationMissing extends LocalizationAbstract
 	{
 		parent::__construct( $configRepository );
 
-		$this->trans_methods       = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
-		$this->folders             = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
-		$this->ignore_lang_files   = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'ignore_lang_files' );
-		$this->lang_folder_path    = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
-		$this->never_obsolete_keys = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'never_obsolete_keys' );
-		$this->editor              = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
-		$this->code_style_fixers   = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
-		$this->code_style_level    = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
+		$this->trans_methods            = config( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
+		$this->folders                  = config( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
+		$this->ignore_lang_files        = config( Localization::PREFIX_LARAVEL_CONFIG . 'ignore_lang_files' );
+		$this->lang_folder_path         = config( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' );
+		$this->never_obsolete_keys      = config( Localization::PREFIX_LARAVEL_CONFIG . 'never_obsolete_keys' );
+		$this->editor                   = config( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
+		$this->code_style_fixers        = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
+		$this->code_style_level         = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
+		$this->dot_notation_split_regex = config( Localization::PREFIX_LARAVEL_CONFIG . 'dot_notation_split_regex' );
+
+		if ( ! is_string( $this->dot_notation_split_regex ) )
+		{
+			// fallback to dot if provided regex is not a string
+			$this->dot_notation_split_regex = '/\\./';
+		}
+
 
 		// @since 2.x.2
 		// Users who have not upgraded their configuration file must have a default
 		// but users may want to set it to null to keep the old buggy behaviour
-		if ( Config::has( Localization::PREFIX_LARAVEL_CONFIG . 'obsolete_array_key' ) )
-		{
-			$this->obsolete_array_key = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'obsolete_array_key' );
-		}
+		$this->obsolete_array_key = config( Localization::PREFIX_LARAVEL_CONFIG . 'obsolete_array_key' , $this->obsolete_array_key );
 	}
 
 	/**
@@ -190,10 +214,11 @@ class LocalizationMissing extends LocalizationAbstract
 		if ( $this->option( 'output-flat' ) )
 		{
 			$lemmas_structured = $this->manager->convertLemmaToFlatArray( $lemmas );
+
 		}
 		else
 		{
-			$lemmas_structured = $this->manager->convertLemmaToStructuredArray( $lemmas );
+			$lemmas_structured = $this->manager->convertLemmaToStructuredArray( $lemmas , $this->dot_notation_split_regex , null );
 		}
 
 		$this->writeLine( '' );
@@ -241,11 +266,15 @@ class LocalizationMissing extends LocalizationAbstract
 
 		foreach ( scandir( $dir_lang ) as $lang )
 		{
+			if ( in_array( $lang , $this->ignoreVendors ) ) continue;
+
 			if ( Tools::isValidDirectory( $dir_lang , $lang ) )
 			{
 				foreach ( $lemmas_structured as $family => $array )
 				{
-					if ( in_array( $family , $this->ignore_lang_files ) )
+					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
+
+					if ( in_array( $family , $this->ignore_lang_files ) || in_array( $this->manager->getShortPath( $file_lang_path ) , $this->ignore_lang_files ) )
 					{
 						if ( $this->option( 'verbose' ) )
 						{
@@ -255,8 +284,6 @@ class LocalizationMissing extends LocalizationAbstract
 						continue;
 					}
 
-					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
-
 					if ( $this->option( 'verbose' ) )
 					{
 						$this->writeLine( '' );
@@ -264,51 +291,55 @@ class LocalizationMissing extends LocalizationAbstract
 
 					$this->writeLine( '    ' . $this->manager->getShortPath( $file_lang_path ) );
 
-					if ( ! is_writable( dirname( $file_lang_path ) ) )
+					if ( ! $this->option( 'dry-run' ) )
 					{
-						// @codeCoverageIgnoreStart
-						$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
 
-						return self::ERROR;
-						// @codeCoverageIgnoreEnd
-					}
+						if ( ! is_writable( dirname( $file_lang_path ) ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
 
-					if ( ! file_exists( $file_lang_path ) )
-					{
-						// @codeCoverageIgnoreStart
-						$this->writeInfo( "    > File has been created" );
-						// @codeCoverageIgnoreEnd
-					}
+							return self::ERROR;
+							// @codeCoverageIgnoreEnd
+						}
 
-					if ( ! touch( $file_lang_path ) )
-					{
-						// @codeCoverageIgnoreStart
-						$this->writeError( "    > Unable to touch file $file_lang_path" );
+						if ( ! file_exists( $file_lang_path ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeInfo( "    > File has been created" );
+							// @codeCoverageIgnoreEnd
+						}
 
-						return self::ERROR;
-						// @codeCoverageIgnoreEnd
-					}
+						if ( ! touch( $file_lang_path ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeError( "    > Unable to touch file $file_lang_path" );
 
-					if ( ! is_readable( $file_lang_path ) )
-					{
-						// @codeCoverageIgnoreStart
-						$this->writeError( "    > Unable to read file $file_lang_path" );
+							return self::ERROR;
+							// @codeCoverageIgnoreEnd
+						}
 
-						return self::ERROR;
-						// @codeCoverageIgnoreEnd
-					}
+						if ( ! is_readable( $file_lang_path ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeError( "    > Unable to read file $file_lang_path" );
 
-					if ( ! is_writable( $file_lang_path ) )
-					{
-						// @codeCoverageIgnoreStart
-						$this->writeError( "    > Unable to write in file $file_lang_path" );
+							return self::ERROR;
+							// @codeCoverageIgnoreEnd
+						}
 
-						return self::ERROR;
-						// @codeCoverageIgnoreEnd
+						if ( ! is_writable( $file_lang_path ) )
+						{
+							// @codeCoverageIgnoreStart
+							$this->writeError( "    > Unable to write in file $file_lang_path" );
+
+							return self::ERROR;
+							// @codeCoverageIgnoreEnd
+						}
 					}
 
 					/** @noinspection PhpIncludeInspection */
-					$a                        = include( $file_lang_path );
+					$a                        = @include( $file_lang_path );
 					$old_lemmas_with_obsolete = ( is_array( $a ) ) ? array_dot( $a ) : array();
 					$new_lemmas               = array_dot( $array );
 					$final_lemmas             = array();
@@ -335,9 +366,32 @@ class LocalizationMissing extends LocalizationAbstract
 						}
 					}
 
-					$obsolete_lemmas = array_diff_key( $old_lemmas , $new_lemmas );
-					$welcome_lemmas  = array_diff_key( $new_lemmas , $old_lemmas );
-					$already_lemmas  = array_intersect_key( $old_lemmas , $new_lemmas );
+					// Check if keys from new lemmas are not sub-keys from old_lemma (#47)
+					// Ignore them if this is the case
+					$new_lemmas_clean = $new_lemmas;
+					$old_lemmas_clean = $old_lemmas;
+
+					foreach ( $new_lemmas as $new_key => $new_value )
+					{
+						foreach ( $old_lemmas as $old_key => $old_value )
+						{
+							if ( starts_with( $old_key , $new_key . '.' ) )
+							{
+								if ( $this->option( 'verbose' ) )
+								{
+									$this->writeLine( "            <info>" . $new_key . "</info> seems to be used to access an array and is already defined in lang file as " . $old_key );
+									$this->writeLine( "            <info>" . $new_key . "</info> not handled!" );
+								}
+
+								unset( $new_lemmas_clean[ $new_key ] );
+								unset( $old_lemmas_clean[ $old_key ] );
+							}
+						}
+					}
+
+					$obsolete_lemmas = array_diff_key( $old_lemmas_clean , $new_lemmas_clean );
+					$welcome_lemmas  = array_diff_key( $new_lemmas_clean , $old_lemmas_clean );
+					$already_lemmas  = array_intersect_key( $old_lemmas_clean , $new_lemmas_clean );
 
 					// disable check for obsolete lemma and consolidate with already_lemmas
 					if ( $this->option( 'disable-obsolete-check' ) )
@@ -374,7 +428,7 @@ class LocalizationMissing extends LocalizationAbstract
 								$i                                                = $i + 1;
 							}
 
-							$key_last_token = explode( '.' , $key );
+							$key_last_token = preg_split( $this->dot_notation_split_regex , $key );
 
 							if ( $this->option( 'translation' ) )
 							{
@@ -385,16 +439,16 @@ class LocalizationMissing extends LocalizationAbstract
 								$translation = end( $key_last_token );
 							}
 
-							if( strtolower( $this->option( 'new-value' ) ) === 'null')
+							if ( strtolower( $this->option( 'new-value' ) ) === 'null' )
 							{
-							    $translation = null;
-                            }
-                            else
-                            {
-                                $translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
-                            }
+								$translation = null;
+							}
+							else
+							{
+								$translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
+							}
 
-							array_set( $final_lemmas , $key , $translation );
+							Tools::arraySet( $final_lemmas , $key , $translation , $this->dot_notation_split_regex );
 						}
 					}
 
@@ -412,7 +466,7 @@ class LocalizationMissing extends LocalizationAbstract
 
 						foreach ( $already_lemmas as $key => $value )
 						{
-							array_set( $final_lemmas , $key , $value );
+							Tools::arraySet( $final_lemmas , $key , $value , $this->dot_notation_split_regex );
 						}
 					}
 
@@ -444,7 +498,7 @@ class LocalizationMissing extends LocalizationAbstract
 									}
 
 									// Given that this lemma is never obsolete, we need to send it back to the final lemma array
-									array_set( $final_lemmas , $key , $value );
+									Tools::arraySet( $final_lemmas , $key , $value , $this->dot_notation_split_regex );
 								}
 							}
 						}
@@ -476,7 +530,7 @@ class LocalizationMissing extends LocalizationAbstract
 									$this->writeLine( "            <comment>" . $key . "</comment>" );
 								}
 
-								array_set( $final_lemmas , $obsolete_prefix . $key , $value );
+								Tools::arraySet( $final_lemmas , $obsolete_prefix . $key , $value , $this->dot_notation_split_regex );
 							}
 						}
 					}

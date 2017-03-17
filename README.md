@@ -29,13 +29,14 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 
 - Choose your version according to the version compatibility matrix:
 
-| Laravel  | Package
-|:---------|:----------
-| 4.2.x    | 2.0.x
-| 5.0.x    | 2.1.x
-| 5.1.x    | 2.2.x
-| 5.2.x    | 2.3.x
-| 5.3.x    | 2.4.x
+| Laravel  | Lumen    | Package
+|:---------|:---------|:----------
+| 4.2.x    |          | 2.0.x
+| 5.0.x    |          | 2.1.x
+| 5.1.x    | 5.1.x    | 2.2.x
+| 5.2.x    | 5.2.x    | 2.3.x
+| 5.3.x    | 5.3.x    | 2.4.x
+| 5.4.x    | 5.4.x    | 2.5.x
 
 - Add the following line in the `require-dev` array of the `composer.json` file and replace the version if needed according to your Laravel version:
     ```php
@@ -43,10 +44,16 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
     ```
 
 - Update your installation : `composer update`
-- Add the following line in the `providers` array of the `config/app.php` configuration file :
+- For Laravel, add the following line in the `providers` array of the `config/app.php` configuration file :
     ```php
     'Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider'
     ```
+
+- For Lumen, add the following lines in the `bootstrap/app.php` file :
+	```php
+	$app->register( Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider::class );
+	$app->configure('laravel-localization-helpers');
+	```
 
 - Now execute `php artisan list` and you should view the new *localization* commands:
     ```
@@ -58,7 +65,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
     ...
     ```
 
-You can add the facade in the Aliases if you need to manage translations in your code :
+In Laravel, you can add the facade in the Aliases if you need to manage translations in your code :
 
 ```php
 'LocalizationHelpers' => 'Potsky\LaravelLocalizationHelpers\Facade\LocalizationHelpers'
@@ -79,6 +86,8 @@ app/config/laravel-localization-helpers.php
 ```
 
 Add new folders to search for, add your own lang methods or functions, ...
+
+> For Lumen, copy manually the [configuration file](https://github.com/potsky/laravel-localization-helpers/blob/master/src/config/config-laravel5.php) as `config/laravel-localization-helpers.php`.
 
 ### Backup files
 
@@ -280,6 +289,10 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 
 ## 5. Upgrade notices
 
+### From `v2.x.4` to `v2.x.5`
+
+- Parameter `dot_notation_split_regex` has been added in the [configuration file](https://github.com/potsky/laravel-localization-helpers/tree/master/src/config). Add it in your configuration file.
+
 ### From `v2.x.1` to `v2.x.2`
 
 - Parameter `obsolete_array_key` has been added in the [configuration file](https://github.com/potsky/laravel-localization-helpers/tree/master/src/config). Add it in your configuration file.
@@ -290,6 +303,16 @@ Use the [github issue tool](https://github.com/potsky/laravel-localization-helpe
 - Take a look at the [configuration file](https://github.com/potsky/laravel-localization-helpers/tree/master/src/config) in the package to add new parameters you don't have in your current package configuration file.
 
 ## 6. Change Log
+
+### v2.x.5
+
+- new: `dot_notation_split_regex` has been added to automatically handle dots in lemma ([#59](https://github.com/potsky/laravel-localization-helpers/issues/59))
+- fix: ignore vendors lang folders ([#59](https://github.com/potsky/laravel-localization-helpers/issues/59))
+- new: you can now ignore specific lang files and not only lang families ([#44](https://github.com/potsky/laravel-localization-helpers/issues/44))
+- fix: in dry run mode, lang files were still created ([#54](https://github.com/potsky/laravel-localization-helpers/issues/54))
+- change: try to handle dynamic lemma errors ([#53](https://github.com/potsky/laravel-localization-helpers/issues/53))
+- change: change composer requirements to minimize lumen requirements ([#49](https://github.com/potsky/laravel-localization-helpers/issues/49))
+- change: handle indirect translation calls ([#47](https://github.com/potsky/laravel-localization-helpers/issues/47))
 
 ### v2.x.4
 
