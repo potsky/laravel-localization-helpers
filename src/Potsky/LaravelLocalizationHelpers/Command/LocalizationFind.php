@@ -48,8 +48,8 @@ class LocalizationFind extends LocalizationAbstract
 	{
 		parent::__construct( $configRepository );
 
-		$this->folders       = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
-		$this->trans_methods = Config::get( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
+		$this->folders       = config( Localization::PREFIX_LARAVEL_CONFIG . 'folders' );
+		$this->trans_methods = config( Localization::PREFIX_LARAVEL_CONFIG . 'trans_methods' );
 	}
 
 	/**

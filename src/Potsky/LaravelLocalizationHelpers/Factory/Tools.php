@@ -12,7 +12,7 @@ class Tools
 	{
 		$versions = explode( '.' , self::getLaravelVersion() , 1 );
 
-		return @(int) $versions[ 0 ];
+		return @(int)$versions[ 0 ];
 	}
 
 	/**
@@ -81,24 +81,28 @@ class Tools
 
 
 	/**
-	 * Set an array item to a given value using "dot" notation only fr the first token
+	 * Set an array item to a given value using "dot" notation.
 	 *
 	 * If no key is given to the method, the entire array will be replaced.
+	 *
+	 * The escape char before a dot is used to escape all dots next to the escaped dot
 	 *
 	 * @param  array  $array
 	 * @param  string $key
 	 * @param  mixed  $value
+	 * @param  string $regex
+	 * @param  int    $level
 	 *
 	 * @return array
 	 */
-	public static function arraySetDotFirstLevel( &$array , $key , $value )
+	public static function arraySet( &$array , $key , $value , $regex = '/\\./' , $level = -1 )
 	{
 		if ( is_null( $key ) )
 		{
 			return $array = $value;
 		}
 
-		$keys = explode( '.' , $key , 2 );
+		$keys = preg_split( $regex , $key , $level );
 
 		while ( count( $keys ) > 1 )
 		{
@@ -109,16 +113,17 @@ class Tools
 			// values at the correct depth. Then we'll keep digging into the array.
 			if ( ! isset( $array[ $key ] ) || ! is_array( $array[ $key ] ) )
 			{
-				$array[ $key ] = array();
+				$array[ $key ] = [ ];
 			}
 
-			$array =& $array[ $key ];
+			$array = &$array[ $key ];
 		}
 
 		$array[ array_shift( $keys ) ] = $value;
 
 		return $array;
 	}
+
 
 	/**
 	 * Return char 's' if argument is greater than 1
@@ -129,7 +134,7 @@ class Tools
 	 */
 	public static function getPlural( $number )
 	{
-		return ( (float) $number >= 2 ) ? 's' : '';
+		return ( (float)$number >= 2 ) ? 's' : '';
 	}
 
 
