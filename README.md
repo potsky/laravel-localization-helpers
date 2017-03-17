@@ -32,7 +32,7 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
 
 | Laravel  | Lumen    | Package
 |:---------|:---------|:----------
-| 4.2.x    |          | 2.0.x
+| 4.2.x    |          | 2.0.x (EOL last version is 2.0.4)
 | 5.0.x    |          | 2.1.x
 | 5.1.x    | 5.1.x    | 2.2.x
 | 5.2.x    | 5.2.x    | 2.3.x
