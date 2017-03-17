@@ -119,6 +119,13 @@ class LocalizationMissing extends LocalizationAbstract
 		$this->code_style_level         = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
 		$this->dot_notation_split_regex = config( Localization::PREFIX_LARAVEL_CONFIG . 'dot_notation_split_regex' );
 
+		if ( ! is_string( $this->dot_notation_split_regex ) )
+		{
+			// fallback to dot if provided regex is not a string
+			$this->dot_notation_split_regex = '/\\./';
+		}
+
+
 		// @since 2.x.2
 		// Users who have not upgraded their configuration file must have a default
 		// but users may want to set it to null to keep the old buggy behaviour
@@ -411,7 +418,7 @@ class LocalizationMissing extends LocalizationAbstract
 								$i                                                = $i + 1;
 							}
 
-							$key_last_token = explode( '.' , $key );
+							$key_last_token = preg_split( $this->dot_notation_split_regex , $key );
 
 							if ( $this->option( 'translation' ) )
 							{
@@ -431,7 +438,7 @@ class LocalizationMissing extends LocalizationAbstract
 								$translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
 							}
 
-							array_set( $final_lemmas , $key , $translation );
+							Tools::arraySet( $final_lemmas , $key , $translation , $this->dot_notation_split_regex );
 						}
 					}
 
@@ -449,7 +456,7 @@ class LocalizationMissing extends LocalizationAbstract
 
 						foreach ( $already_lemmas as $key => $value )
 						{
-							array_set( $final_lemmas , $key , $value );
+							Tools::arraySet( $final_lemmas , $key , $value , $this->dot_notation_split_regex );
 						}
 					}
 
@@ -481,7 +488,7 @@ class LocalizationMissing extends LocalizationAbstract
 									}
 
 									// Given that this lemma is never obsolete, we need to send it back to the final lemma array
-									array_set( $final_lemmas , $key , $value );
+									Tools::arraySet( $final_lemmas , $key , $value , $this->dot_notation_split_regex );
 								}
 							}
 						}
@@ -513,7 +520,7 @@ class LocalizationMissing extends LocalizationAbstract
 									$this->writeLine( "            <comment>" . $key . "</comment>" );
 								}
 
-								array_set( $final_lemmas , $obsolete_prefix . $key , $value );
+								Tools::arraySet( $final_lemmas , $obsolete_prefix . $key , $value , $this->dot_notation_split_regex );
 							}
 						}
 					}
