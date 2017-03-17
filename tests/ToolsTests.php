@@ -19,13 +19,13 @@ class ToolsTests extends TestCase
 	{
 		$array = array();
 
-		Tools::arraySet( $array , 'a.b.c' , true , '/\\./' , null , 2 );
+		Tools::arraySet( $array , 'a.b.c' , true , '/\\./' , 2 );
 		$this->assertTrue( $array['a']['b.c'] );
 
-		Tools::arraySet( $array , 'a.b.c' , true , '/\\./' , null , 2 );
+		Tools::arraySet( $array , 'a.b.c' , true , '/\\./' , 2 );
 		$this->assertNull( @$array['a']['b']['c'] );
 
-		Tools::arraySet( $array , null , true , '/\\./' , null , 2 );
+		Tools::arraySet( $array , null , true , '/\\./' , 2 );
 		/** @var bool $array */
 		$this->assertTrue( $array );
 	}

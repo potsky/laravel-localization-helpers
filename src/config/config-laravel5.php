@@ -329,30 +329,6 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
-	| Escape char
-	|--------------------------------------------------------------------------
-	|
-	| The escape char is used to stop the array dot notation when parsing lemma.
-	| As soon as the escape char is encountered next to a dot, the rest of the
-	| string can contain dots
-	|
-	| For example, lemma 'message.@To be continued...' will be injected in the
-	| message lang file as key '@To be continued...'
-	|
-	| For example, lemma 'message.@First sentence. Second sentence' will be injected
-	| in the message lang file as key '@First sentence. Second sentence' and not as
-	| "@First sentence" => [ " Second sentence" => "TODO:..." ]
-	|
-	| You can set this to null to ignore this feature.
-	|
-	| This parameter will change nothing if you use the output-flat option of course
-	|
-	*/
-	'escape_char'        => '@',
-
-
-	/*
-	|--------------------------------------------------------------------------
 	| Dot notation split
 	|--------------------------------------------------------------------------
 	|

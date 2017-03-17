@@ -92,15 +92,6 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $obsolete_array_key = 'LLH:obsolete';
 
 	/**
-	 * The escape char
-	 *
-	 * @var  string
-	 *
-	 * @since 2.x.5
-	 */
-	protected $escape_char = null;
-
-	/**
 	 * The dot notation split regex
 	 *
 	 * @var  string
@@ -126,7 +117,6 @@ class LocalizationMissing extends LocalizationAbstract
 		$this->editor                   = config( Localization::PREFIX_LARAVEL_CONFIG . 'editor_command_line' );
 		$this->code_style_fixers        = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
 		$this->code_style_level         = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
-		$this->escape_char              = config( Localization::PREFIX_LARAVEL_CONFIG . 'escape_char' );
 		$this->dot_notation_split_regex = config( Localization::PREFIX_LARAVEL_CONFIG . 'dot_notation_split_regex' );
 
 		// @since 2.x.2
@@ -211,7 +201,7 @@ class LocalizationMissing extends LocalizationAbstract
 		}
 		else
 		{
-			$lemmas_structured = $this->manager->convertLemmaToStructuredArray( $lemmas , $this->dot_notation_split_regex , $this->escape_char );
+			$lemmas_structured = $this->manager->convertLemmaToStructuredArray( $lemmas , $this->dot_notation_split_regex , null );
 		}
 
 		$this->writeLine( '' );
@@ -263,7 +253,7 @@ class LocalizationMissing extends LocalizationAbstract
 			{
 				foreach ( $lemmas_structured as $family => $array )
 				{
-					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.' . $extension;
+					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
 
 					if ( in_array( $family , $this->ignore_lang_files ) || in_array( $this->manager->getShortPath( $file_lang_path ) , $this->ignore_lang_files ) )
 					{

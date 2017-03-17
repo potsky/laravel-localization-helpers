@@ -36,7 +36,7 @@ class Gh44Tests extends TestCase
 	/**
 	 * https://github.com/potsky/laravel-localization-helpers/issues/44
 	 */
-	public function testLangFilesAreCreatedWhenUsingDryRun()
+	public function testSpecificFilePathInIgnoreConfiguration()
 	{
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::$langFolder );
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh44/code' );

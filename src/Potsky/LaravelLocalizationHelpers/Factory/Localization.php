@@ -357,7 +357,7 @@ class Localization
 	 *                       eg: [ 'message.lemma.child' => string(83)
 	 *                       "/Users/potsky/WTF/laravel-localization-helpers/tests/mock/trans.php" , ... ]
 	 *
-	 * @param string $regex
+	 * @param string $dot_notation_split_regex
 	 * @param int    $level
 	 *
 	 * @return array a structured array of lemma
@@ -370,7 +370,7 @@ class Localization
 	 *                                    "/Users/potsky/Work/Private/GitHub/laravel-localization-helpers/tests/mock/trans.php"
 	 *                        ...
 	 */
-	public function convertLemmaToStructuredArray( $lemmas , $dot_notation_split_regex , $escape_char , $level = -1 )
+	public function convertLemmaToStructuredArray( $lemmas , $dot_notation_split_regex , $level = -1 )
 	{
 		$lemmas_structured = array();
 
@@ -388,7 +388,7 @@ class Localization
 			}
 			else
 			{
-				Tools::arraySet( $lemmas_structured , $key , $value , $dot_notation_split_regex , $escape_char , $level );
+				Tools::arraySet( $lemmas_structured , $key , $value , $dot_notation_split_regex , $level );
 			}
 		}
 

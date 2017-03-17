@@ -85,16 +85,17 @@ class Tools
 	 *
 	 * If no key is given to the method, the entire array will be replaced.
 	 *
+	 * The escape char before a dot is used to escape all dots next to the escaped dot
+	 *
 	 * @param  array  $array
 	 * @param  string $key
 	 * @param  mixed  $value
 	 * @param  string $regex
-	 * @param  string $escape_char
 	 * @param  int    $level
 	 *
 	 * @return array
 	 */
-	public static function arraySet( &$array , $key , $value , $regex = '/\\./' , $escape_char = null , $level = -1 )
+	public static function arraySet( &$array , $key , $value , $regex = '/\\./' , $level = -1 )
 	{
 		if ( is_null( $key ) )
 		{
