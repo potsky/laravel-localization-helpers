@@ -9,7 +9,7 @@ class Gh31Tests extends TestCase
 	private static $langFile;
 
 	private static $langFileVendor;
-	
+
 	private static $langFileVendor42;
 
 	/**
