@@ -3,6 +3,7 @@
 use Config;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\CS\Console\Application;
 
 class Localization
 {
@@ -10,6 +11,7 @@ class Localization
 	const NO_LANG_FOLDER_FOUND_IN_YOUR_CUSTOM_PATH = 3;
 	const BACKUP_DATE_FORMAT                       = "Ymd_His";
 	const PREFIX_LARAVEL_CONFIG                    = 'laravel-localization-helpers.';
+	const JSON_HEADER                              = '//JSON//';
 
 	private static $PHP_CS_FIXER_LEVELS = array( 'psr0' , 'psr1' , 'psr2' , 'symfony' );
 	private static $PHP_CS_FIXER_FIXERS = array(
@@ -382,9 +384,11 @@ class Localization
 
 		foreach ( $lemmas as $key => $value )
 		{
-			if ( strpos( $key , '.' ) === false )
+			$keys = preg_split( $dot_notation_split_regex , $key , $level );
+
+			if ( count( $keys ) <= 1 )
 			{
-				$this->messageBag->writeLine( '    <error>' . $key . '</error> in file <comment>' . $this->getShortPath( $value ) . '</comment> <error>will not be included because it has no family</error>' );
+				Tools::arraySet( $lemmas_structured , self::JSON_HEADER . '.' . $key , $value , $dot_notation_split_regex , $level );
 			}
 			else
 			{
@@ -410,7 +414,7 @@ class Localization
 	 */
 	public function convertLemmaToFlatArray( $lemmas )
 	{
-		return $this->convertLemmaToStructuredArray( $lemmas , null , null , 2 );
+		return $this->convertLemmaToStructuredArray( $lemmas , null , 2 );
 	}
 
 	/**
@@ -675,6 +679,7 @@ class Localization
 	{
 		if ( is_null( $this->translator ) )
 		{
+			/** @var string $translator */
 			$translator       = config( self::PREFIX_LARAVEL_CONFIG . 'translator' );
 			$this->translator = new Translator( 'Microsoft' , array(
 				'client_id'        => config( self::PREFIX_LARAVEL_CONFIG . 'translators.' . $translator . '.client_id' ) ,
@@ -696,6 +701,11 @@ class Localization
 	/**
 	 * Fix Code Style for a file or a directory
 	 *
+	 * @param       $filePath
+	 * @param array $fixers
+	 * @param null  $level
+	 *
+	 * @return string
 	 * @throws \Exception
 	 * @throws \Potsky\LaravelLocalizationHelpers\Factory\Exception
 	 */
@@ -743,7 +753,7 @@ class Localization
 
 		$input       = new ArrayInput( $options );
 		$output      = new BufferedOutput();
-		$application = new \Symfony\CS\Console\Application();
+		$application = new Application();
 		$application->setAutoExit( false );
 		$application->run( $input , $output );
 

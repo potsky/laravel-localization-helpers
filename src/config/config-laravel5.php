@@ -62,6 +62,10 @@ return array(
 	|
 	*/
 	'trans_methods'       => array(
+		'json'        => array(
+			'@__\(\s*(\'.*\')\s*(,.*)*\)@U' ,
+			'@__\(\s*(".*")\s*(,.*)*\)@U' ,
+		) ,
 		'trans'        => array(
 			'@trans\(\s*(\'.*\')\s*(,.*)*\)@U' ,
 			'@trans\(\s*(".*")\s*(,.*)*\)@U' ,
@@ -89,6 +93,22 @@ return array(
 			'@\@choice\(\s*(".*")\s*,.*\)@U' ,
 		) ,
 	) ,
+
+
+	/*
+	|--------------------------------------------------------------------------
+	| JSON languages
+	|--------------------------------------------------------------------------
+	|
+	| You must set languages you want to generate in JSON format
+	|
+	| JSON langages are supported since Laravel 5.4
+	| https://laravel.com/docs/5.4/localization#using-translation-strings-as-keys
+	|
+	*/
+	'json_languages' => array(
+		'en'
+	),
 
 
 	/*

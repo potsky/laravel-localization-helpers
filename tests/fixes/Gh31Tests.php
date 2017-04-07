@@ -1,4 +1,4 @@
-<?php
+	<?php
 
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 

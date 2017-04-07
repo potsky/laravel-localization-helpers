@@ -5,8 +5,12 @@ namespace Potsky\LaravelLocalizationHelpers\Command;
 use Config;
 use Illuminate\Config\Repository;
 use Potsky\LaravelLocalizationHelpers\Factory\Exception;
+use Potsky\LaravelLocalizationHelpers\Factory\LangFile;
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 use Potsky\LaravelLocalizationHelpers\Factory\Tools;
+use Potsky\LaravelLocalizationHelpers\Object\LangFileAbstract;
+use Potsky\LaravelLocalizationHelpers\Object\LangFileGenuine;
+use Potsky\LaravelLocalizationHelpers\Object\LangFileJson;
 use Symfony\Component\Console\Input\InputOption;
 
 class LocalizationMissing extends LocalizationAbstract
@@ -18,16 +22,6 @@ class LocalizationMissing extends LocalizationAbstract
 	 * @var string
 	 */
 	protected $name = 'localization:missing';
-
-	/**
-	 * Ignore these lang subfolders
-	 *
-	 * https://laravel.com/docs/4.2/localization
-	 * https://laravel.com/docs/5.1/localization
-	 *
-	 * @var array
-	 */
-	protected $ignoreVendors = array( 'vendor' , 'packages' );
 
 	/**
 	 * The console command description.
@@ -111,6 +105,15 @@ class LocalizationMissing extends LocalizationAbstract
 	protected $dot_notation_split_regex = null;
 
 	/**
+	 * The JSON languages to handle
+	 *
+	 * @var  string
+	 *
+	 * @since 2.x.6
+	 */
+	protected $json_languages = null;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param \Illuminate\Config\Repository $configRepository
@@ -128,6 +131,7 @@ class LocalizationMissing extends LocalizationAbstract
 		$this->code_style_fixers        = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.fixers' );
 		$this->code_style_level         = config( Localization::PREFIX_LARAVEL_CONFIG . 'code_style.level' );
 		$this->dot_notation_split_regex = config( Localization::PREFIX_LARAVEL_CONFIG . 'dot_notation_split_regex' );
+		$this->json_languages           = config( Localization::PREFIX_LARAVEL_CONFIG . 'json_languages' );
 
 		if ( ! is_string( $this->dot_notation_split_regex ) )
 		{
@@ -264,17 +268,29 @@ class LocalizationMissing extends LocalizationAbstract
 
 		$this->writeLine( 'Scan files:' );
 
-		foreach ( scandir( $dir_lang ) as $lang )
+		/**
+		 * Parse all lang file types
+		 *
+		 * @var LangFileAbstract $langFileType
+		 */
+		foreach ( LangFile::getLangFiles( $dir_lang , $this->json_languages ) as $langFileType )
 		{
-			if ( in_array( $lang , $this->ignoreVendors ) ) continue;
+			$lang = $langFileType->getLang();
 
-			if ( Tools::isValidDirectory( $dir_lang , $lang ) )
+			/**
+			 * Parse now all extracted families
+			 */
+			foreach ( $lemmas_structured as $family => $array )
 			{
-				foreach ( $lemmas_structured as $family => $array )
+				if ( $family === Localization::JSON_HEADER )
 				{
-					$file_lang_path = $dir_lang . DIRECTORY_SEPARATOR . $lang . DIRECTORY_SEPARATOR . $family . '.php';
+					$lang_file = new LangFileJson( $dir_lang , $lang );
+				}
+				else
+				{
+					$lang_file = new LangFileGenuine( $dir_lang , $lang , $family );
 
-					if ( in_array( $family , $this->ignore_lang_files ) || in_array( $this->manager->getShortPath( $file_lang_path ) , $this->ignore_lang_files ) )
+					if ( in_array( $family , $this->ignore_lang_files ) || in_array( $lang_file->getShortFilePath() , $this->ignore_lang_files ) )
 					{
 						if ( $this->option( 'verbose' ) )
 						{
@@ -283,304 +299,314 @@ class LocalizationMissing extends LocalizationAbstract
 						}
 						continue;
 					}
+				}
 
-					if ( $this->option( 'verbose' ) )
+				if ( $this->option( 'verbose' ) )
+				{
+					$this->writeLine( '' );
+				}
+
+				$this->writeLine( '    ' . $lang_file->getShortFilePath() );
+
+				if ( ! $this->option( 'dry-run' ) )
+				{
+
+					if ( ! $lang_file->ensureFolder() )
 					{
-						$this->writeLine( '' );
+						// @codeCoverageIgnoreStart
+						$this->writeError( "    > Unable to create directory " . $lang_file->getFileFolderPath() );
+
+						return self::ERROR;
+						// @codeCoverageIgnoreEnd
 					}
 
-					$this->writeLine( '    ' . $this->manager->getShortPath( $file_lang_path ) );
-
-					if ( ! $this->option( 'dry-run' ) )
+					if ( ! $lang_file->isFolderWritable() )
 					{
+						// @codeCoverageIgnoreStart
+						$this->writeError( "    > Unable to write file in directory " . $lang_file->getFileFolderPath() );
 
-						if ( ! is_writable( dirname( $file_lang_path ) ) )
-						{
-							// @codeCoverageIgnoreStart
-							$this->writeError( "    > Unable to write file in directory " . dirname( $file_lang_path ) );
-
-							return self::ERROR;
-							// @codeCoverageIgnoreEnd
-						}
-
-						if ( ! file_exists( $file_lang_path ) )
-						{
-							// @codeCoverageIgnoreStart
-							$this->writeInfo( "    > File has been created" );
-							// @codeCoverageIgnoreEnd
-						}
-
-						if ( ! touch( $file_lang_path ) )
-						{
-							// @codeCoverageIgnoreStart
-							$this->writeError( "    > Unable to touch file $file_lang_path" );
-
-							return self::ERROR;
-							// @codeCoverageIgnoreEnd
-						}
-
-						if ( ! is_readable( $file_lang_path ) )
-						{
-							// @codeCoverageIgnoreStart
-							$this->writeError( "    > Unable to read file $file_lang_path" );
-
-							return self::ERROR;
-							// @codeCoverageIgnoreEnd
-						}
-
-						if ( ! is_writable( $file_lang_path ) )
-						{
-							// @codeCoverageIgnoreStart
-							$this->writeError( "    > Unable to write in file $file_lang_path" );
-
-							return self::ERROR;
-							// @codeCoverageIgnoreEnd
-						}
+						return self::ERROR;
+						// @codeCoverageIgnoreEnd
 					}
 
-					/** @noinspection PhpIncludeInspection */
-					$a                        = @include( $file_lang_path );
-					$old_lemmas_with_obsolete = ( is_array( $a ) ) ? array_dot( $a ) : array();
-					$new_lemmas               = array_dot( $array );
-					$final_lemmas             = array();
-					$display_already_comment  = false;
-					$something_to_do          = false;
-					$i                        = 0;
-
-					// Remove the obsolete prefix key
-					$old_lemmas             = array();
-					$obsolete_prefix_length = strlen( $obsolete_prefix );
-					foreach ( $old_lemmas_with_obsolete as $key => $value )
+					if ( ! $lang_file->fileExists() )
 					{
-						if ( starts_with( $key , $obsolete_prefix ) )
-						{
-							$key = substr( $key , $obsolete_prefix_length );
-							if ( ! isset( $old_lemmas[ $key ] ) )
-							{
-								$old_lemmas[ $key ] = $value;
-							}
-						}
-						else
+						// @codeCoverageIgnoreStart
+						$this->writeInfo( "    > File has been created" );
+						// @codeCoverageIgnoreEnd
+					}
+
+					if ( ! $lang_file->touch() )
+					{
+						// @codeCoverageIgnoreStart
+						$this->writeError( "    > Unable to touch file " . $lang_file->getFilePath() );
+
+						return self::ERROR;
+						// @codeCoverageIgnoreEnd
+					}
+
+					if ( ! $lang_file->isReadable() )
+					{
+						// @codeCoverageIgnoreStart
+						$this->writeError( "    > Unable to read file " . $lang_file->getFilePath() );
+
+						return self::ERROR;
+						// @codeCoverageIgnoreEnd
+					}
+
+					if ( ! $lang_file->isWritable() )
+					{
+						// @codeCoverageIgnoreStart
+						$this->writeError( "    > Unable to write in file " . $lang_file->getFilePath() );
+
+						return self::ERROR;
+						// @codeCoverageIgnoreEnd
+					}
+				}
+
+				/** @noinspection PhpIncludeInspection */
+				$a                        = $lang_file->load();
+				$old_lemmas_with_obsolete = ( is_array( $a ) ) ? array_dot( $a ) : array();
+				$new_lemmas               = array_dot( $array );
+				$final_lemmas             = array();
+				$display_already_comment  = false;
+				$something_to_do          = false;
+				$i                        = 0;
+
+				// Remove the obsolete prefix key
+				$old_lemmas             = array();
+				$obsolete_prefix_length = strlen( $obsolete_prefix );
+				foreach ( $old_lemmas_with_obsolete as $key => $value )
+				{
+					if ( starts_with( $key , $obsolete_prefix ) )
+					{
+						$key = substr( $key , $obsolete_prefix_length );
+						if ( ! isset( $old_lemmas[ $key ] ) )
 						{
 							$old_lemmas[ $key ] = $value;
 						}
 					}
-
-					// Check if keys from new lemmas are not sub-keys from old_lemma (#47)
-					// Ignore them if this is the case
-					$new_lemmas_clean = $new_lemmas;
-					$old_lemmas_clean = $old_lemmas;
-
-					foreach ( $new_lemmas as $new_key => $new_value )
+					else
 					{
-						foreach ( $old_lemmas as $old_key => $old_value )
-						{
-							if ( starts_with( $old_key , $new_key . '.' ) )
-							{
-								if ( $this->option( 'verbose' ) )
-								{
-									$this->writeLine( "            <info>" . $new_key . "</info> seems to be used to access an array and is already defined in lang file as " . $old_key );
-									$this->writeLine( "            <info>" . $new_key . "</info> not handled!" );
-								}
-
-								unset( $new_lemmas_clean[ $new_key ] );
-								unset( $old_lemmas_clean[ $old_key ] );
-							}
-						}
+						$old_lemmas[ $key ] = $value;
 					}
+				}
 
-					$obsolete_lemmas = array_diff_key( $old_lemmas_clean , $new_lemmas_clean );
-					$welcome_lemmas  = array_diff_key( $new_lemmas_clean , $old_lemmas_clean );
-					$already_lemmas  = array_intersect_key( $old_lemmas_clean , $new_lemmas_clean );
+				// Check if keys from new lemmas are not sub-keys from old_lemma (#47)
+				// Ignore them if this is the case
+				$new_lemmas_clean = $new_lemmas;
+				$old_lemmas_clean = $old_lemmas;
 
-					// disable check for obsolete lemma and consolidate with already_lemmas
-					if ( $this->option( 'disable-obsolete-check' ) )
+				foreach ( $new_lemmas as $new_key => $new_value )
+				{
+					foreach ( $old_lemmas as $old_key => $old_value )
 					{
-						$already_lemmas  = array_unique( $obsolete_lemmas + $already_lemmas );
-						$obsolete_lemmas = array();
-					}
-
-					ksort( $obsolete_lemmas );
-					ksort( $welcome_lemmas );
-					ksort( $already_lemmas );
-
-					//////////////////////////
-					// Deal with new lemmas //
-					//////////////////////////
-					if ( count( $welcome_lemmas ) > 0 )
-					{
-						$display_already_comment                 = true;
-						$something_to_do                         = true;
-						$there_are_new                           = true;
-						$final_lemmas[ "POTSKY___NEW___POTSKY" ] = "POTSKY___NEW___POTSKY";
-
-						$this->writeInfo( '        ' . ( $c = count( $welcome_lemmas ) ) . ' new string' . Tools::getPlural( $c ) . ' to translate' );
-
-						foreach ( $welcome_lemmas as $key => $value )
+						if ( starts_with( $old_key , $new_key . '.' ) )
 						{
 							if ( $this->option( 'verbose' ) )
 							{
-								$this->writeLine( "            <info>" . $key . "</info> in " . $this->manager->getShortPath( $value ) );
-							}
-							if ( ! $this->option( 'no-comment' ) )
-							{
-								$final_lemmas[ 'POTSKY___COMMENT___POTSKY' . $i ] = "Defined in file $value";
-								$i                                                = $i + 1;
+								$this->writeLine( "            <info>" . $new_key . "</info> seems to be used to access an array and is already defined in lang file as " . $old_key );
+								$this->writeLine( "            <info>" . $new_key . "</info> not handled!" );
 							}
 
-							$key_last_token = preg_split( $this->dot_notation_split_regex , $key );
-
-							if ( $this->option( 'translation' ) )
-							{
-								$translation = $this->manager->translate( end( $key_last_token ) , $lang );
-							}
-							else
-							{
-								$translation = end( $key_last_token );
-							}
-
-							if ( strtolower( $this->option( 'new-value' ) ) === 'null' )
-							{
-								$translation = null;
-							}
-							else
-							{
-								$translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
-							}
-
-							Tools::arraySet( $final_lemmas , $key , $translation , $this->dot_notation_split_regex );
-						}
-					}
-
-					///////////////////////////////
-					// Deal with existing lemmas //
-					///////////////////////////////
-					if ( count( $already_lemmas ) > 0 )
-					{
-						if ( $this->option( 'verbose' ) )
-						{
-							$this->writeLine( '        ' . ( $c = count( $already_lemmas ) ) . ' already translated string' . Tools::getPlural( $c ) );
-						}
-
-						$final_lemmas[ "POTSKY___OLD___POTSKY" ] = "POTSKY___OLD___POTSKY";
-
-						foreach ( $already_lemmas as $key => $value )
-						{
-							Tools::arraySet( $final_lemmas , $key , $value , $this->dot_notation_split_regex );
-						}
-					}
-
-					///////////////////////////////
-					// Deal with obsolete lemmas //
-					///////////////////////////////
-					if ( count( $obsolete_lemmas ) > 0 )
-					{
-						$protected_already_included = false;
-
-						// Remove all dynamic fields
-						foreach ( $obsolete_lemmas as $key => $value )
-						{
-							foreach ( $this->never_obsolete_keys as $remove )
-							{
-								if ( ( strpos( $key , '.' . $remove . '.' ) !== false ) || starts_with( $key , $remove . '.' ) )
-								{
-									if ( $this->option( 'verbose' ) )
-									{
-										$this->writeLine( "        <comment>" . $key . "</comment> is protected as a dynamic lemma" );
-									}
-
-									unset( $obsolete_lemmas[ $key ] );
-
-									if ( $protected_already_included === false )
-									{
-										$final_lemmas[ "POTSKY___PROTECTED___POTSKY" ] = "POTSKY___PROTECTED___POTSKY";
-										$protected_already_included                    = true;
-									}
-
-									// Given that this lemma is never obsolete, we need to send it back to the final lemma array
-									Tools::arraySet( $final_lemmas , $key , $value , $this->dot_notation_split_regex );
-								}
-							}
-						}
-					}
-
-
-					/////////////////////////////////////
-					// Fill the final lemmas array now //
-					/////////////////////////////////////
-					if ( count( $obsolete_lemmas ) > 0 )
-					{
-						$display_already_comment = true;
-						$something_to_do         = true;
-
-						if ( $this->option( 'no-obsolete' ) )
-						{
-							$this->writeComment( "        " . ( $c = count( $obsolete_lemmas ) ) . ' obsolete string' . Tools::getPlural( $c ) . ' (will be deleted)' );
-						}
-						else
-						{
-							$this->writeComment( "        " . ( $c = count( $obsolete_lemmas ) ) . ' obsolete string' . Tools::getPlural( $c ) . ' (can be deleted manually in the generated file)' );
-
-							$final_lemmas[ "POTSKY___OBSOLETE___POTSKY" ] = "POTSKY___OBSOLETE___POTSKY";
-
-							foreach ( $obsolete_lemmas as $key => $value )
-							{
-								if ( $this->option( 'verbose' ) )
-								{
-									$this->writeLine( "            <comment>" . $key . "</comment>" );
-								}
-
-								Tools::arraySet( $final_lemmas , $obsolete_prefix . $key , $value , $this->dot_notation_split_regex );
-							}
-						}
-					}
-
-					// Flat style
-					if ( $this->option( 'output-flat' ) )
-					{
-						$final_lemmas = array_dot( $final_lemmas );
-					}
-
-					if ( ( $something_to_do === true ) || ( $this->option( 'force' ) ) )
-					{
-						$content = var_export( $final_lemmas , true );
-						$content = preg_replace( "@'POTSKY___COMMENT___POTSKY[0-9]*' => '(.*)',@" , '// $1' , $content );
-						$content = str_replace(
-							array(
-								"'POTSKY___NEW___POTSKY' => 'POTSKY___NEW___POTSKY'," ,
-								"'POTSKY___OLD___POTSKY' => 'POTSKY___OLD___POTSKY'," ,
-								"'POTSKY___PROTECTED___POTSKY' => 'POTSKY___PROTECTED___POTSKY'," ,
-								"'POTSKY___OBSOLETE___POTSKY' => 'POTSKY___OBSOLETE___POTSKY'," ,
-							) ,
-							array(
-								'//============================== New strings to translate ==============================//' ,
-								( $display_already_comment === true ) ? '//==================================== Translations ====================================//' : '' ,
-								'//============================== Dynamic protected strings =============================//' ,
-								'//================================== Obsolete strings ==================================//' ,
-							) ,
-							$content
-						);
-
-						$file_content = "<?php\n";
-
-						if ( ! $this->option( 'no-date' ) )
-						{
-							$a = " Generated via \"php artisan " . $this->argument( 'command' ) . "\" at " . date( "Y/m/d H:i:s" ) . " ";
-							$file_content .= "/" . str_repeat( '*' , strlen( $a ) ) . "\n" . $a . "\n" . str_repeat( '*' , strlen( $a ) ) . "/\n";
-						}
-
-						$file_content .= "\nreturn " . $content . ";";
-						$job[ $file_lang_path ] = $file_content;
-					}
-					else
-					{
-						if ( $this->option( 'verbose' ) )
-						{
-							$this->writeLine( "        > <comment>Nothing to do for this file</comment>" );
+							unset( $new_lemmas_clean[ $new_key ] );
+							unset( $old_lemmas_clean[ $old_key ] );
 						}
 					}
 				}
+
+				$obsolete_lemmas = array_diff_key( $old_lemmas_clean , $new_lemmas_clean );
+				$welcome_lemmas  = array_diff_key( $new_lemmas_clean , $old_lemmas_clean );
+				$already_lemmas  = array_intersect_key( $old_lemmas_clean , $new_lemmas_clean );
+
+				// disable check for obsolete lemma and consolidate with already_lemmas
+				if ( $this->option( 'disable-obsolete-check' ) )
+				{
+					$already_lemmas  = array_unique( $obsolete_lemmas + $already_lemmas );
+					$obsolete_lemmas = array();
+				}
+
+				ksort( $obsolete_lemmas );
+				ksort( $welcome_lemmas );
+				ksort( $already_lemmas );
+
+				//////////////////////////
+				// Deal with new lemmas //
+				//////////////////////////
+				if ( count( $welcome_lemmas ) > 0 )
+				{
+					$display_already_comment                 = true;
+					$something_to_do                         = true;
+					$there_are_new                           = true;
+					$final_lemmas[ "POTSKY___NEW___POTSKY" ] = "POTSKY___NEW___POTSKY";
+
+					$this->writeInfo( '        ' . ( $c = count( $welcome_lemmas ) ) . ' new string' . Tools::getPlural( $c ) . ' to translate' );
+
+					foreach ( $welcome_lemmas as $key => $value )
+					{
+						if ( $this->option( 'verbose' ) )
+						{
+							$this->writeLine( "            <info>" . $key . "</info> in " . $this->manager->getShortPath( $value ) );
+						}
+						if ( ! $this->option( 'no-comment' ) )
+						{
+							$final_lemmas[ 'POTSKY___COMMENT___POTSKY' . $i ] = "Defined in file $value";
+							$i                                                = $i + 1;
+						}
+
+						$key_last_token = preg_split( $this->dot_notation_split_regex , $key );
+
+						if ( $this->option( 'translation' ) )
+						{
+							$translation = $this->manager->translate( end( $key_last_token ) , $lang );
+						}
+						else
+						{
+							$translation = end( $key_last_token );
+						}
+
+						if ( strtolower( $this->option( 'new-value' ) ) === 'null' )
+						{
+							$translation = null;
+						}
+						else
+						{
+							$translation = str_replace( '%LEMMA' , $translation , $this->option( 'new-value' ) );
+						}
+
+						Tools::arraySet( $final_lemmas , $key , $translation , $this->dot_notation_split_regex );
+					}
+				}
+
+				///////////////////////////////
+				// Deal with existing lemmas //
+				///////////////////////////////
+				if ( count( $already_lemmas ) > 0 )
+				{
+					if ( $this->option( 'verbose' ) )
+					{
+						$this->writeLine( '        ' . ( $c = count( $already_lemmas ) ) . ' already translated string' . Tools::getPlural( $c ) );
+					}
+
+					$final_lemmas[ "POTSKY___OLD___POTSKY" ] = "POTSKY___OLD___POTSKY";
+
+					foreach ( $already_lemmas as $key => $value )
+					{
+						Tools::arraySet( $final_lemmas , $key , $value , $this->dot_notation_split_regex );
+					}
+				}
+
+				///////////////////////////////
+				// Deal with obsolete lemmas //
+				///////////////////////////////
+				if ( count( $obsolete_lemmas ) > 0 )
+				{
+					$protected_already_included = false;
+
+					// Remove all dynamic fields
+					foreach ( $obsolete_lemmas as $key => $value )
+					{
+						foreach ( $this->never_obsolete_keys as $remove )
+						{
+							if ( ( strpos( $key , '.' . $remove . '.' ) !== false ) || starts_with( $key , $remove . '.' ) )
+							{
+								if ( $this->option( 'verbose' ) )
+								{
+									$this->writeLine( "        <comment>" . $key . "</comment> is protected as a dynamic lemma" );
+								}
+
+								unset( $obsolete_lemmas[ $key ] );
+
+								if ( $protected_already_included === false )
+								{
+									$final_lemmas[ "POTSKY___PROTECTED___POTSKY" ] = "POTSKY___PROTECTED___POTSKY";
+									$protected_already_included                    = true;
+								}
+
+								// Given that this lemma is never obsolete, we need to send it back to the final lemma array
+								Tools::arraySet( $final_lemmas , $key , $value , $this->dot_notation_split_regex );
+							}
+						}
+					}
+				}
+
+
+				/////////////////////////////////////
+				// Fill the final lemmas array now //
+				/////////////////////////////////////
+				if ( count( $obsolete_lemmas ) > 0 )
+				{
+					$display_already_comment = true;
+					$something_to_do         = true;
+
+					if ( $this->option( 'no-obsolete' ) )
+					{
+						$this->writeComment( "        " . ( $c = count( $obsolete_lemmas ) ) . ' obsolete string' . Tools::getPlural( $c ) . ' (will be deleted)' );
+					}
+					else
+					{
+						$this->writeComment( "        " . ( $c = count( $obsolete_lemmas ) ) . ' obsolete string' . Tools::getPlural( $c ) . ' (can be deleted manually in the generated file)' );
+
+						$final_lemmas[ "POTSKY___OBSOLETE___POTSKY" ] = "POTSKY___OBSOLETE___POTSKY";
+
+						foreach ( $obsolete_lemmas as $key => $value )
+						{
+							if ( $this->option( 'verbose' ) )
+							{
+								$this->writeLine( "            <comment>" . $key . "</comment>" );
+							}
+
+							Tools::arraySet( $final_lemmas , $obsolete_prefix . $key , $value , $this->dot_notation_split_regex );
+						}
+					}
+				}
+
+				// Flat style
+				if ( $this->option( 'output-flat' ) )
+				{
+					$final_lemmas = array_dot( $final_lemmas );
+				}
+
+				if ( ( $something_to_do === true ) || ( $this->option( 'force' ) ) )
+				{
+					$content = var_export( $final_lemmas , true );
+					$content = preg_replace( "@'POTSKY___COMMENT___POTSKY[0-9]*' => '(.*)',@" , '// $1' , $content );
+					$content = str_replace(
+						array(
+							"'POTSKY___NEW___POTSKY' => 'POTSKY___NEW___POTSKY'," ,
+							"'POTSKY___OLD___POTSKY' => 'POTSKY___OLD___POTSKY'," ,
+							"'POTSKY___PROTECTED___POTSKY' => 'POTSKY___PROTECTED___POTSKY'," ,
+							"'POTSKY___OBSOLETE___POTSKY' => 'POTSKY___OBSOLETE___POTSKY'," ,
+						) ,
+						array(
+							'//============================== New strings to translate ==============================//' ,
+							( $display_already_comment === true ) ? '//==================================== Translations ====================================//' : '' ,
+							'//============================== Dynamic protected strings =============================//' ,
+							'//================================== Obsolete strings ==================================//' ,
+						) ,
+						$content
+					);
+
+					$file_content = "<?php\n";
+
+					if ( ! $this->option( 'no-date' ) )
+					{
+						$a = " Generated via \"php artisan " . $this->argument( 'command' ) . "\" at " . date( "Y/m/d H:i:s" ) . " ";
+						$file_content .= "/" . str_repeat( '*' , strlen( $a ) ) . "\n" . $a . "\n" . str_repeat( '*' , strlen( $a ) ) . "/\n";
+					}
+
+					$file_content .= "\nreturn " . $content . ";";
+					$job[ $lang_file->getFilePath() ] = $file_content;
+				}
+				else
+				{
+					if ( $this->option( 'verbose' ) )
+					{
+						$this->writeLine( "        > <comment>Nothing to do for this file</comment>" );
+					}
+				}
 			}
+
 		}
 
 		///////////////////////////////////////////
