@@ -275,6 +275,8 @@ class LocalizationMissing extends LocalizationAbstract
 		 */
 		foreach ( LangFile::getLangFiles( $dir_lang , $this->json_languages ) as $langFileType )
 		{
+			if ($langFileType->getTypeVendor()) continue;
+
 			$lang = $langFileType->getLang();
 
 			/**
