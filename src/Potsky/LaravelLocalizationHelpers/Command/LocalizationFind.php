@@ -57,7 +57,7 @@ class LocalizationFind extends LocalizationAbstract
 	 *
 	 * @return mixed
 	 */
-	public function fire()
+	public function handle()
 	{
 		$lemma   = $this->argument( 'lemma' );
 		$folders = $this->manager->getPath( $this->folders );

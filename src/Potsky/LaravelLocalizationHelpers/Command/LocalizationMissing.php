@@ -151,7 +151,7 @@ class LocalizationMissing extends LocalizationAbstract
 	 *
 	 * @return mixed
 	 */
-	public function fire()
+	public function handle()
 	{
 		$folders         = $this->manager->getPath( $this->folders );
 		$this->display   = ! $this->option( 'silent' );
