@@ -2,7 +2,7 @@
 
 use Potsky\LaravelLocalizationHelpers\Factory\Localization;
 
-class Gh56Tests extends TestCase
+class Gh56TestsNOTNOW extends TestCase
 {
 	private static $langFolder;
 
