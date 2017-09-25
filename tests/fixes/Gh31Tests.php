@@ -36,6 +36,7 @@ class Gh31Tests extends TestCase
 	{
 		@unlink( self::$langFile );
 		@unlink( self::$langFileVendor );
+		@unlink( self::$langFileVendor42 );
 
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'lang_folder_path' , self::$langFolder );
 		Config::set( Localization::PREFIX_LARAVEL_CONFIG . 'folders' , self::MOCK_DIR_PATH . '/gh31/code' );

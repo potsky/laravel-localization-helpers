@@ -48,7 +48,7 @@ class LocalizationClear extends LocalizationAbstract
 	 *
 	 * @return mixed
 	 */
-	public function fire()
+	public function handle()
 	{
 		$days = (int)$this->option( 'days' );
 

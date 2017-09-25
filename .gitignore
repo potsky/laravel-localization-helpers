@@ -7,3 +7,4 @@ coverage
 /tmp*
 _ide_helper.php
 cs_fixer_tmp_*
+.php_cs.cache

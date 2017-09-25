@@ -8,14 +8,13 @@
   ],
   "license"           : "GPL-3.0+",
   "require"           : {
-    "illuminate/support"                  : "5.4.*",
-    "friendsofphp/php-cs-fixer"           : "^1.11",
+    "illuminate/support"                  : "5.5.*",
+    "friendsofphp/php-cs-fixer"           : "^2.6",
     "potsky/microsoft-translator-php-sdk" : "*"
   },
   "require-dev"       : {
-    "orchestra/testbench"    : "3.4.*",
-    "phpunit/phpunit"        : "^4.0|^5.0",
-    "mockery/mockery"        : "^0.9",
+    "orchestra/testbench"    : "3.5.*",
+    "phpunit/phpunit"        : "^6.0",
     "satooshi/php-coveralls" : "dev-master"
   },
   "autoload"          : {
@@ -26,5 +25,12 @@
       "Potsky\\LaravelLocalizationHelpers\\" : "src/"
     }
   },
-  "minimum-stability" : "stable"
+  "minimum-stability" : "stable",
+  "extra": {
+        "laravel": {
+            "providers": [
+                "Potsky\\LaravelLocalizationHelpers\\LaravelLocalizationHelpersServiceProvider"
+            ]
+        }
+    }
 }
