@@ -46,10 +46,34 @@ LLH is a set of artisan commands to manage translations in your Laravel project.
     ```
 
 - Update your installation : `composer update`
-- For Laravel, add the following line in the `providers` array of the `config/app.php` configuration file :
+
+- For Laravel, add the following lines in the `AppServiceProvider` array of the `config/app.php` configuration file :
     ```php
     Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider::class,
     ```
+
+	On Laravel 5.5, if you don't use the package in production, disable auto-loading and register it only on `local` or `dev`: 
+
+	- Add the following lines in the `register` method of the `AppServiceProvider` :
+		```php
+		public function register()
+		{
+			if ($this->app->environment() === 'dev') { // or local or whatever
+				$this->app->register(\Potsky\LaravelLocalizationHelpers\LaravelLocalizationHelpersServiceProvider::class);
+			}
+		}
+		```
+
+    - Disable to auto-register provider by adding these lines in the `composer.json` file:
+		```php
+		"extra" : {
+			"laravel" : {
+				"dont-discover" : [
+					"potsky/laravel-localization-helpers"
+				]
+			}
+		}
+		```
 
 - For Lumen, add the following lines in the `bootstrap/app.php` file :
 	```php
