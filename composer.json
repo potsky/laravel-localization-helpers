@@ -15,7 +15,7 @@
   "require-dev"       : {
     "orchestra/testbench"    : "3.5.*",
     "phpunit/phpunit"        : "^6.0",
-    "satooshi/php-coveralls" : "dev-master"
+    "satooshi/php-coveralls" : "^2.0"
   },
   "autoload"          : {
     "classmap" : [
