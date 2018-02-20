@@ -13,7 +13,7 @@
     "potsky/microsoft-translator-php-sdk" : "*"
   },
   "require-dev"       : {
-    "orchestra/testbench"    : "3.5.*",
+    "orchestra/testbench"    : "3.6.*",
     "phpunit/phpunit"        : "^6.0",
     "satooshi/php-coveralls" : "^2.0"
   },
