@@ -8,7 +8,7 @@
   ],
   "license"           : "GPL-3.0+",
   "require"           : {
-    "illuminate/support"                  : "5.5.*",
+    "illuminate/support"                  : "5.6.*",
     "friendsofphp/php-cs-fixer"           : "^2.6",
     "potsky/microsoft-translator-php-sdk" : "*"
   },
